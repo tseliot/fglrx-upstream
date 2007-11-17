@@ -1,0 +1,76 @@
+ATI video drivers for Ubuntu
+============================
+
+Further information can be found at http://www.ati.com/ -- look for
+the "Drivers & Software" page and follow links to the Linux drivers.
+
+This package is generated automatically via the official ATI driver
+installer that is available from the above homepage.
+
+
+Building the kernel module
+--------------------------
+   Using module-assistant is the easiest way to build and install the
+   kernel module. In the usual environment it should detect all
+   requirements. The command "module-assistant" can also be called as
+   "m-a" on the command line.
+
+   First, if you have never built modules before, you should prepare the build
+   environment by running:
+
+   # module-assistant prepare
+   # module-assistant update
+
+   Now continue to build the fglrx kernel module.  For example,
+   assuming that you build for the running kernel:
+
+   # module-assistant a-i fglrx
+   
+   If you prefer to build the packages with m-a from your own user
+   account (with ~/src/linux being the kernel source):
+   $ mkdir -p ~/src/modass
+   $ module-assistant -u ~/src/modass -k ~/src/linux install fglrx
+
+   If upgrading fglrx from a previous release it may be necessary to
+   first remove the old kernel modules before building the new one.
+   This can be most easily accomplished by running:
+
+   # rm /usr/src/fglrx-kernel*.deb
+   # apt-get install --fix-broken
+
+   The "apt-get install --fix-broken" should be run after installing
+   the new xorg-driver-fglrx packages.  This command will cause the
+   old kernel module package to be uninstalled, which will then allow
+   module-assistant to succeed.  The other option is to remove the
+   fglrx-kernel package manually with apt-get or synaptic before
+   running module-assistant.
+
+
+Building the kernel module (alternatives)
+-----------------------------------------
+First, cd into /usr/src and unpack the kernel module sources:
+   $ cd /usr/src
+   $ bzcat fglrx.tar.bz2 | tar x
+
+You can also build the kernel module in several other ways:
+1) Use the supplied make.sh script. This will build a module that matches
+   the running kernel; you need to have the correct kernel source and
+   configuration in place.
+
+ -or-
+
+2) Use the following commands (only on kernel 2.6.x):
+   $ cd /usr/src/linux
+   $ make SUBDIRS=/usr/src/modules/fglrx modules
+   (replace /usr/src/linux with the path to your kernel sources)
+
+ -or-
+
+3) Use the make-kpkg(1) command provided by the kernel-package Debian
+   package. This will produce a corresponding fglrx-kernel package for the
+   Debian kernel-image package that you are using. This is "the Debian
+   way". See the "modules_image" section of the make-kpkg(1) man page.
+
+Options 3 will create a nice Debian package to install; otherwise,
+you'll have to copy the module to the right directory under
+/lib/modules, then run 'depmod -ae' and 'modprobe fglrx' to load it.

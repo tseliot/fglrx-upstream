@@ -1,0 +1,154 @@
+2007-07-02  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* dists/*/rules
+	- make sure all apps have correct executable permissions
+
+2007-05-02  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* dists/gutsy
+	- added Gutsy Gibbon distro and bumped other versions
+
+2007-04-02  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* dists
+	- added new glesx.so and esut.a files to xorg/modules
+
+2007-02-20  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* dists/feisty
+	- target added for upcoming Feisty/7.04 release
+	* rules, control.template
+	- replaced fireglcontrol with new amdcccle
+	- removed fglrx-sources package since we won't ship the old
+	control panel anymore
+
+2006-11-23  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* overlay
+	- renamed overlay/ to dists/ and made a separate subdirectory for
+	each distribution version.
+	* ati-installer.sh
+	- made more POSIX compliant
+
+2006-09-04  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* rules
+	- changed to using tar's native bzip2 option instead of piping
+	through bzip2.
+
+2006-08-16  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* overlay/edgy
+	- added Xorg 7.1 support and Ubuntu/edgy target
+	- added a work-around for fireglcontrolpanel on x710 targets
+
+2006-08-11  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* debian/10fglrx.template
+	- only set LD_LIBRARY_PATH for 64bit builds
+
+	* debian/driver.atieventsd.init
+	- fixed call to start-stop-daemon
+	
+2006-06-04  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* atieventsd
+	- new init.d script, man page and the daemon installation
+	* fireglcontrol.desktop
+	- made more Gnome HIG compliant
+	* preinst, postrm
+	- removed some bad diverts
+	* fglrx-powermode.sh
+	- fixed for latest aticonfig
+	
+2006-05-14  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* ati-package.sh
+	- make the package directory writeable so copying overlay works
+	better
+	- use list of distro versions, don't rely on overlay/* for package
+	listings
+
+	* module/postinst
+	- remove the depmod -a from the kernel module postinst scripts as
+	it is done automatically by debhelper and works better
+
+2006-05-10  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* ati-package.sh
+	- force umask 002
+	- use -f when copying files
+
+2006-04-23  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* debian/driver.prerm, overlay/dapper/driver.prerm
+	* debian/rules, overlay/dapper/rules
+	- unsued, removed
+
+	* overlay/dapper/driver.preinst
+	* overlay/dapper/driver.postrm
+	- updated from latest l-r-m package
+	
+	* control.template
+	- re-add the fglrx-control package from the driver
+
+2006-04-16  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* ati-package.sh
+	- copy the common directory first we can override files with the
+	version specific directories
+	- use mktemp to generate a unique working directory
+
+	* version/dapper/rules
+	- don't create the /usr/lib/fglrx directory in the package since
+	it is done in the preinst/postrm scripts
+	- fix amd64 package build
+	
+2006-04-15  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* debian/*
+	* ati-packager.sh
+	- separated debian directory into version specific ones for easier
+	backwards compatibility maintenance.
+
+	* common/*
+	- moved version agnostic files (/etc stuff) to common
+
+	* version/dapper/rules
+	- changed redirection of libGL files
+	- changes DRI module location to /usr/lib/dri
+
+2006-03-18  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* debian/fgkrx-powermode.sh
+	- Source /etc/default/fglrx to allow easy disabling of the
+	powerstate switching code
+	
+	* debian/fglrx.default
+	- New default config file
+
+	* debian/rule
+	- Added fglrxprofiles.csv and fglrxrc to be installed to /etc
+	- Added fglrx.default file to be installed to /etc/default
+
+2006-03-12  Aric Cyr  <Aric.Cyr@gmail.com>
+
+	* debian/fglrx-powermode.sh
+	* debian/fglrx-lid-aticonfig
+	* debian/fglrx-ac-aticonfig
+	- New ACPI scripts to automaticaly call aticonfig and set low
+	power mode or revert to default depending on lid and AC
+	state. Thanks to Matthew Tippett for the original scripts and
+	idea.
+
+	* debian/rules
+	- Updated copyright year.
+	- Added above ACPI related files to the xorg-driver-fglrx package.
+	
+	* debian/copyright
+	- Updated copyright year.
+	
+	* ati-packager.sh
+	- Force the current locale to C for so that packages will be
+	located in the corrent directory after being built, and not lost
+	in /tmp.  Thanks to KanoTheMaster at Rage3d for the tip.

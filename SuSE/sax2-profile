@@ -1,0 +1,29 @@
+# Single Head profile for ATI ("fglrx") driver
+# --------------------------------------------
+#
+#  Usage: sax2 -m 0=fglrx -b /usr/share/doc/packages/fglrx/sax2-profile
+#
+# Use the "fglrxconfig" program for setting up a Multihead 
+# configuration with the ATI ("fglrx") driver.
+
+# Remove device/desktop for Screen 1, which might have been applied by
+# the Radeon Multihead profile before. Needs to be done, since we 
+# don't want to create a configuration mix with radeon/fglrx drivers,
+# which simply doesn't work.
+
+Device  -> [X+1] = [REMOVE]
+Screen  -> [X+1] = [REMOVE]
+Monitor -> [X+1] = [REMOVE]
+
+ServerLayout -> all -> Screen -> 1 = [REMOVE]
+ServerLayout -> all -> Screen -> 0 -> top    =
+ServerLayout -> all -> Screen -> 0 -> bottom =
+ServerLayout -> all -> Screen -> 0 -> left   =
+ServerLayout -> all -> Screen -> 0 -> right  =
+
+Screen->[X]->DefaultDepth    = 24
+Module->[X]->Load            = dbe,type1,freetype,extmod,glx,v4l,dri
+Device->[X]->Raw->11->Option = "UseInternalAGPGART" "no"
+Device->[X]->Raw->12->Option = "mtrr" "off"
+Device->[X]->Raw->13->Option = "VideoOverlay" "on"
+Device->[X]->Raw->14->Option = "OpenGLOverlay" "off"

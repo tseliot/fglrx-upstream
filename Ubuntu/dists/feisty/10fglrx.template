@@ -1,0 +1,9 @@
+LIBGL_DRIVERS_PATH=/#XMODDIR#/dri
+if [ `uname -m` = 'x86_64' ]; then
+  if [ -d /#XMODDIR32#/dri ]; then
+    LIBGL_DRIVERS_PATH=${LIBGL_DRIVERS_PATH}:/#XMODDIR32#/dri
+    LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/lib32
+    export LD_LIBRARY_PATH
+  fi
+fi
+export LIBGL_DRIVERS_PATH

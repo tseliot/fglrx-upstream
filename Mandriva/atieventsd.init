@@ -1,0 +1,91 @@
+#!/bin/bash
+#
+# atieventsd      This shell script takes care of starting and stopping
+#               ATI events daemon.
+#
+# chkconfig: 2345 65 35
+# description: ATI Events Daemon
+#
+# processname: atieventsd
+# pidfile: /var/run/atieventsd.pid
+### BEGIN INIT INFO
+# Provides:       atieventsd
+# Required-Start: acpid dm
+# Required-Stop:
+# Default-Start:  3 5
+# Default-Stop:
+# Description:    ATI Events Daemon
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+DAEMONOPTS=""
+
+RETVAL=0
+
+start() {
+	# Start daemons.
+	gprintf "Starting atieventsd: "
+
+	# Check if we're using fglrx or not
+	[ ! -f /proc/dri/0/name ] && sleep 2
+	grep -q fglrx /proc/dri/0/name >& /dev/null || return 0
+
+	daemon /usr/sbin/atieventsd $DAEMONOPTS
+	RETVAL=$?
+	echo
+	if [ $RETVAL -eq 0 ]; then
+		PID=`/sbin/pidof atieventsd`
+		if [ $PID ]; then
+			touch /var/lock/subsys/atieventsd
+			echo $PID > /var/run/atieventsd.pid
+		fi
+	fi
+	return $RETVAL
+}
+
+stop() {
+	# Stop daemons.
+	gprintf "Shutting down atieventsd: "
+
+	# Check if we're using fglrx or not
+	grep -q fglrx /proc/dri/0/name >& /dev/null || return 0
+
+	if [ -r /var/run/atieventsd.pid ]; then
+	    killproc atieventsd
+	    RETVAL=$?
+	    [ "$RETVAL" = 0 ] && success "stop" || failure "stop"
+	else
+	    success "already stopped"
+	    RETVAL=0
+	fi
+        [ $RETVAL -eq 0 ] && rm -f /var/run/atieventsd.pid
+	[ $RETVAL = 0 ] && rm -f /var/lock/subsys/atieventsd
+	echo
+	return $RETVAL
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart|reload)
+	stop
+	start
+	RETVAL=$?
+	;;
+  status)
+	status atieventsd
+	RETVAL=$?
+	;;
+  *)
+	gprintf "Usage: atieventsd {start|stop|restart|status}\n"
+	exit 1
+esac
+
+exit $RETVAL

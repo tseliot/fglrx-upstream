@@ -1,0 +1,55 @@
+#!/bin/sh
+
+set -e
+
+# summary of how this script can be called:
+#        * <new-preinst> `install'
+#        * <new-preinst> `install' <old-version>
+#        * <new-preinst> `upgrade' <old-version>
+#        * <old-preinst> `abort-upgrade' <new-version>
+#
+# For details see /usr/share/doc/packaging-manual/
+
+PKGNAME=#PKGNAME#
+DISTRO=#DISTRO#
+
+case "$1" in
+    install)
+        if [ ! -d /usr/share/fglrx ]; then
+	    mkdir /usr/share/fglrx || true
+	fi
+        if [ ! -d /usr/share/fglrx/diversions ]; then
+	    mkdir /usr/share/fglrx/diversions || true
+	fi
+	dpkg-divert --add --package $PKGNAME \
+		--divert /usr/share/fglrx/diversions/libGL.so.1.2 \
+		--rename /usr/lib/libGL.so.1.2
+
+	if [ `uname -m` = 'x86_64' ]; then
+	  # for Breezy we need to divert libdri.a so we can install our own
+	  if [ $DISTRO = 'breezy' ]; then
+		dpkg-divert --add --package $PKGNAME \
+			--divert /usr/share/fglrx/diversions/libdri.a \
+			--rename /usr/X11R6/lib/modules/extensions/libdri.a
+	  fi
+
+		dpkg-divert --add --package $PKGNAME \
+			--divert /usr/share/fglrx/diversions/libGL.so.1.2_32bit \
+			--rename /usr/lib32/libGL.so.1.2
+	fi
+    ;;
+
+    upgrade)
+    ;;
+
+    abort-upgrade)
+    ;;
+
+    *)
+        echo "preinst called with unknown argument \`$1'" >&2
+        exit 0
+    ;;
+esac
+
+#DEBHELPER#
+
