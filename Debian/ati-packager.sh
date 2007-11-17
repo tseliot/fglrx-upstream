@@ -95,6 +95,11 @@ buildPackage()
     cp -f -R ${InstallerRootDir}/arch/${ARCH_DIR}/* ${TmpDrvFilesDir}
     cp -f -R ${InstallerRootDir}/common/* ${TmpDrvFilesDir}
 
+    if [ "$ARCH" = "amd64" ]; then
+        cp -f -R ${InstallerRootDir}/arch/x86/usr/X11R6/lib \
+                ${TmpDrvFilesDir}/usr/X11R6/
+    fi
+
     # Merge package files from the appropriate directories
     chmod -R u+w ${AbsDistroDir}
 	cp -f -R ${AbsDistroDir}/dists/${X_NAME} ${TmpDrvFilesDir}/debian

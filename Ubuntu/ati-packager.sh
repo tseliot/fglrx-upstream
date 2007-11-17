@@ -69,7 +69,7 @@ buildPackage()
         dapper|6.06) X_DIR=x690; X_NAME=dapper;;
         edgy|6.10)   X_DIR=x710; X_NAME=edgy;;
         feisty|7.04) X_DIR=x710; X_NAME=feisty;;
-        gutsy|7.10) X_DIR=x710; X_NAME=gutsy;;
+        gutsy|7.10)  X_DIR=x710; X_NAME=gutsy;;
         *) echo "Error: invalid package name passed to --buildpkg" ; exit 1 ;;
     esac
 
@@ -96,6 +96,11 @@ buildPackage()
     cp -f -R ${InstallerRootDir}/${X_DIR}/* ${TmpDrvFilesDir}
     cp -f -R ${InstallerRootDir}/arch/${ARCH_DIR}/* ${TmpDrvFilesDir}
     cp -f -R ${InstallerRootDir}/common/* ${TmpDrvFilesDir}
+
+    if [ "$ARCH" = "amd64" ]; then
+        cp -f -R ${InstallerRootDir}/arch/x86/usr/X11R6/lib \
+		${TmpDrvFilesDir}/usr/X11R6/
+    fi
 
     # Merge package files from the appropriate directories
 	chmod -R u+w ${AbsDistroDir}

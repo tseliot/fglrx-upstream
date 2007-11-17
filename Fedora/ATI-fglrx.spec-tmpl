@@ -1,3 +1,4 @@
+%define	       debug_package	%{nil}
 %define        _x11dir          %{_prefix}/X11R6
 %define        _x11libdir       %{_x11dir}/%{_lib}
 %define        _x11includedir   %{_x11dir}/include
@@ -316,6 +317,9 @@ fi
 
 
 %changelog
+* Sun Oct 28 2007 Michael Larabel <Michael AT phoronix DOT com> 8.43.1-1
+- Fedora 8 debuginfo fix
+
 * Sat Aug 25 2007 Michael Larabel <Michael AT phoronix DOT com> 8.40.5-1
 - fglrx_dri.so makes a come back
 - Start work on Fedora 8 support

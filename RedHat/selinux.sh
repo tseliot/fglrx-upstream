@@ -19,21 +19,27 @@
 #
 # Allowing access if you trust share library to run correctly, we need to change the file context to textrel_shlib_t.
 
+# is_selinux()
+# SE Linux OS detection (RHEL5, RHEL5.x, etc.)
+# The function expect the output from ls --context on a distribution with SELinux as the following 5 fields:
+# mode        user group security context                file name
+# -rw-r--r--  root root root:object_r:usr_t              /usr/share/ati/fglrx-install.log
+# The field $4 on SELinux system is security context and on Non-SELinux system $4 is file name
+is_selinux()
+{
+    local fglrx_log='/usr/share/ati/fglrx-install.log'
+    ls --context $fglrx_log 2> /dev/null| awk -v logfile=$fglrx_log '{ print ($4 == logfile) ? "non-selinux" : "selinux" }'
+}
+
 if [ "${_ARCH}" = "x86_64" ]; then
        SE_USRLIB=/usr/lib64
 else
        SE_USRLIB=/usr/lib
 fi
 
-# RHEL5 detection
-if [ -f /etc/redhat-release ]; then
-    read -r redhat_release < /etc/redhat-release
-    if [[ `echo $redhat_release | grep "Red Hat"` ]]; then
-        RH_VERSION=`echo $redhat_release | sed -e "s/.*release //" -e "s/[^0-9]//g"`
-    fi
-fi
+    SE_OS=`is_selinux`
 
-if [ ${RH_VERSION} = "5" ]; then
+if [ "$SE_OS" = "selinux" ]; then
     #Change security context if SELINUX is not disabled.
     SE_STAT=`getenforce`
     SELINUX_CMD=`which chcon`
