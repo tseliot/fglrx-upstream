@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 # Copyright (C) 2002-2005 Flavio Stanchina
 # Copyright (C) 2005-2006 Aric Cyr
+# Copyright (C) 2007 Mario Limonciello
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -15,7 +16,7 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 endif
 ifneq (,$(ARCH))
 	DEB_BUILD_ARCH := $(ARCH)
-else 
+else
 ifeq (,$(DEB_BUILD_ARCH))
 	DEB_BUILD_ARCH := $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 endif

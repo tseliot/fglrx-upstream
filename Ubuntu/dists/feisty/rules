@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 # Copyright (C) 2002-2005 Flavio Stanchina
 # Copyright (C) 2005-2006 Aric Cyr
+# Copyright (C) 2007 Mario Limonciello
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -15,7 +16,7 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 endif
 ifneq (,$(ARCH))
 	DEB_BUILD_ARCH := $(ARCH)
-else 
+else
 ifeq (,$(DEB_BUILD_ARCH))
 	DEB_BUILD_ARCH := $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 endif
@@ -171,7 +172,8 @@ binary: build install
 		etc/acpi \
 		etc/acpi/events \
 		etc/default \
-		etc/X11/Xsession.d
+		etc/X11/Xsession.d \
+		etc/xdg/compiz
 
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	# the amd64 package includes 32bit compatibility libraries
@@ -202,6 +204,7 @@ endif
 	dh_install -p$(PKG_driver) "usr/X11R6/bin/fgl*"      "usr/bin"
 	dh_install -p$(PKG_driver) "usr/X11R6/bin/aticonfig" "usr/bin"
 	dh_install -p$(PKG_driver) "usr/sbin/atieventsd"     "usr/sbin"
+	dh_install -p$(PKG_driver) "debian/compiz-manager"   "etc/xdg/compiz"
 	dh_installman -p$(PKG_driver) "usr/share/man/man8/atieventsd.8"
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	# amd64 needs some library redirection

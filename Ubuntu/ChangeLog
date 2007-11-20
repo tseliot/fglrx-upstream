@@ -1,3 +1,16 @@
+2007-11-20  Mario Limonciello <superm1@ubuntu.com>
+        * dists/*
+        - Update Maintainer on all dists
+        - Add Uploaders field for all dists
+        * dists/hardy
+        - Add new target
+        * dists/gutsy
+        - Add DKMS support
+        - Drop m-a support , as it conflicts with DKMS
+        * dists/{feisty,gutsy}
+        - Add diversions so that compiz can launch after discussing
+          with Ubuntu compiz maintainer.
+
 2007-07-02  Aric Cyr  <Aric.Cyr@gmail.com>
 
 	* dists/*/rules

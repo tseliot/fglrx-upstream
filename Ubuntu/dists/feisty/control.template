@@ -1,7 +1,8 @@
 Source: fglrx-installer
 Section: restricted
 Priority: extra
-Maintainer: Aric Cyr <Aric.Cyr@gmail.com>
+Maintainer: Mario Limonciello <superm1@ubuntu.com>
+Uploaders: Mario Limonciello <superm1@ubuntu.com>, Aric Cyr <Aric.Cyr@gmail.com>
 Build-Depends: debhelper (>= 4.2.11), wget, rpm, bzip2, xserver-xorg | xserver-xfree86, x-dev, fakeroot, ia32-libs [amd64]
 Standards-Version: 3.6.1
 

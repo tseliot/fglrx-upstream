@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 # Copyright (C) 2002-2005 Flavio Stanchina
 # Copyright (C) 2005-2006 Aric Cyr
+# Copyright (C) 2007 Mario Limonciello
+
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1

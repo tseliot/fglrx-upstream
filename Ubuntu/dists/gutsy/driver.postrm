@@ -29,6 +29,8 @@ case "$1" in
 
 	dpkg-divert --remove --rename --package $PKGNAME --divert /usr/X11R6/lib/fglrx/libGL.so.1.2.xlibmesa /usr/X11R6/lib/libGL.so.1.2 > /dev/null
 
+	dpkg-divert --remove --rename --package $PKGNAME --divert /etc/xdg/compiz/compiz-manager.ubuntu /etc/xdg/compiz/compiz-manager > /dev/null
+
 	if [ -d /usr/lib/fglrx ]; then
 		rmdir /usr/lib/fglrx || true;
 	fi

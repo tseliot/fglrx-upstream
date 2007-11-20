@@ -9,9 +9,9 @@ installer that is available from the above homepage.
 
 DKMS
 -------------------------
-   Ubuntu Gutsy introduces support to build modules using a
-   utility developed by Dell, called DKMS.  It will automatically
-   build your kernel module for you when you first boot into the
-   kernel (or as necessary)
+   Ubuntu includes support to build modules using a utility
+   developed by Dell, called DKMS.  It will automatically
+   build your kernel module for you when you first boot into
+   the kernel (or as necessary)
 
    See the DKMS man page for more information.
