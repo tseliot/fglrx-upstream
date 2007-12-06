@@ -8,7 +8,7 @@ Standards-Version: 3.6.1
 
 Package: #XSERVER#-driver-fglrx
 Architecture: amd64 i386
-Depends: ${shlibs:Depends}, xserver-#XSERVER#, libstdc++5
+Depends: ${shlibs:Depends}, xserver-#XSERVER#
 Conflicts: fglrx-driver, xfree86-driver-fglrx, nvidia-glx, nvidia-glx-legacy
 Replaces: fglrx-driver, xfree86-driver-fglrx
 Description: Video driver for the ATI graphics accelerators

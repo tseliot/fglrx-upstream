@@ -18,17 +18,19 @@ DAEMONOPTS=""
 
 [ -f $DAEMONPATH ] || exit 0
 
+. /lib/lsb/init-functions
+
 case "$1" in
     start)
-        echo -n "Starting $DAEMONNAME: "
-	start-stop-daemon --start --oknodo --exec $DAEMONPATH -- $DAEMONOPTS
-        echo "done."
+        log_daemon_msg "Starting $DAEMONNAME"
+	start-stop-daemon --start --quite --oknodo --exec $DAEMONPATH -- $DAEMONOPTS
+        log_end_msg $?
         ;;
 
     stop)
-        echo -n "Stopping $DAEMONNAME: "
-	start-stop-daemon --stop --exec $DAEMONPATH --oknodo
-        echo "done."
+        log_daemon_msg "Stopping $DAEMONNAME"
+	start-stop-daemon --stop --quite --exec $DAEMONPATH --oknodo
+        log_end_msg $?
         ;;
 
     restart)
