@@ -1,3 +1,9 @@
+2007-11-06  Mario Limonciello <superm1@ubuntu.com>
+	* Drop old unsupported distros
+	- Breezy
+	- Warty
+	- Hoary
+
 2007-11-20  Mario Limonciello <superm1@ubuntu.com>
         * dists/*
         - Update Maintainer on all dists
