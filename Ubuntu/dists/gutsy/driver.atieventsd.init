@@ -23,13 +23,13 @@ DAEMONOPTS=""
 case "$1" in
     start)
         log_daemon_msg "Starting $DAEMONNAME"
-	start-stop-daemon --start --quite --oknodo --exec $DAEMONPATH -- $DAEMONOPTS
+	start-stop-daemon --start --quiet --oknodo --exec $DAEMONPATH -- $DAEMONOPTS
         log_end_msg $?
         ;;
 
     stop)
         log_daemon_msg "Stopping $DAEMONNAME"
-	start-stop-daemon --stop --quite --exec $DAEMONPATH --oknodo
+	start-stop-daemon --stop --quiet --exec $DAEMONPATH --oknodo
         log_end_msg $?
         ;;
 
