@@ -95,8 +95,13 @@ function _make_x
     mv ${ROOT_DIR}/arch/${ARCH}/usr/* usr;
     
     case ${ARCH} in
-	x86_64) 
-	    LIB_DIR="usr/X11R6/lib64 usr/X11R6/lib";
+	x86_64)
+            for lib_dir in usr/X11R6/lib64 usr/X11R6/lib; do
+              if [ -d ${lib_dir}/ ]; then
+                LIB_DIR="${LIB_DIR} ${lib_dir}"; 
+              fi;
+              done
+              LIB_DIR=${LIB_DIR# }; # Tolgo l'eventuale spazio iniziale
 	    ;;
 	x86)
 	    LIB_DIR=usr/X11R6/lib;
@@ -117,7 +122,6 @@ function _make_x
     # 2)
     # MOVE ARCH INDIPENDENT files
     cp -rp ${ROOT_DIR}/common/usr/* usr;
-    mv ${ROOT_DIR}/common/opt opt;
     mkdir -p etc/ati
     mv ${ROOT_DIR}/common/etc/ati/{atiogl.xml,authatieventsd.sh,control,fglrxprofiles.csv,fglrxrc,signature} etc/ati/\
 	2>/dev/null;
@@ -168,13 +172,19 @@ function _make_x
     # 6)
     # If use xorg >= 7, remove obsolete directory X11R6
     if (( $XORG_7 )); then
-	for dir in ${LIB_DIR}; # Move X modules in /usr/$LIB_DIR/xorg/modules
+	for dir in ${LIB_DIR}; # Move X modules in usr/$LIB_DIR/xorg/modules
 	  do
 	  mkdir ${dir}/xorg;
 	  mv ${dir}/modules ${dir}/xorg;
 	done
 	cp -rp usr/X11R6/* usr/;
 	rm -rf usr/X11R6;
+       
+        echo >> install/doinst.sh;
+        for dir in ${LIB_DIR}; do
+          echo "[ ! -d /${dir}/modules ] && ln -s /usr/`basename $dir`/xorg/modules /${dir}/" >> install/doinst.sh;
+        done
+        echo >> install/doinst.sh;
     fi
 
     # 7) 
@@ -245,7 +255,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo "Only root can do it!" && exit 1;
     
-    BUILD_VER=1.1.6;
+    BUILD_VER=1.1.7;
     
     ROOT_DIR=$PWD; # Usata dal file patch_function (se esiste)
     echo "$ROOT_DIR" | grep -q " " && echo "The name of the current directory should not contain any spaces" && exit 1;
@@ -253,7 +263,7 @@ function _init_env
     ARCH=$(arch); # Usata dal file patch_function (se esiste)
     [[ $ARCH != x86_64 ]] && ARCH="x86";
 
-    # Setto il nome de modulo
+    # Setto il nome del modulo
     if [ ! -z ${KERNEL_PATH} ]; then
 	_detect_kernel_ver_from_PATH_KERNEL; # Setta KNL_VER, variabile usata dal file patch_function (se esiste)
     else
@@ -263,7 +273,7 @@ function _init_env
     if [[ $KNL_VER == "2.6."* ]]; then
 	MODULE_NAME=fglrx.ko.gz;    
     else
-	MODULE_NAME=fglrx.ko.gz;
+	MODULE_NAME=fglrx.o.gz;
     fi
 
     SCRIPT_DIR=packages/Slackware; # Usata dal file patch_function (se esiste)
