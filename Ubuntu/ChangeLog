@@ -1,3 +1,7 @@
+2007-12-11 Mario Limonciello <superm1@ubuntu.com>
+        * ati-packager.sh
+        - Remove old distros and add hardy
+
 2007-12-10 Mario Limonciello <superm1@ubuntu.com>
         * dists/{hardy, gutsy}
         - Force install dkms built drivers in case
