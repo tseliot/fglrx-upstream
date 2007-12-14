@@ -54,6 +54,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin \
          $RPM_BUILD_ROOT/usr/X11R6/%{_lib} \
 %ifarch x86_64
          $RPM_BUILD_ROOT/usr/X11R6/lib \
+         $RPM_BUILD_ROOT/usr/lib \
 %endif
          $RPM_BUILD_ROOT/usr/%{_lib}/fglrx/lib \
          $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx \
