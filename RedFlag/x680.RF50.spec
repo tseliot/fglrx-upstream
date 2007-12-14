@@ -6,7 +6,7 @@
 %define         _x11libdir      %{_x11dir}/%{_lib}
 %define         _x11includedir  %{_x11dir}/include
 
-Name:           fglrx_7_2_0_RF50
+Name:           fglrx_6_8_2_RF50
 Version:        %ATI_DRIVER_VERSION
 Release:        %ATI_DRIVER_RELEASE
 Summary:        %ATI_DRIVER_SUMMARY
@@ -41,16 +41,20 @@ ExclusiveArch:  %{ix86}
 %ATI_DRIVER_DESCRIPTION
 
 
-%package control-center
-Summary:        The Catalyst Control Center for the ATI proprietary graphics driver 
+%package control-panel
+Summary:        The control panel for the ATI proprietary graphics driver
 Group:          User Interface/X Hardware Support
 License:        Other License(s), see package
 
 Requires:       %{name} = %{version}-%{release}
 
 
-%description control-center
-The AMD Catalyst Control Center for ATI Radeon and FireGL graphics cards.
+%description control-panel
+This package provides the control panel used by the ATI proprietary
+graphics driver for ATI Radeon graphic cards. This includes ATI RADEON
+(8500 and later), MOBILITY RADEON (M9 and later), RADEON XPRESS IGP,
+and FireGL series of graphics graphics accelerators.
+
 
 %package devel
 Summary:        Development Files for the ATI proprietary graphics driver
@@ -60,10 +64,11 @@ License:        Other License(s), see package
 Requires:       %{name} = %{version}-%{release}
 
 %description devel
-The development files and examples required for the ATI proprietary graphics
-driver for ATI Radeon graphics cards. This includes ATI Radeon, Mobility Radeon,
-Radeon Xpress IGP, and FireGL series of graphics graphics accelerators.
-This driver works only with post R200 (Radeon 9200) graphics cards.
+This package provides development files and examples required for the
+ATI proprietary graphics driver for ATI Radeon graphic cards. This
+includes ATI RADEON (8500 and later), MOBILITY RADEON (M9 and later),
+RADEON XPRESS IGP, and FireGL series of graphics graphics accelerators.
+
 
 # %package -n kernel-module-%{name}-%{_kmodver}
 %package -n %{name}-module-%{_kmodver}
@@ -102,7 +107,7 @@ mv $RPM_BUILD_ROOT%{_datadir}/icons \
 
 # Move source examples to docs
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/fglrx/examples/source
-mv $RPM_BUILD_ROOT%{_usrsrc}/ati/* \
+mv $RPM_BUILD_ROOT%{_usrsrc}/ATI/* \
    $RPM_BUILD_ROOT%{_docdir}/fglrx/examples/source
 mv $RPM_BUILD_ROOT%{_docdir}/fglrx \
    $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
@@ -128,14 +133,14 @@ pushd $RPM_BUILD_ROOT%{_datadir}/applications
 cat <<EOF > ati-fireglcontrolpanel.desktop
 [Desktop Entry]
 Encoding=UTF-8
-Name=AMD Catalyst Control Center
-GenericName=AMD Catalyst Control Center
-Comment=The ATI Catalyst Control Center For Linux
-Exec=amdcccle
-Icon=ccc_large.xpm
+Name=ATI Control Panel
+GenericName=ATI Control Panel
+Comment=ATI graphics adapter settings
+Exec=fireglcontrolpanel
+Icon=ati.xpm
 Terminal=false
 Type=Application
-Categories=Qt;Application;System;
+#Categories=Qt;Application;System;
 Version=%{version}
 EOF
 popd
@@ -191,11 +196,9 @@ fi
 %dir %{_sysconfdir}/ati
 %dir %{_libdir}/fglrx
 %doc %{_docdir}/%{name}-%{version}
-%config %{_sysconfdir}/ati/fglrxrc
-%config %{_sysconfdir}/ati/fglrxprofiles.csv
-%config %{_sysconfdir}/ati/control
+%config %{_sysconfdir}/fglrxrc
+%config %{_sysconfdir}/fglrxprofiles.csv
 %config %{_sysconfdir}/ld.so.conf.d/fglrx-x86.conf
-%config %{_sysconfdir}/acpi/events/aticonfig.conf
 %{_sysconfdir}/ati/*
 %{_initrddir}/atieventsd
 %{_sbindir}/atieventsd
@@ -206,23 +209,19 @@ fi
 %{_x11libdir}/modules/drivers/fglrx_drv.o
 %{_x11libdir}/modules/linux/libfglrxdrm.a
 %{_x11libdir}/modules/dri/fglrx_dri.so
-%{_x11libdir}/modules/glesx.so
-%{_x11libdir}/modules/esut.a
-#%{_x11libdir}/modules/dri/atiogl_a_dri.so
-%{_libdir}/fglrx/*.so.*
+%{_x11libdir}/modules/dri/atiogl_a_dri.so
+%{_libdir}/fglrx/*.so.1*
 %{_mandir}/man[1-9]/atieventsd.*
 
-%files control-center
+%files control-panel
 %defattr(-,root,root,-)
-%{_bindir}/amdcccle
-%{_datadir}/applications/ati-controlcenter.desktop
-%{_datadir}/pixmaps/ccc*
-%{_datadir}/ati/amdcccle/amdcccle_*.qm
+%{_x11bindir}/fireglcontrolpanel
+%{_datadir}/applications/ati-fireglcontrolpanel.desktop
+%{_datadir}/pixmaps/ati.xpm
 
 %files devel
 %defattr(-,root,root,-)
 %{_libdir}/fglrx/*.a
-#%{_libdir}/fglrx/*.so
 %{_includedir}/GL/*ATI.h
 %{_x11includedir}/X11/extensions/fglrx*.h
 
