@@ -1,3 +1,14 @@
+2007-12-11 Mario Limonciello <superm1@ubuntu.com>
+        * ati-packager.sh
+        - Remove old distros and add hardy
+
+2007-12-10 Mario Limonciello <superm1@ubuntu.com>
+        * dists/{hardy, gutsy}
+        - Force install dkms built drivers in case
+          they were wanting it reinstalled.
+        * (re)-Correct typo for s/quite/quiet/
+        * dists/hardy
+
 2007-12-06 Laurent Bigonville <bigon@bigon.be>
 
 	* dists/hardy/driver.atieventsd.init

@@ -9,13 +9,11 @@
 DRV_RELEASE="`./ati-packager-helper.sh --version`"
 DEBEMAIL="`./ati-packager-helper.sh --vendor` <`./ati-packager-helper.sh --url`>"
 
-WARTY="warty 4.10"
-HOARY="hoary 5.04"
-BREEZY="breezy 5.10"
 DAPPER="dapper 6.06"
 EDGY="edgy 6.10"
 FEISTY="feisty 7.04"
 GUTSY="gutsy 7.10"
+HARDY="hardy 8.04"
 
 # set locale to sane value
 export LANG=C
@@ -28,7 +26,7 @@ umask 002
 #Purpose: lists distribution supported packages
 getSupportedPackages()
 {
-	echo $WARTY $HOARY $BREEZY $DAPPER $EDGY $FEISTY $GUTSY
+	echo $DAPPER $EDGY $FEISTY $GUTSY $HARDY
 }
 
 makeChangelog()
@@ -63,13 +61,11 @@ buildPackage()
 
     #Detect x* dir name corresponding to X_NAME
     case ${X_NAME} in
-        warty|4.10)  X_DIR=x430; X_NAME=warty;;
-        hoary|5.04)  X_DIR=x680; X_NAME=hoary;;
-        breezy|5.10) X_DIR=x680; X_NAME=breezy;;
         dapper|6.06) X_DIR=x690; X_NAME=dapper;;
         edgy|6.10)   X_DIR=x710; X_NAME=edgy;;
         feisty|7.04) X_DIR=x710; X_NAME=feisty;;
         gutsy|7.10)  X_DIR=x710; X_NAME=gutsy;;
+        hardy|8.04)  X_DIR=x710; X_NAME=hardy;;
         *) echo "Error: invalid package name passed to --buildpkg" ; exit 1 ;;
     esac
 
