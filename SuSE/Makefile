@@ -1,10 +1,9 @@
 # Makefile
 
-specfiles100=x680.SUSE100-IA32.spec x680_64a.SUSE100-AMD64.spec
 specfiles101=x690.SUSE101-IA32.spec x690.SLES10-IA32.spec x690.SLED10-IA32.spec x690_64a.SUSE101-AMD64.spec x690_64a.SLES10-AMD64.spec x690_64a.SLED10-AMD64.spec
 specfiles102=x710.SUSE102-IA32.spec x710_64a.SUSE102-AMD64.spec
 specfiles103=x710.SUSE103-IA32.spec x710_64a.SUSE103-AMD64.spec
-specfiles=$(specfiles100) $(specfiles101) $(specfiles102) $(specfiles103)
+specfiles=$(specfiles101) $(specfiles102) $(specfiles103)
 
 all:
 	for i in $(specfiles); do \
