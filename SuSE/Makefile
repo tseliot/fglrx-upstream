@@ -5,6 +5,8 @@ specfiles102=x710.SUSE102-IA32.spec x710_64a.SUSE102-AMD64.spec
 specfiles103=x710.SUSE103-IA32.spec x710_64a.SUSE103-AMD64.spec
 specfiles=$(specfiles101) $(specfiles102) $(specfiles103)
 
+tarball=suse.tar.bz2
+
 all:
 	for i in $(specfiles); do \
           arch=""; \
@@ -19,5 +21,8 @@ all:
 diff:	all
 	for i in $(specfiles); do diff -u fglrx.spec $$i; done
 
+dist:	all
+	tar cjf $(tarball) *
+
 clean:
-	rm -f $(specfiles) *~
+	rm -f $(tarball) *~
