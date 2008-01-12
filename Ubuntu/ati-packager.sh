@@ -159,11 +159,6 @@ case "${action}" in
             break
         fi
     done
-    #If we are explicitly trying to build something that isn't supported
-    if [ "${package}" != "Ubuntu" ]
-    then
-        echo ${package} "is invalid.  Attempting automatic detection."
-    fi
     #If we haven't explicitly called, or failed to type something coherent
     #automatically detect
     if [ "${support_flag}" != "true" ]
@@ -178,6 +173,11 @@ case "${action}" in
                 break
             fi
         done
+        #If we are explicitly trying to build something that isn't supported
+        if [ "${support_flag}" != "true" ] && [ "${package}" != "Ubuntu" ]
+        then
+            echo ${package} "is invalid.  Attempting automatic detection."
+        fi
     fi
     if [ "${support_flag}" = "true" ]
     then
