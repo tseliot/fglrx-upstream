@@ -54,6 +54,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin \
          $RPM_BUILD_ROOT/usr/X11R6/%{_lib} \
 %ifarch x86_64
          $RPM_BUILD_ROOT/usr/X11R6/lib \
+         $RPM_BUILD_ROOT/usr/lib \
 %endif
          $RPM_BUILD_ROOT/usr/%{_lib}/fglrx/lib \
          $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx \
@@ -72,7 +73,7 @@ pushd $tmpdir/fglrx
   chmod 644 $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx/2.6.x/Makefile
   ln -s 2.6.x/Makefile $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx/Makefile
   rm -rf lib
-  mv usr/share/doc/fglrx/{articles,user-manual,release-notes} \
+  mv usr/share/doc/fglrx/{articles,user-manual} \
     $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx
   chmod 755 $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx/{articles,user-manual}
   if [ -d etc/ati ]; then
@@ -116,7 +117,6 @@ pushd $tmpdir/fglrx
     install -m 644 LICENSE.xmlconfig     $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx
   install -m 644 *.html                  $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx
   install -m 644 $RPM_SOURCE_DIR/README.SuSE $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx
-  install -m 644 $RPM_SOURCE_DIR/sax2-profile $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx
   install -m 755 fgl_glxgears            $RPM_BUILD_ROOT/usr/bin
   test -f fglrx_dri.so && \
     install -m 444 fglrx_dri.so          $RPM_BUILD_ROOT%{DRI_DRIVERS_DIR}
@@ -150,6 +150,7 @@ pushd $tmpdir/fglrx
   install -m 755 atigetsysteminfo.sh     $RPM_BUILD_ROOT/usr/sbin
   test -f atieventsd && \
   install -m 755 atieventsd              $RPM_BUILD_ROOT/usr/sbin
+  install -m 755 amdnotifyui             $RPM_BUILD_ROOT/usr/sbin
   test -f atieventsd.8 && \
     gzip atieventsd.8
   test -f atieventsd.8.gz && \
@@ -324,6 +325,7 @@ exit 0
 /usr/X11R6/%{_lib}/libGL.so
 /usr/X11R6/%{_lib}/libGL.so.1
 /usr/X11R6/%{_lib}/libGL.so.1.2
+/usr/sbin/amdnotifyui
 /usr/share/applications/fglrx.desktop
 /usr/share/pixmaps/fglrx.png
 /usr/share/doc/packages/fglrx

@@ -1,3 +1,17 @@
+2008-01-11 Mario Limonciello <superm1@ubuntu.com>
+        * ati-packager.sh:
+        - Re-order warning messages that may be displayed.
+        * dists/feisty/compiz-manager:
+        - Add file to fix building feisty packages
+        * dists/{feisty,gutsy,hardy/driver.postrm}:
+        - Properly cleanup old compiz-manager xdg file.
+
+2007-12-19 Mario Limonciello <superm1@ubuntu.com>
+        * ati-packager.sh
+        - Add optional LSB release detection support.
+        - Any invalid releases will automatically fall
+          back to LSB release detection for selection.
+
 2007-12-11 Mario Limonciello <superm1@ubuntu.com>
         * ati-packager.sh
         - Remove old distros and add hardy

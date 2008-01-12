@@ -264,6 +264,7 @@ fi
 %config(noreplace) %{_sysconfdir}/ati/control
 %config %{_sysconfdir}/ati/logo.xbm.example
 %config %{_sysconfdir}/ati/atiogl.xml
+%config %{_sysconfdir}/ati/amdpcsdb.default
 %config %{_sysconfdir}/ati/logo_mask.xbm.example
 %config %{_sysconfdir}/ld.so.conf.d/fglrx*.conf
 %config %{_sysconfdir}/acpi/events/*aticonfig.conf
@@ -317,6 +318,9 @@ fi
 
 
 %changelog
+* Thu Dec 20 2007 Michael Larabel <Michael AT phoronix DOT com> 8.44.3-1
+- Add support for amdpcsdb.default
+
 * Sun Oct 28 2007 Michael Larabel <Michael AT phoronix DOT com> 8.43.1-1
 - Fedora 8 debuginfo fix
 
