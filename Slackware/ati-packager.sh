@@ -255,7 +255,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo "Only root can do it!" && exit 1;
     
-    BUILD_VER=1.1.8;
+    BUILD_VER=1.1.9;
     
     ROOT_DIR=$PWD; # Usata dal file patch_function (se esiste)
     echo "$ROOT_DIR" | grep -q " " && echo "The name of the current directory should not contain any spaces" && exit 1;
@@ -295,7 +295,11 @@ case $1 in
 	;;
     --buildpkg)
 	_init_env;
-	echo -e "\nATI SlackBuild Ver. $BUILD_VER\nby Emanuele Tomasi <tomasi@cli.di.unipi.it>";
+	echo -e "\nATI SlackBuild Ver. $BUILD_VER"\
+                "\n--------------------------------------------"\
+                "\nby: Emanuele Tomasi <tomasi@cli.di.unipi.it>"\
+                "\n    Ezio Ghibaudo<ekxius@gmail.com>"\
+                "\n    Federido Rota<federico.rota01@gmail.com>\n";
 	buildpkg $2;
 	;;
     *)
