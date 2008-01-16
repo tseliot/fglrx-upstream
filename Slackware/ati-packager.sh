@@ -123,8 +123,8 @@ function _make_x
     # MOVE ARCH INDIPENDENT files
     cp -rp ${ROOT_DIR}/common/usr/* usr;
     mkdir -p etc/ati
-    mv ${ROOT_DIR}/common/etc/ati/{atiogl.xml,authatieventsd.sh,control,fglrxprofiles.csv,fglrxrc,signature} etc/ati/\
-	2>/dev/null;
+    mv ${ROOT_DIR}/common/etc/ati/{amdpcsdb.default,atiogl.xml,authatieventsd.sh,control,fglrxprofiles.csv,fglrxrc,signature}\
+        etc/ati/ 2>/dev/null;
 
     # 3)
     # MOVE USE_X_VERSION DEPENDENT files
@@ -255,7 +255,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo "Only root can do it!" && exit 1;
     
-    BUILD_VER=1.1.7;
+    BUILD_VER=1.1.8;
     
     ROOT_DIR=$PWD; # Usata dal file patch_function (se esiste)
     echo "$ROOT_DIR" | grep -q " " && echo "The name of the current directory should not contain any spaces" && exit 1;
