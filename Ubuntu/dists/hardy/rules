@@ -278,7 +278,13 @@ endif
 	dh_compress
 	dh_makeshlibs
 	dh_installdeb
-	LD_PRELOAD= dh_shlibdeps
+ifeq ($(DEB_BUILD_ARCH),amd64)
+	ldconfig -n arch/x86_64/usr/X11R6/lib
+	LD_PRELOAD= dh_shlibdeps -larch/x86_64/usr/X11R6/lib
+else
+	ldconfig -n arch/x86/usr/X11R6/lib
+	LD_PRELOAD= dh_shlibdeps -larch/x86/usr/X11R6/lib	
+endif
 ifeq ($(CVERSION),$(PVERSION))
 	dh_gencontrol -- -VXVERSION=$(XVERSION) -VXVERSIONMAX=$(XVERSIONMAX) -VXTYPE=$(XTYPE) -VXSERVER=$(XSERVER)
 else

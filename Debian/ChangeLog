@@ -1,3 +1,8 @@
+2008-01-21  Mario Limonciello <superm1@ubuntu.com>
+
+       * dists/lenny/rules
+       - Create symlinks with ldconfig before building debs
+
 2007-07-02  Aric Cyr  <Aric.Cyr@gmail.com>
 
 	* dists/*/rules

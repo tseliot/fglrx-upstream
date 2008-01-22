@@ -1,3 +1,7 @@
+2008-01-21 Mario Limonciello <superm1@ubuntu.com>
+        * dists/{dapper,edgy,feist,gutsy,hardy}/rules
+        - Build symlinks with ldconfig before building debs
+ 
 2008-01-11 Mario Limonciello <superm1@ubuntu.com>
         * ati-packager.sh:
         - Re-order warning messages that may be displayed.
