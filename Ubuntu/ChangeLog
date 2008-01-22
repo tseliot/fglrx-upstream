@@ -7,6 +7,11 @@
         - No longer detect the xserver, its always xorg on Ubuntu
         - Use static control files rather than control.template
         - Update build-dependencies to modern requirements.
+        * dists/{dapper,edgy,feisty,gutsy,hardy}/rules
+        - No longer detect the X server.  Assume xorg
+        - Remove old calls related to rpms
+        - Remove symlinks built by ldconfig before packaging
+          debs but after calculating shlib dependencies.
 
 2008-01-21 Mario Limonciello <superm1@ubuntu.com>
         * dists/{dapper,edgy,feisty,gutsy,hardy}/rules
