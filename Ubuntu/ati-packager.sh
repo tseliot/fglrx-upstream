@@ -22,6 +22,66 @@ export LC_ALL=C
 # set umask to sane value
 umask 002
 
+#Root command
+if [ `whoami` != "root" ]; then
+    if [ -x /usr/bin/gksudo ] && [ ! -z "$DISPLAY" ]; then
+        ROOT='/usr/bin/gksudo -D "Install AMD Driver build dependencies"'
+    elif [ -x /usr/bin/kdesu ] && [ ! -z "$DISPLAY" ]; then
+        ROOT='/usr/bin/kdesu'
+    elif [ -x /usr/bin/sudo ]; then
+        ROOT='/usr/bin/sudo'
+    fi
+else
+    ROOT=""
+fi
+
+#Synaptic availablity
+if [ -x /usr/sbin/synaptic ]; then
+    SYNAPTIC="TRUE"
+else
+    SYNAPTIC=""
+fi
+
+#Function: buildDepends()
+#Purpose: checks that all build dependencies are resolved
+buildDepends()
+{
+    if [ ! -x /usr/bin/dpkg-checkbuilddeps ] || [ ! -x /usr/bin/gcc ]; then
+        if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
+            $ROOT /usr/sbin/synaptic --set-selections --non-interactive --hide-main-window << EOF
+dpkg-dev install
+build-essential install
+EOF
+        else
+            $ROOT apt-get -y install dpkg-dev build-essential
+        fi
+        #do a check again in case we have failed here
+        if [ ! -x /usr/bin/dpkg-checkbuilddeps ]; then
+            echo "Unable to install dpkg-dev and build-essential.  Please manually install and try again."
+            exit 4
+        fi
+    fi
+    release=$1
+    missing_dependencies=$(dpkg-checkbuilddeps packages/Ubuntu/dists/$release/control 2>&1 | awk -F: '{ print $3 }' | sed 's/([^)]*)//g' | sed 's/|\s[^\s]*//g')
+    #'
+    if [ ! -z "$missing_dependencies" ]; then
+        echo -n "Resolving build dependencies..."
+        if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
+            echo $missing_dependencies | sed 's/$/\ /' | sed 's/\ /\ install\r\n/g' | sudo /usr/sbin/synaptic --set-selections --non-interactive --hide-main-window
+        else
+            $ROOT apt-get -y install $missing_dependencies
+        fi
+        #do a check again, abort if we still have some not installed
+        missing_dependencies=$(dpkg-checkbuilddeps packages/Ubuntu/dists/$release/control 2>&1 | awk -F: '{ print $3 }' | sed 's/([^)]*)//g' | sed 's/|\s[^\s]*//g')
+        #'
+        if [ ! -z "$missing_dependencies" ]; then
+            echo -n "Unable to resolve $missing_dependencies.  Please manually install and try again."
+            exit 5
+        fi
+        echo -n "Continuing package build"
+    fi
+}
+
 #Function: getSupportedPackages()
 #Purpose: lists distribution supported packages
 getSupportedPackages()
@@ -31,12 +91,33 @@ getSupportedPackages()
 
 makeChangelog()
 {
-    printf "%b\n" "fglrx-installer (${DRV_RELEASE}-`./ati-packager-helper.sh --release`) experimental; urgency=low\n" \
+    printf "%b\n" "fglrx-installer (${DRV_RELEASE}-0ubuntu`./ati-packager-helper.sh --release`) ${1}; urgency=low\n" \
     > ${TmpDrvFilesDir}/debian/changelog
     printf "%b\n" "  * new release\n" \
     >> ${TmpDrvFilesDir}/debian/changelog
     printf "%b\n" " -- ${DEBEMAIL}  `date --rfc-822`\n" \
     >> ${TmpDrvFilesDir}/debian/changelog
+}
+
+installPackages()
+{
+    #check for dkms
+    if [ ! -x /usr/sbin/dkms ]; then
+        if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
+            echo "dkms install" | $ROOT /usr/sbin/synaptic --set-selections --non-interactive --hide-main-window
+        else
+            $ROOT apt-get -y install dkms
+        fi
+    fi
+
+    #Detect target architecture if not set
+    if [ -z "$ARCH" ]; then
+        ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
+    fi
+    file="../fglrx-installer_${DRV_RELEASE}-0ubuntu`./ati-packager-helper.sh --release`_${ARCH}.changes"
+    echo $file
+    packages=$(cat $file | grep extra | awk '{print $5}' | grep -v dev | sed 's/^/..\//g')
+    $ROOT dpkg -i $packages
 }
 
 
@@ -51,13 +132,6 @@ buildPackage()
     TmpPkgBuildOut="/tmp/pkg_build.out"         # Temporary file to output diagnostics of the package build utility
     TmpDrvFilesDir=`mktemp -d -t fglrx.XXXXXX`  # Temporary directory to merge files from the common and x* directories
 
-    #Detect target architecture if not set
-    if [ -z "$ARCH" ]; then
-        ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
-    fi
-    if [ "$ARCH" = "x86_x64" ]; then
-        ARCH="amd64"
-    fi
 
     #Detect x* dir name corresponding to X_NAME
     case ${X_NAME} in
@@ -70,6 +144,17 @@ buildPackage()
         #Automatically detect
         echo "Error: invalid package name passed to --buildpkg" ; exit 1 ;;
     esac
+
+    #resolve build dependencies
+    buildDepends $X_NAME
+
+    #Detect target architecture if not set
+    if [ -z "$ARCH" ]; then
+        ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
+    fi
+    if [ "$ARCH" = "x86_x64" ]; then
+        ARCH="amd64"
+    fi
 
     case ${ARCH} in
     amd64) ARCH_DIR=x86_64; X_DIR=${X_DIR}_64a;;
@@ -106,7 +191,7 @@ buildPackage()
     cp -f -R ${AbsDistroDir}/module ${TmpDrvFilesDir}
 
     # generate a temporary changelog with version information
-    makeChangelog
+    makeChangelog ${X_NAME}
 
     #Build the package
     cd ${TmpDrvFilesDir}
@@ -128,28 +213,18 @@ buildPackage()
         echo "Package build failed!"
         echo "Package build utility output:"
         cat ${TmpPkgBuildOut}
-        EXIT_CODE=1
+        exit 1
     fi
 
     #Clean-up
     rm -rf ${TmpDrvFilesDir} > /dev/null
     rm -f ${TmpPkgBuildOut} > /dev/null
-
-    exit ${EXIT_CODE}
 }
 
-#Starting point of this script, process the {action} argument
-
-#Requested action
-action=$1
-
-case "${action}" in
---get-supported)
-    getSupportedPackages
-    ;;
---buildpkg)
+query_lsb()
+{
+    package=$1
     #First determine if we are explicitly calling a release build
-    package=$2
     support_flag=false
     for supported_list in `getSupportedPackages`
     do
@@ -186,7 +261,26 @@ case "${action}" in
         echo "Unable to build package for" ${package}
         exit 1
     fi
-    exit 0
+}
+
+#Starting point of this script, process the {action} argument
+
+#Requested action
+action=$1
+
+case "${action}" in
+--get-supported)
+    getSupportedPackages
+    ;;
+--autopkg)
+    query_lsb $2
+    installPackages
+    ;;
+--installpkg)
+    installPackages
+    ;;
+--buildpkg)
+    query_lsb $2
     ;;
 *|--*)
     echo ${action}: unsupported option passed by ati-installer.sh

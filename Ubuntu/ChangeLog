@@ -1,3 +1,9 @@
+2008-01-22 Mario Limonciello <superm1@ubuntu.com>
+        * ati-packager.sh:
+        - Add build dependency resolution
+        - Add --autopkg and --installpkg support
+          to automatically build/install or just install
+
 2008-01-21 Mario Limonciello <superm1@ubuntu.com>
         * dists/{dapper,edgy,feist,gutsy,hardy}/rules
         - Build symlinks with ldconfig before building debs
