@@ -12,6 +12,8 @@
         - Remove old calls related to rpms
         - Remove symlinks built by ldconfig before packaging
           debs but after calculating shlib dependencies.
+        * dists/hardy
+        - Drop compiz-manager diversion
 
 2008-01-21 Mario Limonciello <superm1@ubuntu.com>
         * dists/{dapper,edgy,feisty,gutsy,hardy}/rules

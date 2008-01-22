@@ -102,11 +102,14 @@ makeChangelog()
 installPackages()
 {
     #check for dkms
-    if [ ! -x /usr/sbin/dkms ]; then
+    if [ ! -x /usr/sbin/dkms ] || [ ! -f /usr/lib/libGL.so.1.2 ]; then
         if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
-            echo "dkms install" | $ROOT /usr/sbin/synaptic --set-selections --non-interactive --hide-main-window
+            $ROOT /usr/sbin/synaptic --set-selections --non-interactive --hide-main-window << EOF
+dkms install
+libgl1-mesa-glx install
+EOF
         else
-            $ROOT apt-get -y install dkms
+            $ROOT apt-get -y install dkms libgl1-mesa-glx
         fi
     fi
 
@@ -115,7 +118,6 @@ installPackages()
         ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
     fi
     file="../fglrx-installer_${DRV_RELEASE}-0ubuntu`./ati-packager-helper.sh --release`_${ARCH}.changes"
-    echo $file
     packages=$(cat $file | grep extra | awk '{print $5}' | grep -v dev | sed 's/^/..\//g')
     $ROOT dpkg -i $packages
 }
@@ -274,6 +276,7 @@ case "${action}" in
     ;;
 --autopkg)
     query_lsb $2
+    cd ..
     installPackages
     ;;
 --installpkg)
