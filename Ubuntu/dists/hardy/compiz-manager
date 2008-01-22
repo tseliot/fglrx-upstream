@@ -1,7 +1,0 @@
-#Updated whitelist and source Ubuntu settings
-
-. /etc/xdg/compiz/compiz-manager.ubuntu
-
-# Driver whitelist
-WHITELIST="nvidia intel ati radeon i810 fglrx"
-
