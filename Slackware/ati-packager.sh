@@ -1,6 +1,6 @@
 #!/bin/bash
-# Last modify: 28/07/2007
-# by spina <spina80@freemail.it>
+# Last modify: 21/01/2008
+# by Emanuele Tomasi <tomasi@cli.di.unipi.it>
 
 # Usata da make_module. Crea il pacchetto per la Slackware
 function _make_module_pkg
@@ -297,9 +297,9 @@ case $1 in
 	_init_env;
 	echo -e "\nATI SlackBuild Ver. $BUILD_VER"\
                 "\n--------------------------------------------"\
-                "\nby: Emanuele Tomasi <tomasi@cli.di.unipi.it>"\
-                "\n    Ezio Ghibaudo<ekxius@gmail.com>"\
-                "\n    Federido Rota<federico.rota01@gmail.com>\n";
+                "\nby: Emanuele Tomasi <tomasiATcli.di.unipi.it>"\
+                "\n    Ezio Ghibaudo<ekxiusATgmail.com>"\
+                "\n    Federico Rota<federico.rotaATbresciaonline.it>\n";
 	buildpkg $2;
 	;;
     *)
