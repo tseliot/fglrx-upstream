@@ -3,12 +3,12 @@ Section: restricted
 Priority: extra
 Maintainer: Mario Limonciello <superm1@ubuntu.com>
 Uploaders: Mario Limonciello <superm1@ubuntu.com>, Aric Cyr <Aric.Cyr@gmail.com>
-Build-Depends: debhelper (>= 4.2.11), wget, rpm, bzip2, xserver-xorg | xserver-xfree86, x-dev, fakeroot, ia32-libs [amd64]
-Standards-Version: 3.6.1
+Build-Depends: debhelper (>= 4.2.11), libxext6, libxext6, libxrandr2, libice6, libsm6, libfontconfig1, libxi6, libxcursor1, xserver-xorg, fakeroot, ia32-libs [amd64]
+Standards-Version: 3.7.3
 
-Package: #XSERVER#-driver-fglrx
+Package: xorg-driver-fglrx
 Architecture: amd64 i386
-Depends: ${shlibs:Depends}, xserver-#XSERVER#
+Depends: ${shlibs:Depends}, xserver-xorg, libstdc++5
 Conflicts: fglrx-driver, xfree86-driver-fglrx, nvidia-glx, nvidia-glx-legacy
 Replaces: fglrx-driver, xfree86-driver-fglrx
 Description: Video driver for the ATI graphics accelerators
@@ -28,10 +28,10 @@ Description: Video driver for the ATI graphics accelerators
  This package provides 2D display drivers
  and hardware accelerated OpenGL for ${XTYPE} ${XVERSION}.
 
-Package: #XSERVER#-driver-fglrx-dev
+Package: xorg-driver-fglrx-dev
 Section: restricted
 Architecture: amd64 i386
-Depends: #XSERVER#-driver-fglrx
+Depends: xorg-driver-fglrx
 Conflicts: fglrx-driver-dev, xfree86-driver-fglrx-dev
 Replaces: fglrx-driver-dev, xfree86-driver-fglrx-dev
 Description: Video driver for the ATI graphics accelerators (devel files)
@@ -42,8 +42,9 @@ Description: Video driver for the ATI graphics accelerators (devel files)
 
 Package: fglrx-kernel-source
 Architecture: amd64 i386
-Depends: debconf, debhelper (>= 4), make, bzip2, dkms
-Suggests: #XSERVER#-driver-fglrx
+Depends: debconf, debhelper (>= 4), make, bzip2
+Recommends: module-assistant | kernel-package
+Suggests: xorg-driver-fglrx
 Description: Kernel module source for the ATI graphics accelerators
  Video driver for the ATI Radeon and FireGL graphics accelerators.
  .
@@ -51,7 +52,7 @@ Description: Kernel module source for the ATI graphics accelerators
 
 Package: fglrx-amdcccle
 Architecture: amd64 i386
-Depends: #XSERVER#-driver-fglrx, ${shlibs:Depends}
+Depends: xorg-driver-fglrx, ${shlibs:Depends}
 Conflicts: fglrx-control-qt2, fglrx-control
 Replaces: fglrx-control
 Description: Catalyst Control Center for the ATI graphics accelerators

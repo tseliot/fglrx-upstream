@@ -3,9 +3,13 @@
         - Add build dependency resolution
         - Add --autopkg and --installpkg support
           to automatically build/install or just install
+        * dists/{dapper,edgy,feisty,gutsy,hardy}/control
+        - No longer detect the xserver, its always xorg on Ubuntu
+        - Use static control files rather than control.template
+        - Update build-dependencies to modern requirements.
 
 2008-01-21 Mario Limonciello <superm1@ubuntu.com>
-        * dists/{dapper,edgy,feist,gutsy,hardy}/rules
+        * dists/{dapper,edgy,feisty,gutsy,hardy}/rules
         - Build symlinks with ldconfig before building debs
  
 2008-01-11 Mario Limonciello <superm1@ubuntu.com>
