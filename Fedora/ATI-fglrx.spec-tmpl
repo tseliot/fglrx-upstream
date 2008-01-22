@@ -273,6 +273,7 @@ fi
 %{_sysconfdir}/ati/signature
 %{_initrddir}/atieventsd
 %{_sbindir}/atieventsd
+%{_sbindir}/amdnotifyui
 %{_sbindir}/atigetsysteminfo
 %{_bindir}/aticonfig
 %{_bindir}/fgl_glxgears
