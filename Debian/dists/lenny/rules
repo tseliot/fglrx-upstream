@@ -246,11 +246,12 @@ endif
 	dh_installdeb
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	ldconfig -n arch/x86_64/usr/X11R6/lib
-	LD_PRELOAD= dh_shlibdeps -larch/x86_64/usr/X11R6/lib --exclude=emul
 else
 	ldconfig -n arch/x86/usr/X11R6/lib
-	LD_PRELOAD= dh_shlibdeps -larch/x86/usr/X11R6/lib --exclude=emul
 endif
+	LD_PRELOAD= dh_shlibdeps --exclude=emul
+	rm -f debian/$(XSERVER)-driver-fglrx/usr/lib/libGL.so.1 debian/$(XSERVER)-driver-fglrx/usr/lib/libfglrx_gamma.so.1 debian/$(XSERVER)-driver-fglrx/usr/lib/libfglrx_tvout.so.1
+
 ifeq ($(CVERSION),$(PVERSION))
 	dh_gencontrol -- -VXVERSION=$(XVERSION) -VXVERSIONMAX=$(XVERSIONMAX) -VXTYPE=$(XTYPE) -VXSERVER=$(XSERVER) -VVERSION=$(PVERSION)
 else
