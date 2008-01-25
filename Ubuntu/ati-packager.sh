@@ -8,6 +8,7 @@
 
 DRV_RELEASE="`./ati-packager-helper.sh --version`"
 DEBEMAIL="`./ati-packager-helper.sh --vendor` <`./ati-packager-helper.sh --url`>"
+REVISION="`./ati-packager-helper.sh --release`"
 
 DAPPER="dapper 6.06"
 EDGY="edgy 6.10"
@@ -25,11 +26,11 @@ umask 002
 #Root command
 if [ `whoami` != "root" ]; then
     if [ -x /usr/bin/gksudo ] && [ ! -z "$DISPLAY" ]; then
-        ROOT='/usr/bin/gksudo -D "Install AMD Driver build dependencies"'
+        ROOT="/usr/bin/gksudo --description 'AMD_Installer' "
     elif [ -x /usr/bin/kdesu ] && [ ! -z "$DISPLAY" ]; then
-        ROOT='/usr/bin/kdesu'
+        ROOT="/usr/bin/kdesu"
     elif [ -x /usr/bin/sudo ]; then
-        ROOT='/usr/bin/sudo'
+        ROOT="/usr/bin/sudo"
     fi
 else
     ROOT=""
@@ -42,16 +43,23 @@ else
     SYNAPTIC=""
 fi
 
+#Top level directories used by multiple methods
+InstallerRootDir=`pwd`              # Absolute path of the <installer root> directory
+AbsInstallerParentDir=`cd ${InstallerRootDir}/.. 2>/dev/null && pwd`    # Absolute path to the installer parent directory
+
 #Function: buildDepends()
 #Purpose: checks that all build dependencies are resolved
 buildDepends()
 {
     if [ ! -x /usr/bin/dpkg-checkbuilddeps ] || [ ! -x /usr/bin/gcc ]; then
         if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
-            $ROOT /usr/sbin/synaptic --set-selections --non-interactive --hide-main-window << EOF
+            TEMPFILE=`/bin/tempfile`
+            cat > $TEMPFILE << EOF
 dpkg-dev install
 build-essential install
 EOF
+            $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
+            rm $TEMPFILE -f
         else
             $ROOT apt-get -y install dpkg-dev build-essential
         fi
@@ -65,9 +73,12 @@ EOF
     missing_dependencies=$(dpkg-checkbuilddeps packages/Ubuntu/dists/$release/control 2>&1 | awk -F: '{ print $3 }' | sed 's/([^)]*)//g' | sed 's/|\s[^\s]*//g')
     #'
     if [ ! -z "$missing_dependencies" ]; then
-        echo -n "Resolving build dependencies..."
+        echo "Resolving build dependencies..."
         if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
-            echo $missing_dependencies | sed 's/$/\ /' | sed 's/\ /\ install\r\n/g' | sudo /usr/sbin/synaptic --set-selections --non-interactive --hide-main-window
+            TEMPFILE=`/bin/tempfile`
+            echo $missing_dependencies | sed 's/$/\ /' | sed 's/\ /\ install\r\n/g' > $TEMPFILE
+            $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
+            rm $TEMPFILE -f
         else
             $ROOT apt-get -y install $missing_dependencies
         fi
@@ -75,10 +86,10 @@ EOF
         missing_dependencies=$(dpkg-checkbuilddeps packages/Ubuntu/dists/$release/control 2>&1 | awk -F: '{ print $3 }' | sed 's/([^)]*)//g' | sed 's/|\s[^\s]*//g')
         #'
         if [ ! -z "$missing_dependencies" ]; then
-            echo -n "Unable to resolve $missing_dependencies.  Please manually install and try again."
+            echo "Unable to resolve $missing_dependencies.  Please manually install and try again."
             exit 5
         fi
-        echo -n "Continuing package build"
+        echo "Continuing package build"
     fi
 }
 
@@ -91,7 +102,7 @@ getSupportedPackages()
 
 makeChangelog()
 {
-    printf "%b\n" "fglrx-installer (${DRV_RELEASE}-0ubuntu`./ati-packager-helper.sh --release`) ${1}; urgency=low\n" \
+    printf "%b\n" "fglrx-installer (${DRV_RELEASE}-0ubuntu${REVISION}) ${1}; urgency=low\n" \
     > ${TmpDrvFilesDir}/debian/changelog
     printf "%b\n" "  * new release\n" \
     >> ${TmpDrvFilesDir}/debian/changelog
@@ -104,10 +115,13 @@ installPackages()
     #check for dkms
     if [ ! -x /usr/sbin/dkms ] || [ ! -f /usr/lib/libGL.so.1.2 ]; then
         if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
-            $ROOT /usr/sbin/synaptic --set-selections --non-interactive --hide-main-window << EOF
+            TEMPFILE=`/bin/tempfile`
+            cat > $TEMPFILE << EOF
 dkms install
 libgl1-mesa-glx install
 EOF
+            $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
+            rm $TEMPFILE -f
         else
             $ROOT apt-get -y install dkms libgl1-mesa-glx
         fi
@@ -117,9 +131,16 @@ EOF
     if [ -z "$ARCH" ]; then
         ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
     fi
-    file="../fglrx-installer_${DRV_RELEASE}-0ubuntu`./ati-packager-helper.sh --release`_${ARCH}.changes"
-    packages=$(cat $file | grep extra | awk '{print $5}' | grep -v dev | sed 's/^/..\//g')
-    $ROOT dpkg -i $packages
+    file="fglrx-installer_${DRV_RELEASE}-0ubuntu${REVISION}_${ARCH}.changes"
+    if [ ! -f "${AbsInstallerParentDir}/$file" ]; then
+    	echo "Unable to find ${AbsInstallerParentDir}/$file.  Please manually install"
+    	exit 10
+    else
+    	cd ${AbsInstallerParentDir}
+    	packages=$(cat $file | grep extra | awk '{print $5}' | grep -v dev | tr "\n" " ")
+    	echo $packages
+    	$ROOT "sh -c 'dpkg -i ${packages}'"
+    fi
 }
 
 
@@ -129,8 +150,7 @@ buildPackage()
 {
     export X_NAME=$1                    # Well known X or distro name (exported for dpkg rules)
     RelDistroDir=`dirname $0`           # Relative path to the distro directory
-    AbsDistroDir=`cd ${RelDistroDir} 2>/dev/null && pwd` # Absolute path to the distro directory
-    InstallerRootDir=`pwd`              # Absolute path of the <installer root> directory
+    AbsDistroDir=`cd ${RelDistroDir} 2>/dev/null && pwd` # Absolute path to the distro directory 
     TmpPkgBuildOut="/tmp/pkg_build.out"         # Temporary file to output diagnostics of the package build utility
     TmpDrvFilesDir=`mktemp -d -t fglrx.XXXXXX`  # Temporary directory to merge files from the common and x* directories
 
@@ -203,8 +223,6 @@ buildPackage()
         #String containing info where the package was created
         PACKAGE_FILES=`grep 'building package .* in .*\.deb' ${TmpPkgBuildOut} | sed -e 's/.*in \`\(.*\.deb\).*/\1/'`
 
-        AbsInstallerParentDir=`cd ${InstallerRootDir}/.. 2>/dev/null && pwd`    # Absolute path to the installer parent directory
-
         for i in ${PACKAGE_FILES}; do
             mv $i ${AbsInstallerParentDir}  # move the created package to the directory where the self-extracting driver archive is located
             echo "Package ${AbsInstallerParentDir}/`basename ${i}` has been successfully generated"
@@ -276,8 +294,9 @@ case "${action}" in
     ;;
 --autopkg)
     query_lsb $2
-    cd ..
     installPackages
+    #aticonfig doesn't work on Hardy atm.
+    #$ROOT "aticonfig --initial"
     ;;
 --installpkg)
     installPackages

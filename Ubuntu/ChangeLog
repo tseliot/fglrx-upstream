@@ -1,3 +1,8 @@
+2008-01-25 Mario Limonciello <superm1@ubuntu.com>
+        * ati-packager.sh:
+        - Fix GUI based package dependency resolution
+        - Fix package installation (resolve path properly)
+
 2008-01-22 Mario Limonciello <superm1@ubuntu.com>
         * ati-packager.sh:
         - Add build dependency resolution
