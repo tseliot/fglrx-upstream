@@ -114,7 +114,9 @@ END_SED_SCRIPT
     rm -f ${TmpPkgSpec} > /dev/null
     rm -f ${TmpPkgBuildOut} > /dev/null
     rm -rf ${TmpDrvFilesDir} > /dev/null
-    
+    rm -f /usr/src/packages/BUILD/files.fglrx \
+          ${PACKAGE_FILE}
+
     exit ${EXIT_CODE}
 }
 
