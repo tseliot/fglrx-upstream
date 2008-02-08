@@ -3,7 +3,7 @@
 # atieventsd      This shell script takes care of starting and stopping
 #               ATI events daemon.
 #
-# chkconfig: 2345 65 35
+# chkconfig: 5 65 35
 # description: ATI Events Daemon
 #
 # processname: atieventsd
@@ -11,9 +11,7 @@
 ### BEGIN INIT INFO
 # Provides:       atieventsd
 # Required-Start: acpid dm
-# Required-Stop:
-# Default-Start:  3 5
-# Default-Stop:
+# Default-Start:  5
 # Description:    ATI Events Daemon
 ### END INIT INFO
 
@@ -25,12 +23,12 @@ DAEMONOPTS=""
 RETVAL=0
 
 start() {
-	# Start daemons.
-	gprintf "Starting atieventsd: "
-
 	# Check if we're using fglrx or not
 	[ ! -f /proc/dri/0/name ] && sleep 2
 	grep -q fglrx /proc/dri/0/name >& /dev/null || return 0
+
+	# Start daemons.
+	gprintf "Starting atieventsd: "
 
 	daemon /usr/sbin/atieventsd $DAEMONOPTS
 	RETVAL=$?

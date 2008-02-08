@@ -1,0 +1,20 @@
+--- ati-8.32.5/common/lib/modules/fglrx/build_mod/make.sh.orig	2006-12-13 06:12:38.000000000 +0200
++++ ati-8.32.5/common/lib/modules/fglrx/build_mod/make.sh	2006-12-16 16:44:43.000000000 +0200
+@@ -71,7 +71,7 @@ fi
+ 
+ # ==============================================================
+ # system/kernel identification
+-uname_r=`uname -r`
++[[ -z "$uname_r" ]] && uname_r=`uname -r`
+ uname_v=`uname -v`
+ uname_s=`uname -s`
+ uname_m=`uname -m`
+@@ -940,7 +940,7 @@ if [ $kernel_is_26x -gt 0 ]; then
+     make CC=${CC} V=${V} \
+ 	LIBIP_PREFIX=$(echo "$LIBIP_PREFIX" | sed -e 's|^\([^/]\)|../\1|') \
+ 	MODFLAGS="-DMODULE $def_for_all $def_smp $def_modversions" \
+-	PAGE_ATTR_FIX=$PAGE_ATTR_FIX > tlog 2>&1 
++	PAGE_ATTR_FIX=$PAGE_ATTR_FIX KVER=$uname_r KDIR=$KERNEL_PATH > tlog 2>&1 
+     res=$?
+     tee -a $logfile < tlog
+     #delete tlog
