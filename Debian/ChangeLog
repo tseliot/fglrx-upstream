@@ -1,3 +1,8 @@
+2008-02-08  Mario Limonciello <superm1@uubntu.com>
+
+       * dists/lenny/rules
+       - Like the Ubuntu build, make the symlinks earlier.
+
 2008-01-22  Mario Limonciello <superm1@ubuntu.com>
 
        * dists/lenny/rules
