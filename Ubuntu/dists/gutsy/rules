@@ -171,6 +171,7 @@ endif
 	dh_install
 
 	# Driver package
+	ldconfig -n usr/X11R6/lib/
 	dh_install -p$(PKG_driver) "usr/X11R6/bin/fgl*"      "usr/bin"
 	dh_install -p$(PKG_driver) "usr/X11R6/bin/aticonfig" "usr/bin"
 	dh_install -p$(PKG_driver) "usr/sbin/atieventsd"     "usr/sbin"
@@ -246,15 +247,10 @@ endif
 	dh_link
 	dh_strip
 	dh_compress
-	dh_makeshlibs
 	dh_installdeb
-ifeq ($(DEB_BUILD_ARCH),amd64)
-	ldconfig -n arch/x86_64/usr/X11R6/lib
-else
-	ldconfig -n arch/x86/usr/X11R6/lib
-endif
-	LD_PRELOAD= dh_shlibdeps
-	rm -f debian/xorg-driver-fglrx/usr/lib/libGL.so.1 debian/xorg-driver-fglrx/usr/lib/libfglrx_gamma.so.1 debian/xorg-driver-fglrx/usr/lib/libfglrx_tvout.so.1
+	dh_makeshlibs
+	dh_shlibdeps
+	rm -f debian/xorg-driver-fglrx/usr/lib/*.1
 
 ifeq ($(CVERSION),$(PVERSION))
 	dh_gencontrol -- -VXVERSION=$(XVERSION) -VXVERSIONMAX=$(XVERSIONMAX) -VXTYPE=$(XTYPE) -VXSERVER=xorg

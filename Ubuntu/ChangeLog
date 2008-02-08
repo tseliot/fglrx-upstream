@@ -1,3 +1,8 @@
+2008-02-08 Mario Limonciello <superm1@ubuntu.com>
+        * dists/*/rules:
+        - Call ldconfig earlier to workaround soname issues
+          with dh_shlibdeps.
+
 2008-01-25 Mario Limonciello <superm1@ubuntu.com>
         * ati-packager.sh:
         - Fix GUI based package dependency resolution
