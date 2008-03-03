@@ -299,7 +299,7 @@ case $1 in
                 "\n--------------------------------------------"\
                 "\nby: Emanuele Tomasi <tomasiATcli.di.unipi.it>"\
                 "\n    Ezio Ghibaudo<ekxiusATgmail.com>"\
-                "\n    Federico Rota<federico.rotaATbresciaonline.it>\n";
+                "\n    Federico Rota<federico.rota01ATgmail.com>\n";
 	buildpkg $2;
 	;;
     *)
