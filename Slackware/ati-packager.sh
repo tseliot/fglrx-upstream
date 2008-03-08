@@ -211,18 +211,19 @@ function _make_x
 
 function buildpkg
 {
-    case $1 in
-	Only_Module | Slack_Module)
+    local OPTIONS=`echo $1 |tr [:upper:] [:lower:]`;
+    case $OPTIONS in
+	only_module | slack_module)
 	    _make_module;
 	    ;;
-	Only_X | Slack_X)
+	only_x | slack_x)
 	    _make_x;
 	    ;;
-	All | Slackware)
+	all | slackware)
 	    _make_module;
 	    _make_x;
 	    ;;
-        Test)
+        test)
             local CHECK_SCRIPT=./check.sh;
             PATH=$PATH:/usr/X11/bin:/usr/X11R6/bin
             source ${CHECK_SCRIPT} --noprint;
