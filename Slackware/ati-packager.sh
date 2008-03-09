@@ -256,7 +256,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo "Only root can do it!" && exit 1;
     
-    BUILD_VER=1.1.9;
+    BUILD_VER=1.2.0;
     
     ROOT_DIR=$PWD; # Usata dal file patch_function (se esiste)
     echo "$ROOT_DIR" | grep -q " " && echo "The name of the current directory should not contain any spaces" && exit 1;
