@@ -22,7 +22,7 @@ export LC_ALL=C
 # Purpose: List supported distributions and associated X version
 get_supported_packages()
 {
-  SUPPORTED_DISTROS="FC3 FC4 FC5 FC6 F7 F8 RHEL3 RHEL4"
+  SUPPORTED_DISTROS="FC3 FC4 FC5 FC6 F7 F8 F9 RHEL3 RHEL4"
 
   for distros in ${SUPPORTED_DISTROS}; do
     echo "${distros}"
@@ -65,8 +65,7 @@ build_package()
     FC3|FC4|RHEL4) X11_RELEASE='x680';;
     FC5)           X11_RELEASE='x700';;
     FC6)           X11_RELEASE='x710';;
-    F7)            X11_RELEASE='x710';;
-    F8)            X11_RELEASE='x710';;
+    F7|F8|F9)      X11_RELEASE='x710';;
   esac
 
   # Detect the target architecture
@@ -122,6 +121,7 @@ build_package()
        ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/xorg/modules
     mv ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/modules/glesx.so \
        ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/xorg/modules
+      # ln -s ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/dri/fglrx_dri.so ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/lib/modules/dri/fglrx_dri.so
       ln -fs ../../../../${ARCH_LIB}/dri/fglrx_dri.so
     # Same work around for 32-on-64
     if [ "${release_arch}" = 'x86_64' ]; then
@@ -222,7 +222,7 @@ build_package()
       ICD_PATH_BUG=""
       ICD_PATH_BUG_32=""
     ;;
-    FC5|FC6|F7|F8)
+    FC5|FC6|F7|F8|F9)
       DRI_MODULE_DIR="%{_libdir}/dri"
       X11_MODULE_DIR="%{_libdir}/xorg/modules"
       X11_INCLUDE_DIR="%{_includedir}"
@@ -233,7 +233,7 @@ build_package()
 
   # Lower the case of the distribution release tag
   case "${distro_name}" in
-    FC3|FC4|FC5|FC6|F7|F8) RH_RELEASE_TAG="$(echo ${distro_name}|tr A-Z a-z)";;
+    FC3|FC4|FC5|FC6|F7|F8|F9) RH_RELEASE_TAG="$(echo ${distro_name}|tr A-Z a-z)";;
     RHEL3|RHEL4) RH_RELEASE_TAG="$(echo ${distro_name}|tr A-Z a-z|cut -c 3-)";;
   esac
 

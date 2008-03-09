@@ -319,6 +319,10 @@ fi
 
 
 %changelog
+* Sat Mar 08 2008 Michael Larabel <Michael AT phoronix DOT com> 8.47.1-1
+- Initial Fedora 9 support
+- Fix a fglrx_dri.so link
+
 * Thu Dec 20 2007 Michael Larabel <Michael AT phoronix DOT com> 8.44.3-1
 - Add support for amdpcsdb.default
 
