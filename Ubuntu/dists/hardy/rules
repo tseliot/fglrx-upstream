@@ -166,7 +166,7 @@ endif
 	dh_install
 
 	# Driver package
-	ldconfig -n usr/X11R6/lib/
+	/sbin/ldconfig -n usr/X11R6/lib/
 	dh_install -p$(PKG_driver) "usr/X11R6/bin/fgl*"      "usr/bin"
 	dh_install -p$(PKG_driver) "usr/X11R6/bin/aticonfig" "usr/bin"
 	dh_install -p$(PKG_driver) "usr/sbin/atieventsd"     "usr/sbin"
