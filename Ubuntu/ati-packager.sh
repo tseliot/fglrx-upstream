@@ -102,7 +102,7 @@ getSupportedPackages()
 
 makeChangelog()
 {
-    printf "%b\n" "fglrx-installer (${DRV_RELEASE}-0ubuntu${REVISION}) ${1}; urgency=low\n" \
+    printf "%b\n" "fglrx-installer (2:${DRV_RELEASE}-0ubuntu${REVISION}) ${1}; urgency=low\n" \
     > ${TmpDrvFilesDir}/debian/changelog
     printf "%b\n" "  * new release\n" \
     >> ${TmpDrvFilesDir}/debian/changelog

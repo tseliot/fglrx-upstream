@@ -1,3 +1,8 @@
+2008-03-16 Mario Limonciello <superm1@ubuntu.com>
+        * ati-packager.sh:
+        - Begin the epoch battle with Ubuntu.  We are now 2:
+          so as to prevent them from winning for now.
+
 2008-02-08 Mario Limonciello <superm1@ubuntu.com>
         * dists/*/rules:
         - Call ldconfig earlier to workaround soname issues
