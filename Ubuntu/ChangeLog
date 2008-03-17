@@ -4,6 +4,8 @@
           so as to prevent them from winning for now.
         * dists/*/rules:
         - Call ldconfig with an explicit path.
+        * dists/*/driver.{preinst,postrm}
+        - Add extra diversion for amd64
 
 2008-02-08 Mario Limonciello <superm1@ubuntu.com>
         * dists/*/rules:
