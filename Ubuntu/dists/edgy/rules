@@ -23,8 +23,8 @@ endif
 endif
 
 # Changelog version (without Debian-specific version)
-CVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d- -f1)
-DVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2)
+CVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d- -f1 | cut -d\: -f2)
+DVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d\: -f2)
 
 # Detect X version.
 # If you want to build for a specific version, set XVERSION accordingly.

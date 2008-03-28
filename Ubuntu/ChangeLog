@@ -1,3 +1,8 @@
+2008-03-28 Mario Limonciello <superm1@ubuntu.com>
+        * dists/*rules:
+        - Parse out epoch versions in rules files.
+          AMD make.sh can't handle them.
+
 2008-03-16 Mario Limonciello <superm1@ubuntu.com>
         * ati-packager.sh:
         - Begin the epoch battle with Ubuntu.  We are now 2:
