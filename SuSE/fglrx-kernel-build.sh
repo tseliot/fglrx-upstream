@@ -1,6 +1,8 @@
 #!/bin/sh
 
-if [ ! -d /usr/src/linux ]; then
+linuxsrc=/lib/modules/$(uname -r)/build
+
+if [ ! -d "$linuxsrc" ]; then
   echo
   echo "*************************************************************"
   echo "Package \"kernel-source\" needs to be installed by YaST2 first!"
@@ -28,8 +30,7 @@ if [ ! -x /usr/bin/gcc ]; then
 fi
 
 pushd /usr/src/kernel-modules/fglrx
-  rm -f Modules.symvers *.o *.ko *.mod.*
-  make -C /lib/modules/$(uname -r)/build M=$(pwd)
+  make -C $linuxsrc M=$PWD
   if [ $? -ne 0 ]; then
     echo 
     echo "******************************"
@@ -38,7 +39,7 @@ pushd /usr/src/kernel-modules/fglrx
     echo
     exit 1
   fi
-  make -C /lib/modules/$(uname -r)/build M=$(pwd) modules_install
+  make -C $linuxsrc M=$PWD modules_install
   if [ $? -ne 0 ]; then
     echo 
     echo "*************************************"
@@ -47,6 +48,7 @@ pushd /usr/src/kernel-modules/fglrx
     echo
     exit 1
   fi
+  make -C $linuxsrc M=$PWD clean
   depmod -a
 popd
 
