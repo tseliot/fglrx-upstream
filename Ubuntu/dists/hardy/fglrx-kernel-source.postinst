@@ -3,7 +3,7 @@
 # Copyright (C) 2005-2006 Aric Cyr
 # Copyright (C) 2007 Mario Limonciello
 
-CVERSION=`dpkg-query -W -f='${Version}' fglrx-kernel-source | awk -F "-" '{print $1}'`
+CVERSION=`dpkg-query -W -f='${Version}' fglrx-kernel-source | awk -F "-" '{print $1}' | cut -d\: -f2`
 
 #DEBHELPER#
 

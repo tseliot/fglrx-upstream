@@ -5,8 +5,7 @@
 
 #DEBHELPER#
 
-CVERSION=`dpkg-query -W -f='${Version}' fglrx-kernel-source | awk -F "-" '{print $1}'`
-
+CVERSION=`dpkg-query -W -f='${Version}' fglrx-kernel-source | awk -F "-" '{print $1}' | cut -d\" -f2`
 case "$1" in
     remove)
 		echo "Removing all DKMS Modules"

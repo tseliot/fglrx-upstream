@@ -2,6 +2,9 @@
         * dists/*rules:
         - Parse out epoch versions in rules files.
           AMD make.sh can't handle them.
+        * dists/{gutsy,hardy}/fglrx-kernel-source.*:
+        - Parse out epoch versions.  AMD make.sh
+          can't handle them.
 
 2008-03-16 Mario Limonciello <superm1@ubuntu.com>
         * ati-packager.sh:
