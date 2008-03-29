@@ -398,6 +398,7 @@ install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_gamma.so.1.0 %{buildroot}%{_
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_pp.so.1.0 %{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_dm.so.1.0 %{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_tvout.so.1.0 %{buildroot}%{_libdir}/%{drivername}
+install -m755 %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so %{buildroot}%{_libdir}/%{drivername}
 /sbin/ldconfig -n					%{buildroot}%{_libdir}/%{drivername}
 ln -s libfglrx_gamma.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_gamma.so
 ln -s libfglrx_pp.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_pp.so
@@ -621,6 +622,7 @@ rm -rf %{buildroot}
 %{_libdir}/%{drivername}/libfglrx_pp.so.1*
 %{_libdir}/%{drivername}/libfglrx_dm.so.1*
 %{_libdir}/%{drivername}/libfglrx_tvout.so.1*
+%{_libdir}/%{drivername}/libatiadlxx.so
 
 %if !%{atibuild}
 %{_mandir}/man1/fglrx_xgamma.1*
