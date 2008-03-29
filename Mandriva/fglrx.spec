@@ -1,7 +1,7 @@
 
 %define name		fglrx
 
-# %atibuild is used to enable special mode for the ATI installer.
+# %atibuild is used to enable the ATI installer --buildpkg mode.
 # The macros version, rel, ati_dir, distsuffix need to be manually defined.
 # The macro mdkversion can also be overridden.
 %define atibuild	0
@@ -9,14 +9,15 @@
 %{?_with_ati: %global atibuild 1}
 
 %if !%{atibuild}
-# defined by ati-packager.sh when using ati installer
+# NOTE: These version definitions are overridden by ati-packager.sh when
+# building with the --buildpkg method of the installer.
 # version in installer filename:
-%define oversion	8-01
+%define oversion	8-3
 # advertized version:
-%define mversion	8.1
-# version from release notes, with two dots as per debian:
-%define version		8.45.2
-%define rel		1
+%define mversion	8.3
+# version from release notes and ati-packager-helper.sh:
+%define version		8.471
+%define rel		2
 %else
 %define oversion	%{version}
 %define mversion	%{version}
@@ -34,7 +35,6 @@
 %define xorg_includedir	%{_includedir}
 %define ld_so_conf_dir	%{_sysconfdir}/ld.so.conf.d/GL
 %define ld_so_conf_file	ati.conf
-%define ati_desktopdir  %{_datadir}/%{drivername}-desktop
 
 # The hardcoded ATI dri directories where we create compat symlinks.
 # The LIBGL_DRIVERS_(PATH|DIR) env vars could be used some day.
@@ -46,7 +46,6 @@
 %if %{mdkversion} <= 200710
 %define driverpkgname	ati
 %define drivername	ati
-%define ati_desktopdir  %{_datadir}/applications
 %endif
 
 %if %{mdkversion} <= 200600
@@ -161,6 +160,7 @@ Linux Edition, is contained in the package
 %package -n %{drivername}-control-center
 Summary:	AMD Catalyst Control Center Linux Edition
 Group:		System/Kernel and hardware
+Requires:	%{driverpkgname} = %{version}
 Obsoletes:	ati-utils < %{version}-%{release}
 Provides:	ati-utils = %{version}-%{release}
 Provides:	amdcccle = %{version}-%{release}
@@ -356,8 +356,8 @@ cat <<EOF >%{buildroot}%{_menudir}/%{drivername}-control-center
 EOF
 %endif
 
-install -d -m755 %{buildroot}%{ati_desktopdir}
-cat > %{buildroot}%{ati_desktopdir}/mandriva-amdcccle.desktop << EOF
+install -d -m755 %{buildroot}%{_datadir}/applications
+cat > %{buildroot}%{_datadir}/applications/mandriva-fglrx-amdcccle.desktop << EOF
 [Desktop Entry]
 Name=ATI Catalyst Control Center
 Comment=ATI graphics adapter settings
@@ -367,10 +367,6 @@ Terminal=false
 Type=Application
 Categories=Settings;HardwareSettings;X-MandrivaLinux-System-Configuration;
 EOF
-%if %{mdkversion} >= 200800
-install -d -m755 %{buildroot}%{_datadir}/applications
-touch %{buildroot}%{_datadir}/applications/mandriva-amdcccle.desktop
-%endif
 
 # icons
 install -d -m755 %{buildroot}%{_miconsdir} %{buildroot}%{_iconsdir} %{buildroot}%{_liconsdir}
@@ -476,8 +472,7 @@ fi
 %{_sbindir}/update-alternatives \
 	--install %{_sysconfdir}/ld.so.conf.d/GL.conf gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file} %{priority} \
 %if %{mdkversion} >= 200800
-	--slave %{_libdir}/xorg/modules/extensions/libglx.so libglx %{_libdir}/xorg/modules/extensions/standard/libglx.so \
-	--slave %{_datadir}/applications/mandriva-amdcccle.desktop mandriva-amdcccle.desktop %{ati_desktopdir}/mandriva-amdcccle.desktop
+	--slave %{_libdir}/xorg/modules/extensions/libglx.so libglx %{_libdir}/xorg/modules/extensions/standard/libglx.so
 if [ "$(readlink -e %{_sysconfdir}/ld.so.conf.d/GL.conf)" = "%{_sysconfdir}/ld.so.conf.d/GL/ati-hd2000.conf" ]; then
 	# Switch from the obsolete hd2000 branch:
 	%{_sbindir}/update-alternatives --set gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file}
@@ -591,9 +586,7 @@ rm -rf %{buildroot}
 %{_sysconfdir}/ati/logo.xbm.example
 %{_sysconfdir}/ati/logo_mask.xbm.example
 %config %{_sysconfdir}/ati/authatieventsd.sh
-# filename suggests this is not a config file, but we tag it as a
-# replaceable (no noreplace) config file until full certainty - Anssi 12/2007
-%config %{_sysconfdir}/ati/amdpcsdb.default
+%{_sysconfdir}/ati/amdpcsdb.default
 
 %{_initrddir}/atieventsd
 
@@ -657,13 +650,7 @@ rm -rf %{buildroot}
 %{_iconsdir}/%{drivername}-amdcccle.png
 %{_liconsdir}/%{drivername}-amdcccle.png
 %endif
-%if %{mdkversion} <= 200710
-%{_datadir}/applications/mandriva-amdcccle.desktop
-%else
-%ghost %{_datadir}/applications/mandriva-amdcccle.desktop
-%dir %{ati_desktopdir}
-%{ati_desktopdir}/mandriva-amdcccle.desktop
-%endif
+%{_datadir}/applications/mandriva-fglrx-amdcccle.desktop
 %if %{mdkversion} <= 200600
 %{_menudir}/%{drivername}-control-center
 %endif
@@ -695,8 +682,22 @@ rm -rf %{buildroot}
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
 
-* Thu Feb 07 2008 Anssi Hannula <anssi@mandriva.org> 8.45.2-1mdv2008.0
-+ Revision: 163394
+* Wed Mar 26 2008 Anssi Hannula <anssi@mandriva.org> 8.471-2mdv2008.1
++ Revision: 190341
+- do not use alternatives for amdcccle desktop file (fixes #39200)
+- amdpcsdb.default is not a config file
+- control-center subpackage requires the main package
+
+* Sat Mar 08 2008 Anssi Hannula <anssi@mandriva.org> 8.471-1mdv2008.1
++ Revision: 182051
+- new version 8.3 aka 8.471 aka 8.47.3
+- now using the ati-packager-helper.sh versioning
+- update comments
+
+* Thu Feb 14 2008 Anssi Hannula <anssi@mandriva.org> 8.45.5-1mdv2008.1
++ Revision: 168540
+- new version
+- drop empty fields from initscript
 - exclude unused patches from ati-packager.sh build
 - use ati reported version in ati-packager.sh builds
 - change distsuffix of ati-packager.sh builds to amd.mdv
