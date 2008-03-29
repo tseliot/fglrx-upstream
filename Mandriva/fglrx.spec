@@ -398,7 +398,9 @@ install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_gamma.so.1.0 %{buildroot}%{_
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_pp.so.1.0 %{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_dm.so.1.0 %{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_tvout.so.1.0 %{buildroot}%{_libdir}/%{drivername}
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so %{buildroot}%{_libdir}/%{drivername}
+if [ -e %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so ]; then
+	install -m755 %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so %{buildroot}%{_libdir}/%{drivername}
+fi
 /sbin/ldconfig -n					%{buildroot}%{_libdir}/%{drivername}
 ln -s libfglrx_gamma.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_gamma.so
 ln -s libfglrx_pp.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_pp.so
@@ -618,11 +620,15 @@ rm -rf %{buildroot}
 %{_prefix}/lib/%{drivername}/libGL.so.1.*
 %endif
 
+%if %{atibuild}
+%{_libdir}/%{drivername}/*.so*
+%else
 %{_libdir}/%{drivername}/libfglrx_gamma.so.1*
 %{_libdir}/%{drivername}/libfglrx_pp.so.1*
 %{_libdir}/%{drivername}/libfglrx_dm.so.1*
 %{_libdir}/%{drivername}/libfglrx_tvout.so.1*
 %{_libdir}/%{drivername}/libatiadlxx.so
+%endif
 
 %if !%{atibuild}
 %{_mandir}/man1/fglrx_xgamma.1*
