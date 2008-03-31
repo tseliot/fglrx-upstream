@@ -108,6 +108,11 @@ pushd $tmpdir/fglrx
   mv usr/X11R6/lib/libfglrx*.so* .
   install -m 755 libfglrx*.so*           $RPM_BUILD_ROOT/usr/lib
   rm libfglrx*.so*
+  if [ -f usr/X11R6/lib/libatiadlxx.so ]; then
+    mv usr/X11R6/lib/libatiadlxx.so .
+    install -m 755 libatiadlxx.so          $RPM_BUILD_ROOT/usr/lib
+    rm libatiadlxx.so
+  fi
 %endif
   for i in `find . -type f`; do mv --backup $i .; done
   # make sure we don't overwrite something
