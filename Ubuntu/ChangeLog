@@ -1,3 +1,7 @@
+2008-03-31 Mario Limonciello <superm1@ubuntu.com>
+        * dists/{gutsy,hardy}/fglrx-kernel-source.prerm:
+        - s/\"/\:/g
+
 2008-03-28 Mario Limonciello <superm1@ubuntu.com>
         * dists/*rules:
         - Parse out epoch versions in rules files.
