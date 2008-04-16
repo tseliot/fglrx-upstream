@@ -291,7 +291,7 @@ function _init_env
 }
 
 function _check_builder_dependencies {
-	local DEPS=(bash bash echo coreutils ln coreutils cp coreutils mv coreutils rm coreutils mkdir coreutils chmod coreutils find findutils strip binutils grep grep sed sed makepkg pkgtools file file gzip gzip depmod module-init-tools mount linux-utils);
+	local DEPS=(ln coreutils cp coreutils mv coreutils rm coreutils mkdir coreutils chmod coreutils find findutils strip binutils grep grep sed sed makepkg pkgtools file file xargs findutils gzip gzip depmod module-init-tools mount linux-utils);
 	 
 	local i=0;
 	local DEPS_OK=0;
@@ -303,7 +303,7 @@ function _check_builder_dependencies {
 			echo -e "\E[00;31mExecutable ${DEPS[$i]} missing. You need to install ${DEPS[${i}+1]}. \E[00m";
 			DEPS_OK=1;
 		fi
-		i=$(( $i + 2 ));
+		let i+=2;	
 	done
 	
 	if [ $DEPS_OK != 0 ];
