@@ -256,7 +256,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo "Only root can do it!" && exit 1;
     
-    BUILD_VER=1.2.0;
+    BUILD_VER=1.2.1;
     
     ROOT_DIR=$PWD; # Usata dal file patch_function (se esiste)
     echo "$ROOT_DIR" | grep -q " " && echo "The name of the current directory should not contain any spaces" && exit 1;
@@ -290,11 +290,34 @@ function _init_env
     DEST_DIR=${PWD%/*};
 }
 
+function _check_builder_dependencies {
+	local DEPS=(ln coreutils cp coreutils mv coreutils rm coreutils mkdir coreutils chmod coreutils find findutils strip binutils grep grep sed sed makepkg pkgtools file file xargs findutils gzip gzip depmod module-init-tools mount linux-utils);
+	 
+	local i=0;
+	local DEPS_OK=0;
+	while [ $i -lt ${#DEPS[@]} ];
+	do
+		which ${DEPS[$i]} &> /dev/null;
+		if [ $? != 0 ];
+		then
+			echo -e "\E[00;31mExecutable ${DEPS[$i]} missing. You need to install ${DEPS[${i}+1]}. \E[00m";
+			DEPS_OK=1;
+		fi
+		let i+=2;	
+	done
+	
+	if [ $DEPS_OK != 0 ];
+	then
+		exit 2;
+	fi
+}
+
 case $1 in
     --get-supported)
 	echo -e "All\tOnly_Module\tOnly_X";
 	;;
     --buildpkg)
+	_check_builder_dependencies;
 	_init_env;
 	echo -e "\nATI SlackBuild Ver. $BUILD_VER"\
                 "\n--------------------------------------------"\
