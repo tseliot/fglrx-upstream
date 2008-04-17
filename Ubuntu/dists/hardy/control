@@ -42,7 +42,7 @@ Description: Video driver for the ATI graphics accelerators (devel files)
 
 Package: fglrx-kernel-source
 Architecture: amd64 i386
-Depends: debconf, debhelper (>= 4), make, bzip2, dkms
+Depends: make, dkms, libc6-dev
 Suggests: xorg-driver-fglrx
 Description: Kernel module source for the ATI graphics accelerators
  Video driver for the ATI Radeon and FireGL graphics accelerators.
