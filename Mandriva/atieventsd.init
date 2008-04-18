@@ -24,7 +24,11 @@ RETVAL=0
 
 start() {
 	# Check if we're using fglrx or not
-	[ ! -f /proc/dri/0/name ] && sleep 2
+	# Timeout length: https://qa.mandriva.com/show_bug.cgi?id=33095#c67
+	waitseconds=5
+	while [ $((waitseconds--)) -gt 0 ] && [ ! -f /proc/dri/0/name ]; do
+		sleep 1
+	done
 	grep -q fglrx /proc/dri/0/name >& /dev/null || return 0
 
 	# Start daemons.
