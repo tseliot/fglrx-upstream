@@ -17,7 +17,7 @@
 %define mversion	8.3
 # version from release notes and ati-packager-helper.sh:
 %define version		8.471
-%define rel		2
+%define rel		3
 %else
 %define oversion	%{version}
 %define mversion	%{version}
@@ -96,6 +96,7 @@ Patch0:		ati-8.32.5-uname_r.patch
 Patch1:		ati-8.19.10-fglrx_gamma-extutil-include.patch
 Patch2:		ati-8.19.10-fgl_glxgears-includes.patch
 %endif
+Patch3:		fglrx-authfile-locations.patch
 License:	Proprietary
 URL:		http://ati.amd.com/support/driver.html
 Group:		System/Kernel and hardware
@@ -115,6 +116,8 @@ BuildRequires:	libxft-devel
 BuildRequires:	libxaw-devel
 BuildRequires:	imake
 BuildRequires:	x11-util-cf-files
+# Used by atieventsd:
+Suggests:	acpid
 %endif
 BuildRequires:	ImageMagick
 %endif
@@ -139,7 +142,12 @@ Provides:	ati = %{version}-%{release}
 Conflicts:	x11-server-common < 1.3.0.0-17
 Conflicts:	drakx-kbd-mouse-x11 < 0.26
 Obsoletes:	x11-driver-video-fglrx-hd2000 < 8.42.3-5
+%if %{mdkversion} >= 200810
+Requires:	kmod(fglrx) = %{version}
+%else
+# no versioned provides on 2008.0
 Requires:	kmod(fglrx)
+%endif
 %endif
 Provides:	atieventsd = %{version}-%{release}
 Obsoletes:	atieventsd < %{version}-%{release}
@@ -228,6 +236,7 @@ cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_
 
 cd common # ensure patch does not touch outside
 %patch0 -p2
+%patch3 -p2
 cd -
 
 cat > README.install.urpmi <<EOF
@@ -399,7 +408,7 @@ install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_pp.so.1.0 %{buildroot}%{_lib
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_dm.so.1.0 %{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_tvout.so.1.0 %{buildroot}%{_libdir}/%{drivername}
 if [ -e %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so ]; then
-	install -m755 %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so %{buildroot}%{_libdir}/%{drivername}
+       install -m755 %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so %{buildroot}%{_libdir}/%{drivername}
 fi
 /sbin/ldconfig -n					%{buildroot}%{_libdir}/%{drivername}
 ln -s libfglrx_gamma.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_gamma.so
@@ -689,6 +698,19 @@ rm -rf %{buildroot}
 %changelog
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
+
+* Fri Apr 18 2008 Anssi Hannula <anssi@mandriva.org> 8.471-3mdv2008.0
++ Revision: 195716
+- suggests acpid for atieventsd
+- fix authfile locations in authatieventsd.sh for Mandriva XDM and KDM,
+  preventing atieventsd from working properly (partially fixes #33095)
+- longer timeout for fglrx driver check in atieventsd initscript
+  (see #33095)
+- better timeout handling in fglrx check of atieventsd initscript
+
+* Tue Apr 01 2008 Anssi Hannula <anssi@mandriva.org> 8.471-3mdv2008.1
++ Revision: 191501
+- add versioned requires on kernel module on 2008.1
 
 * Wed Mar 26 2008 Anssi Hannula <anssi@mandriva.org> 8.471-2mdv2008.1
 + Revision: 190341
