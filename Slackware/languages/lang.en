@@ -1,0 +1,13 @@
+ATI SlackBuild Version
+--------------------------------------------
+by: Emanuele Tomasi <tomasiATcli.di.unipi.it>
+    Ezio Ghibaudo <ekxiusATgmail.com>
+    Federico Rota <federico.rota01ATgmail.com>
+unsupported option passed by ati-installer.sh
+Executable
+missing. You need to install
+Only root can do it!
+The name of the current directory should not contain any spaces
+Error -> Kernel version not detected
+Error -> I don't have make module
+unsupported.
