@@ -17,7 +17,7 @@ function _make_module_pkg
     # Modifico il nome del pacchetto aggiungendo alla fine, la versione del kernel
     MODULE_PACK_NAME=${MODULE_PACK_NAME}_kernel_${MODULE_KERNEL_VERSION//-/_}.tgz;
     makepkg -l y -c n ${MODULE_PACK_NAME};
-    
+
     mv ${MODULE_PACK_NAME} ${DEST_DIR};
 
     cd ${ROOT_DIR};
@@ -32,32 +32,32 @@ function _make_module
 
     # Copy arch-depend files
     mv arch/${ARCH}/${MODULE_DIR}/* common/${MODULE_DIR};
-    
+
     cd common/${MODULE_DIR};
 
     # Se ci sono, applico le patch (backward compatibility)
     if [ -f ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh ]; then
-	source ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh;
-	_module_patch;
+		source ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh;
+		_module_patch;
     fi
 
     # Make modules with ati's script
     if ! sh make.sh; then
-	echo "Error -> I don't have make module";
-	exit 3;
+		echo ${MESSAGE[11]};
+		exit 3;
     fi
-    
+
     # Make module package
     cd ..;
     if [[ $MODULE_NAME == "fglrx.ko.gz" ]]; then
-	mv fglrx*.ko fglrx.ko;
-	gzip fglrx.ko; # crea il file con nome uguale a $MODULE_NAME
+		mv fglrx*.ko fglrx.ko;
+		gzip fglrx.ko; # crea il file con nome uguale a $MODULE_NAME
     else
-	mv fglrx*.o fglrx.o;
-	gzip fglrx.o; # crea il file con nome uguale a $MODULE_NAME
+		mv fglrx*.o fglrx.o;
+		gzip fglrx.o; # crea il file con nome uguale a $MODULE_NAME
     fi
-    mv ${MODULE_NAME} ${ROOT_DIR}/${MODULE_PKG_DIR};
-    
+    	mv ${MODULE_NAME} ${ROOT_DIR}/${MODULE_PKG_DIR};
+
     cd ${ROOT_DIR};
 
     _make_module_pkg;
@@ -74,31 +74,31 @@ function _make_x
     # set X_VERSION
     PATH=$PATH:/usr/X11/bin:/usr/X11R6/bin
     source ${CHECK_SCRIPT} --noprint;
-    
+
     case ${X_VERSION} in
 	x670*) # Xorg Server 6.7
 	    USE_X_VERSION=${X_VERSION/x670/x680}; # Use the xorg 6.8 files
 	    ;;
 	x7*) # Xorg Server 7.x
-	    XORG_7=1; 
+	    XORG_7=1;
 	    ;;
     esac
 
     [ -z $USE_X_VERSION ] && USE_X_VERSION=${X_VERSION};
 
     cd ${X_PKG_DIR};
-    
+
     # 1)
     # MOVE ARCH DIPENDENT files
     mkdir usr;
-  
+
     mv ${ROOT_DIR}/arch/${ARCH}/usr/* usr;
-    
+
     case ${ARCH} in
 	x86_64)
             for lib_dir in usr/X11R6/lib64 usr/X11R6/lib; do
               if [ -d ${lib_dir}/ ]; then
-                LIB_DIR="${LIB_DIR} ${lib_dir}"; 
+                LIB_DIR="${LIB_DIR} ${lib_dir}";
               fi;
               done
               LIB_DIR=${LIB_DIR# }; # Tolgo l'eventuale spazio iniziale
@@ -106,9 +106,9 @@ function _make_x
 	x86)
 	    LIB_DIR=usr/X11R6/lib;
     esac
-    
+
     # Make some symbolik link
-    for dir in ${LIB_DIR}; 
+    for dir in ${LIB_DIR};
       do
       ( cd $dir;
 	  for file in *.so.1.?;
@@ -118,7 +118,7 @@ function _make_x
 	  done
       )
     done
-        
+
     # 2)
     # MOVE ARCH INDIPENDENT files
     cp -rp ${ROOT_DIR}/common/usr/* usr;
@@ -152,13 +152,13 @@ function _make_x
 	chmod a+x aticonfig fgl_glxgears fglrxinfo fglrx_xgamma 2>/dev/null;
         chmod go-x amdcccle fireglcontrolpanel 2>/dev/null;
     )
-    
+
     # 4.4) Aggiusto i permessi ai file in etc/ati
     ( cd etc/ati;
 	chmod a-x *;
 	chmod a+x authatieventsd.sh 2>/dev/null;
     )
-    
+
     # 5)
     # Alcuni dei file in etc/ati devono essere spostati come .new in modo da preservarli con la rimozione del
     # pacchetto. Inoltre lo script di installazione del pacchetto provvederà a rinominarli o a cancellarli se
@@ -168,7 +168,7 @@ function _make_x
 	    [ -f $file ] && mv $file ${file}.new;
 	done
     )
-    
+
     # 6)
     # If use xorg >= 7, remove obsolete directory X11R6
     if (( $XORG_7 )); then
@@ -179,7 +179,7 @@ function _make_x
 	done
 	cp -rp usr/X11R6/* usr/;
 	rm -rf usr/X11R6;
-       
+
         echo >> install/doinst.sh;
         for dir in ${LIB_DIR}; do
           echo "[ ! -d /${dir}/modules ] && ln -s /usr/`basename $dir`/xorg/modules /${dir}/" >> install/doinst.sh;
@@ -187,7 +187,7 @@ function _make_x
         echo >> install/doinst.sh;
     fi
 
-    # 7) 
+    # 7)
     # MAKE PACKAGE
     local X_PACK_NAME=${X_PACK_PARTIAL_NAME/fglrx-/fglrx-${X_VERSION}-}.tgz;
 
@@ -196,11 +196,11 @@ function _make_x
 	sed s/fglrx:/fglrx-${X_VERSION}:/ slack-desc > slack-desc.tmp;
 	mv -f slack-desc.tmp slack-desc
     )
-    
+
     # Strip binaries and libraries
     find . | xargs file | sed -n "/ELF.*executable/b PRINT;/ELF.*shared object/b PRINT;d;:PRINT s/\(.*\):.*/\1/;p;"\
 	| xargs strip --strip-unneeded 2> /dev/null
-    
+
     makepkg -l y -c n ${X_PACK_NAME};
     mv ${X_PACK_NAME} ${DEST_DIR};
 
@@ -229,7 +229,7 @@ function buildpkg
             source ${CHECK_SCRIPT} --noprint;
             set;
             ;;
-	*) echo "$1 unsupported";
+	*) echo "$1 ${MESSAGE[12]}";
 	    exit 2;
 	    ;;
     esac
@@ -245,54 +245,55 @@ function _detect_kernel_ver_from_PATH_KERNEL
 	    KNL_VER=$(grep UTS_RELEASE ${INCLUDES}/version-*.h 2>/dev/null | cut -d'"' -f2);
 	fi
     fi
-    
+
     if [ -z ${KNL_VER} ]; then
-	echo "Error -> Kernel version not detected";
-	exit 1;
+		echo ${MESSAGE[10]};
+		exit 1;
     fi
 }
 
 function _init_env
 {
-    [ $(id -u) -gt 0 ] && echo "Only root can do it!" && exit 1;
-    
-    BUILD_VER=1.2.1;
-    
-    ROOT_DIR=$PWD; # Usata dal file patch_function (se esiste)
-    echo "$ROOT_DIR" | grep -q " " && echo "The name of the current directory should not contain any spaces" && exit 1;
-    
-    ARCH=$(arch); # Usata dal file patch_function (se esiste)
-    [[ $ARCH != x86_64 ]] && ARCH="x86";
+   [ $(id -u) -gt 0 ] && echo ${MESSAGE[8]} && exit 1;
 
-    # Setto il nome del modulo
-    if [ ! -z ${KERNEL_PATH} ]; then
-	_detect_kernel_ver_from_PATH_KERNEL; # Setta KNL_VER, variabile usata dal file patch_function (se esiste)
-    else
-	KNL_VER=$(uname -r) # Usata dal file patch_function (se esiste)
-    fi
-    
-    if [[ $KNL_VER == "2.6."* ]]; then
-	MODULE_NAME=fglrx.ko.gz;    
-    else
-	MODULE_NAME=fglrx.o.gz;
-    fi
+   BUILD_VER=1.2.2;
 
-    SCRIPT_DIR=packages/Slackware; # Usata dal file patch_function (se esiste)
-    ATI_DRIVER_VER=$(./ati-packager-helper.sh --version); # Usata dal file patch_function (se esiste)
-    ATI_DRIVER_REL=$(./ati-packager-helper.sh --release);
-    
-    MODULE_PKG_DIR=${SCRIPT_DIR}/module_pkg;
-    MODULE_PACK_NAME=fglrx-module-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}
-    
-    X_PKG_DIR=${SCRIPT_DIR}/x_pkg;
-    X_PACK_PARTIAL_NAME=fglrx-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL};
-    
-    DEST_DIR=${PWD%/*};
+   ROOT_DIR=$PWD; # Usata dal file patch_function (se esiste)
+   echo "$ROOT_DIR" | grep -q " " && echo ${MESSAGE[9]} && exit 1;
+
+
+   ARCH=$(arch); # Usata dal file patch_function (se esiste)
+   [[ $ARCH != x86_64 ]] && ARCH="x86";
+
+   # Setto il nome del modulo
+   if [ ! -z ${KERNEL_PATH} ]; then
+		_detect_kernel_ver_from_PATH_KERNEL; # Setta KNL_VER, variabile usata dalfile patch_function (se esiste)
+   else
+		KNL_VER=$(uname -r) # Usata dal file patch_function (se esiste)
+   fi
+
+   if [[ $KNL_VER == "2.6."* ]]; then
+		MODULE_NAME=fglrx.ko.gz;
+   else
+		MODULE_NAME=fglrx.o.gz;
+   fi
+
+   SCRIPT_DIR=packages/Slackware; # Usata dal file patch_function (se esiste)
+   ATI_DRIVER_VER=$(./ati-packager-helper.sh --version); # Usata dal file patch_function (se esiste)
+   ATI_DRIVER_REL=$(./ati-packager-helper.sh --release);
+
+   MODULE_PKG_DIR=${SCRIPT_DIR}/module_pkg;
+   MODULE_PACK_NAME=fglrx-module-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}
+
+   X_PKG_DIR=${SCRIPT_DIR}/x_pkg;
+   X_PACK_PARTIAL_NAME=fglrx-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL};
+
+   DEST_DIR=${PWD%/*};
 }
 
 function _check_builder_dependencies {
 	local DEPS=(ln coreutils cp coreutils mv coreutils rm coreutils mkdir coreutils chmod coreutils find findutils strip binutils grep grep sed sed makepkg pkgtools file file xargs findutils gzip gzip depmod module-init-tools mount linux-utils);
-	 
+
 	local i=0;
 	local DEPS_OK=0;
 	while [ $i -lt ${#DEPS[@]} ];
@@ -300,33 +301,61 @@ function _check_builder_dependencies {
 		which ${DEPS[$i]} &> /dev/null;
 		if [ $? != 0 ];
 		then
-			echo -e "\E[00;31mExecutable ${DEPS[$i]} missing. You need to install ${DEPS[${i}+1]}. \E[00m";
+			echo -e "\E[00;31m${MESSAGE[6]} ${DEPS[$i]} ${MESSAGE[7]} ${DEPS[${i}+1]}. \E[00m";
 			DEPS_OK=1;
 		fi
-		let i+=2;	
+		let i+=2;
 	done
-	
+
 	if [ $DEPS_OK != 0 ];
 	then
 		exit 2;
 	fi
 }
 
+function _set_builder_language
+{
+	local EXT=$(echo $LANG | cut -d '_' -f1);
+	ORIG_DIR=$PWD;
+
+	if echo "${ORIG_DIR}" | grep -s " "; then
+ 		echo -e "\nThe name of the current directory should not contain any spaces.\n";
+		exit 1;
+	fi
+
+	cd $ORIG_DIR/packages/Slackware/languages;
+	local FILE=lang.$EXT;
+
+	if [ ! -e $FILE ]; then
+		FILE=lang.en;
+	fi
+
+	OLD_IFS=$IFS;
+	IFS=$(echo -e '\n\t');
+	MESSAGE=($(cat $FILE));
+	IFS=$OLD_IFS;
+
+	cd ${ORIG_DIR};
+
+	return;
+}
+
 case $1 in
-    --get-supported)
-	echo -e "All\tOnly_Module\tOnly_X";
+   --get-supported)
+		echo -e "All\tOnly_Module\tOnly_X";
 	;;
-    --buildpkg)
-	_check_builder_dependencies;
-	_init_env;
-	echo -e "\nATI SlackBuild Ver. $BUILD_VER"\
-                "\n--------------------------------------------"\
-                "\nby: Emanuele Tomasi <tomasiATcli.di.unipi.it>"\
-                "\n    Ezio Ghibaudo<ekxiusATgmail.com>"\
-                "\n    Federico Rota<federico.rota01ATgmail.com>\n";
-	buildpkg $2;
+   --buildpkg)
+   	_set_builder_language;
+		_check_builder_dependencies;
+		_init_env;
+		echo -e "\n${MESSAGE[0]} $BUILD_VER"\
+            	"\n${MESSAGE[1]}"\
+               "\n${MESSAGE[2]}"\
+               "\n${MESSAGE[3]}"\
+               "\n${MESSAGE[4]}\n";
+		buildpkg $2;
 	;;
-    *)
-	echo "${1}: unsupported option passed by ati-installer.sh";
+   *)
+		echo "${1}: ${MESSAGE[5]}";
 	;;
 esac
