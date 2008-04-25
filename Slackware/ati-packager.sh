@@ -1,27 +1,28 @@
 #!/bin/bash
-# Last modify: 21/01/2008
 # by Emanuele Tomasi <tomasi@cli.di.unipi.it>
+#    Ezio Ghibaudo   <ekxius@gmail.com>
+#    Federico Rota   <federico.rota01@gmail.com>
 
 # Usata da make_module. Crea il pacchetto per la Slackware
 function _make_module_pkg
 {
     cd ${MODULE_PKG_DIR};
-
+    
     # Estraggo la versione del kernel dal modulo creato
     local MODULE_KERNEL_VERSION=$(modinfo ./${MODULE_NAME} | grep vermagic| \tr -s ' ' ' '| cut -d' ' -f2);
     local MODULE_DEST_DIR=lib/modules/${MODULE_KERNEL_VERSION}/external;
-
+    
     mkdir -p ${MODULE_DEST_DIR};
     mv ${MODULE_NAME} ${MODULE_DEST_DIR};
-
+    
     # Modifico il nome del pacchetto aggiungendo alla fine, la versione del kernel
     MODULE_PACK_NAME=${MODULE_PACK_NAME}_kernel_${MODULE_KERNEL_VERSION//-/_}.tgz;
     makepkg -l y -c n ${MODULE_PACK_NAME};
-
+    
     mv ${MODULE_PACK_NAME} ${DEST_DIR};
-
+    
     cd ${ROOT_DIR};
-
+    
     return;
 }
 
@@ -29,39 +30,39 @@ function _make_module_pkg
 function _make_module
 {
     local MODULE_DIR=lib/modules/fglrx/build_mod;
-
+    
     # Copy arch-depend files
     mv arch/${ARCH}/${MODULE_DIR}/* common/${MODULE_DIR};
-
+    
     cd common/${MODULE_DIR};
-
+    
     # Se ci sono, applico le patch (backward compatibility)
     if [ -f ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh ]; then
-		source ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh;
-		_module_patch;
+	source ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh;
+	_module_patch;
     fi
-
+    
     # Make modules with ati's script
     if ! sh make.sh; then
-		echo ${MESSAGE[11]};
-		exit 3;
+	echo ${MESSAGE[9]};
+	exit 3;
     fi
-
+    
     # Make module package
     cd ..;
     if [[ $MODULE_NAME == "fglrx.ko.gz" ]]; then
-		mv fglrx*.ko fglrx.ko;
-		gzip fglrx.ko; # crea il file con nome uguale a $MODULE_NAME
+	mv fglrx*.ko fglrx.ko;
+	gzip fglrx.ko; # crea il file con nome uguale a $MODULE_NAME
     else
-		mv fglrx*.o fglrx.o;
-		gzip fglrx.o; # crea il file con nome uguale a $MODULE_NAME
+	mv fglrx*.o fglrx.o;
+	gzip fglrx.o; # crea il file con nome uguale a $MODULE_NAME
     fi
-    	mv ${MODULE_NAME} ${ROOT_DIR}/${MODULE_PKG_DIR};
-
+    mv ${MODULE_NAME} ${ROOT_DIR}/${MODULE_PKG_DIR};
+    
     cd ${ROOT_DIR};
-
+    
     _make_module_pkg;
-
+    
     return;
 }
 
@@ -70,11 +71,11 @@ function _make_x
 {
     local CHECK_SCRIPT=./check.sh;
     local XORG_7=0;
-
+    
     # set X_VERSION
     PATH=$PATH:/usr/X11/bin:/usr/X11R6/bin
     source ${CHECK_SCRIPT} --noprint;
-
+    
     case ${X_VERSION} in
 	x670*) # Xorg Server 6.7
 	    USE_X_VERSION=${X_VERSION/x670/x680}; # Use the xorg 6.8 files
@@ -83,54 +84,54 @@ function _make_x
 	    XORG_7=1;
 	    ;;
     esac
-
+    
     [ -z $USE_X_VERSION ] && USE_X_VERSION=${X_VERSION};
-
+    
     cd ${X_PKG_DIR};
-
+    
     # 1)
     # MOVE ARCH DIPENDENT files
     mkdir usr;
-
+    
     mv ${ROOT_DIR}/arch/${ARCH}/usr/* usr;
-
+    
     case ${ARCH} in
 	x86_64)
             for lib_dir in usr/X11R6/lib64 usr/X11R6/lib; do
-              if [ -d ${lib_dir}/ ]; then
-                LIB_DIR="${LIB_DIR} ${lib_dir}";
-              fi;
-              done
-              LIB_DIR=${LIB_DIR# }; # Tolgo l'eventuale spazio iniziale
+		if [ -d ${lib_dir}/ ]; then
+                    LIB_DIR="${LIB_DIR} ${lib_dir}";
+		fi;
+            done
+            LIB_DIR=${LIB_DIR# }; # Tolgo l'eventuale spazio iniziale
 	    ;;
 	x86)
 	    LIB_DIR=usr/X11R6/lib;
     esac
-
+    
     # Make some symbolik link
     for dir in ${LIB_DIR};
-      do
-      ( cd $dir;
-	  for file in *.so.1.?;
+    do
+	( cd $dir;
+	    for file in *.so.1.?;
 	    do
-	    ln -s $file ${file%.*};
-	    ln -s $file ${file%%.*}.so;
-	  done
-      )
+		ln -s $file ${file%.*};
+		ln -s $file ${file%%.*}.so;
+	    done
+	)
     done
-
+    
     # 2)
     # MOVE ARCH INDIPENDENT files
     cp -rp ${ROOT_DIR}/common/usr/* usr;
     mkdir -p etc/ati
     mv ${ROOT_DIR}/common/etc/ati/{amdpcsdb.default,atiogl.xml,authatieventsd.sh,control,fglrxprofiles.csv,fglrxrc,signature}\
         etc/ati/ 2>/dev/null;
-
+    
     # 3)
     # MOVE USE_X_VERSION DEPENDENT files
     cp -rp ${ROOT_DIR}/${USE_X_VERSION}/usr/* usr;
-
-
+    
+    
     # 4)
     # Aggiusto i permessi
     # 4.1) Nella directory usr, tolgo i diritti di esecuzione a tutti i file che non siano:
@@ -141,7 +142,7 @@ function _make_x
         find . -not \( -wholename "*bin*" -o \( -wholename "*lib*" -a -not -wholename "*.a" \) \) -not -type d\
 	    | xargs chmod -x
     )
-
+    
     # 4.2) I file in usr/sbin devono avere il permesso di esecuzione solo per il root
     ( cd usr/sbin;
         chmod go-x *;
@@ -173,16 +174,16 @@ function _make_x
     # If use xorg >= 7, remove obsolete directory X11R6
     if (( $XORG_7 )); then
 	for dir in ${LIB_DIR}; # Move X modules in usr/$LIB_DIR/xorg/modules
-	  do
-	  mkdir ${dir}/xorg;
-	  mv ${dir}/modules ${dir}/xorg;
+	do
+	    mkdir ${dir}/xorg;
+	    mv ${dir}/modules ${dir}/xorg;
 	done
 	cp -rp usr/X11R6/* usr/;
 	rm -rf usr/X11R6;
-
+	
         echo >> install/doinst.sh;
         for dir in ${LIB_DIR}; do
-          echo "[ ! -d /${dir}/modules ] && ln -s /usr/`basename $dir`/xorg/modules /${dir}/" >> install/doinst.sh;
+            echo "[ ! -d /${dir}/modules ] && ln -s /usr/`basename $dir`/xorg/modules /${dir}/" >> install/doinst.sh;
         done
         echo >> install/doinst.sh;
     fi
@@ -200,12 +201,12 @@ function _make_x
     # Strip binaries and libraries
     find . | xargs file | sed -n "/ELF.*executable/b PRINT;/ELF.*shared object/b PRINT;d;:PRINT s/\(.*\):.*/\1/;p;"\
 	| xargs strip --strip-unneeded 2> /dev/null
-
+    
     makepkg -l y -c n ${X_PACK_NAME};
     mv ${X_PACK_NAME} ${DEST_DIR};
-
+    
     cd ${ROOT_DIR};
-
+    
     return;
 }
 
@@ -229,7 +230,7 @@ function buildpkg
             source ${CHECK_SCRIPT} --noprint;
             set;
             ;;
-	*) echo "$1 ${MESSAGE[12]}";
+	*) echo "$1 ${MESSAGE[10]}";
 	    exit 2;
 	    ;;
     esac
@@ -245,117 +246,107 @@ function _detect_kernel_ver_from_PATH_KERNEL
 	    KNL_VER=$(grep UTS_RELEASE ${INCLUDES}/version-*.h 2>/dev/null | cut -d'"' -f2);
 	fi
     fi
-
+    
     if [ -z ${KNL_VER} ]; then
-		echo ${MESSAGE[10]};
-		exit 1;
+	echo ${MESSAGE[8]};
+	exit 1;
     fi
 }
 
 function _init_env
 {
-   [ $(id -u) -gt 0 ] && echo ${MESSAGE[8]} && exit 1;
-
-   BUILD_VER=1.2.2;
-
-   ROOT_DIR=$PWD; # Usata dal file patch_function (se esiste)
-   echo "$ROOT_DIR" | grep -q " " && echo ${MESSAGE[9]} && exit 1;
-
-
-   ARCH=$(arch); # Usata dal file patch_function (se esiste)
-   [[ $ARCH != x86_64 ]] && ARCH="x86";
-
-   # Setto il nome del modulo
-   if [ ! -z ${KERNEL_PATH} ]; then
-		_detect_kernel_ver_from_PATH_KERNEL; # Setta KNL_VER, variabile usata dalfile patch_function (se esiste)
-   else
-		KNL_VER=$(uname -r) # Usata dal file patch_function (se esiste)
-   fi
-
-   if [[ $KNL_VER == "2.6."* ]]; then
-		MODULE_NAME=fglrx.ko.gz;
-   else
-		MODULE_NAME=fglrx.o.gz;
-   fi
-
-   SCRIPT_DIR=packages/Slackware; # Usata dal file patch_function (se esiste)
-   ATI_DRIVER_VER=$(./ati-packager-helper.sh --version); # Usata dal file patch_function (se esiste)
-   ATI_DRIVER_REL=$(./ati-packager-helper.sh --release);
-
-   MODULE_PKG_DIR=${SCRIPT_DIR}/module_pkg;
-   MODULE_PACK_NAME=fglrx-module-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}
-
-   X_PKG_DIR=${SCRIPT_DIR}/x_pkg;
-   X_PACK_PARTIAL_NAME=fglrx-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL};
-
-   DEST_DIR=${PWD%/*};
+    [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
+    
+    BUILD_VER=1.2.3;
+    
+    ROOT_DIR=$PWD; # Usata dal file patch_function (se esiste)
+    echo "$ROOT_DIR" | grep -q " " && echo ${MESSAGE[7]} && exit 1;
+    
+    
+    ARCH=$(arch); # Usata dal file patch_function (se esiste)
+    [[ $ARCH != x86_64 ]] && ARCH="x86";
+    
+    # Setto il nome del modulo
+    if [ ! -z ${KERNEL_PATH} ]; then
+	_detect_kernel_ver_from_PATH_KERNEL; # Setta KNL_VER, variabile usata dalfile patch_function (se esiste)
+    else
+	KNL_VER=$(uname -r) # Usata dal file patch_function (se esiste)
+    fi
+    
+    if [[ $KNL_VER == "2.6."* ]]; then
+	MODULE_NAME=fglrx.ko.gz;
+    else
+	MODULE_NAME=fglrx.o.gz;
+    fi
+    
+    SCRIPT_DIR=packages/Slackware; # Usata dal file patch_function (se esiste)
+    ATI_DRIVER_VER=$(./ati-packager-helper.sh --version); # Usata dal file patch_function (se esiste)
+    ATI_DRIVER_REL=$(./ati-packager-helper.sh --release);
+    
+    MODULE_PKG_DIR=${SCRIPT_DIR}/module_pkg;
+    MODULE_PACK_NAME=fglrx-module-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}
+    
+    X_PKG_DIR=${SCRIPT_DIR}/x_pkg;
+    X_PACK_PARTIAL_NAME=fglrx-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL};
+    
+    DEST_DIR=${PWD%/*};
 }
 
 function _check_builder_dependencies {
-	local DEPS=(ln coreutils cp coreutils mv coreutils rm coreutils mkdir coreutils chmod coreutils find findutils strip binutils grep grep sed sed makepkg pkgtools file file xargs findutils gzip gzip depmod module-init-tools mount linux-utils);
-
-	local i=0;
-	local DEPS_OK=0;
-	while [ $i -lt ${#DEPS[@]} ];
-	do
-		which ${DEPS[$i]} &> /dev/null;
-		if [ $? != 0 ];
-		then
-			echo -e "\E[00;31m${MESSAGE[6]} ${DEPS[$i]} ${MESSAGE[7]} ${DEPS[${i}+1]}. \E[00m";
-			DEPS_OK=1;
-		fi
-		let i+=2;
-	done
-
-	if [ $DEPS_OK != 0 ];
+    local DEPS=(ln coreutils cp coreutils mv coreutils rm coreutils mkdir coreutils chmod coreutils find findutils strip binutils grep grep sed sed makepkg pkgtools file file xargs findutils gzip gzip depmod module-init-tools mount linux-utils);
+    
+    local i=0;
+    local DEPS_OK=0;
+    while [ $i -lt ${#DEPS[@]} ];
+    do
+	which ${DEPS[$i]} &> /dev/null;
+	if [ $? != 0 ];
 	then
-		exit 2;
+	    echo -e "\E[00;31m${MESSAGE[4]} ${DEPS[$i]} ${MESSAGE[5]} ${DEPS[${i}+1]}. \E[00m";
+	    DEPS_OK=1;
 	fi
+	let i+=2;
+    done
+    
+    if [ $DEPS_OK != 0 ];
+    then
+	exit 2;
+    fi
 }
 
 function _set_builder_language
 {
-	local EXT=$(echo $LANG | cut -d '_' -f1);
-	ORIG_DIR=$PWD;
-
-	if echo "${ORIG_DIR}" | grep -s " "; then
- 		echo -e "\nThe name of the current directory should not contain any spaces.\n";
-		exit 1;
-	fi
-
-	cd $ORIG_DIR/packages/Slackware/languages;
-	local FILE=lang.$EXT;
-
-	if [ ! -e $FILE ]; then
-		FILE=lang.en;
-	fi
-
-	OLD_IFS=$IFS;
-	IFS=$(echo -e '\n\t');
-	MESSAGE=($(cat $FILE));
-	IFS=$OLD_IFS;
-
-	cd ${ORIG_DIR};
-
-	return;
+    local EXT=$(echo $LANG | cut -d '_' -f1);
+    local FILE="/packages/Slackware/languages/lang.en";
+    local OLD_IFS=$IFS;
+    
+    if [ -e "${PWD}"/packages/Slackware/languages/lang.${EXT} ]; then
+        local FILE="/packages/Slackware/languages/lang.${EXT}";
+    fi
+    
+    IFS=$(echo -e '\n\t');
+    MESSAGE=($(cat "${PWD}"$FILE));
+    IFS=$OLD_IFS;
+    
+    return;
 }
 
 case $1 in
-   --get-supported)
-		echo -e "All\tOnly_Module\tOnly_X";
+    --get-supported)
+	echo -e "All\tOnly_Module\tOnly_X";
 	;;
-   --buildpkg)
-   	_set_builder_language;
-		_check_builder_dependencies;
-		_init_env;
-		echo -e "\n${MESSAGE[0]} $BUILD_VER"\
-            	"\n${MESSAGE[1]}"\
-               "\n${MESSAGE[2]}"\
-               "\n${MESSAGE[3]}"\
-               "\n${MESSAGE[4]}\n";
-		buildpkg $2;
+    --buildpkg)
+	_set_builder_language;
+	_check_builder_dependencies;
+	_init_env;
+	echo -e "\n${MESSAGE[0]} $BUILD_VER"\
+                "\n--------------------------------------------"\
+                "\n${MESSAGE[1]}"\
+                "\n${MESSAGE[2]}"\
+                "\n${MESSAGE[3]}\n";
+	buildpkg $2;
 	;;
-   *)
-		echo "${1}: ${MESSAGE[5]}";
+    *)
+	echo "${1}: unsupported option passed by ati-installer.sh";
 	;;
 esac
