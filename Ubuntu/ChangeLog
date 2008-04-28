@@ -1,3 +1,7 @@
+2008-04-28 Mario Limonciello <superm1@ubuntu.com>
+        * dists/*/*preinst:
+        - Correct diversion.  Thanks Pat Suwalski
+
 2008-04-17 Mario Limonciello <superm1@ubuntu.com>
         * dists/hardy/control:
         - Loosen depends on fglrx-kernel-source
