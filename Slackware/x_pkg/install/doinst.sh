@@ -19,15 +19,9 @@ config etc/ati/authatieventsd.sh.new;
 config etc/ati/fglrxprofiles.csv.new;
 config etc/ati/fglrxrc.new;
 
-if ! (mount | grep /dev/shm &>/dev/null); then
-   echo -e "\n########################################################################################\n"\
-"WARNING: /dev/shm is not mounted, see the file /usr/share/doc/fglrx/articles/devshm.html\n"\
-"########################################################################################\n"
-fi
-
-echo -e "\n####################################################################\n"\
+echo -e "\n########################################################################\n"\
 "NOTE:   You have to modify the X server configuration file to use \n"\
 "\tthe ATI driver:\n"\
 "\n\t\taticonfig --initial\n\n"\
 "\tcan it help you. Run aticonfig without options for more details.\n"\
-"####################################################################\n";
+"########################################################################\n";

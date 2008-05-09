@@ -9,3 +9,5 @@ The name of the current directory should not contain any spaces
 Error -> Kernel version not detected
 Error -> I don't have make module
 unsupported.
+make_module.sh script missing!
+make_x.sh script missing!

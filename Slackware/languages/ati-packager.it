@@ -9,3 +9,5 @@ Il nome della directory corrente non deve contenere spazi
 Errore -> Versione kernel non rilevata
 Errore -> Make module non rilevato
 non supportato.
+Script make_module.sh non trovato!
+Script make_x.sh non trovato!
