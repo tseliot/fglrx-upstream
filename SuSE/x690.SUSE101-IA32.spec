@@ -171,6 +171,12 @@ pushd $tmpdir/fglrx
     install -m 444 esut.a                $RPM_BUILD_ROOT%{MODULES_DIR}
   test -f glesx.so && \
     install -m 444 glesx.so              $RPM_BUILD_ROOT%{MODULES_DIR}
+  test -f amdxmm.so && \
+    install -m 444 amdxmm.so             $RPM_BUILD_ROOT%{MODULES_DIR}
+  test -f atiodcli && \
+    install -m 755 atiodcli              $RPM_BUILD_ROOT/usr/bin
+  test -f atiode && \
+    install -m 755 atiode                $RPM_BUILD_ROOT/usr/bin
 popd
 pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   # add kernel patches here
@@ -220,6 +226,12 @@ fi
 %else
 echo "/usr/bin/amdcccle" >> files.fglrx
 %endif
+if [ -f $RPM_BUILD_ROOT/usr/bin/atiodcli ]; then
+  echo "/usr/bin/atiodcli" >> files.fglrx
+fi
+if [ -f $RPM_BUILD_ROOT/usr/bin/atiode ]; then
+  echo "/usr/bin/atiode" >> files.fglrx
+fi
 if [ -f $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_tvout.a ]; then
   echo "/usr/X11R6/%{_lib}/libfglrx_tvout.a" >> files.fglrx
 fi
@@ -234,6 +246,9 @@ if [ -f $RPM_BUILD_ROOT/%{MODULES_DIR}/esut.a ]; then
 fi
 if [ -f $RPM_BUILD_ROOT/%{MODULES_DIR}/glesx.so ]; then
   echo "%{MODULES_DIR}/glesx.so" >> files.fglrx
+fi
+if [ -f $RPM_BUILD_ROOT/%{MODULES_DIR}/amdxmm.so ]; then
+  echo "%{MODULES_DIR}/amdxmm.so" >> files.fglrx
 fi
 %ifarch x86_64
 if [ -f $RPM_BUILD_ROOT%{DRI_DRIVERS32_DIR}/fglrx_dri.so ]; then
