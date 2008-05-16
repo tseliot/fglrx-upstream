@@ -1,3 +1,7 @@
+2008-05-16 Mario Limonciello <superm1@ubuntu.com>
+        * dists/{gutsy,hardy}/*prerm
+        - Remove modules on both upgrade and removal
+
 2008-04-28 Mario Limonciello <superm1@ubuntu.com>
         * dists/*/*preinst:
         - Correct diversion.  Thanks Pat Suwalski
