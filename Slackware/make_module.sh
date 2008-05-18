@@ -4,7 +4,7 @@ function _make_module_pkg
     cd ${MODULE_PKG_DIR};
     
     # Estraggo la versione del kernel dal modulo creato
-    local MODULE_KERNEL_VERSION=$(modinfo ./${MODULE_NAME} | grep vermagic| \tr -s ' ' ' '| cut -d' ' -f2);
+    local MODULE_KERNEL_VERSION=$(modinfo ./${MODULE_NAME} | grep vermagic| tr -s ' ' ' '| cut -d' ' -f2);
     local MODULE_DEST_DIR=lib/modules/${MODULE_KERNEL_VERSION}/external;
 
     mkdir -p ${MODULE_DEST_DIR};
@@ -15,10 +15,11 @@ function _make_module_pkg
     makepkg -l y -c n ${MODULE_PACK_NAME};
     
     mv ${MODULE_PACK_NAME} ${DEST_DIR};
+    echo ${MODULE_PACK_NAME} >> ${TMP_FILE};
 
     cd ${ROOT_DIR};
    
-    return;
+    return 0;
 }
 
 # Crea il modulo per il kernel
@@ -40,23 +41,19 @@ function _make_module
     # Make modules with ati's script
     if ! sh make.sh; then
 	echo ${MESSAGE[9]};
-	exit 3;
+	exit 1;
     fi
 
     # Make module package
     cd ..;
-    if [[ $MODULE_NAME == "fglrx.ko.gz" ]]; then
-	mv fglrx*.ko fglrx.ko;
-	gzip fglrx.ko; # crea il file con nome uguale a $MODULE_NAME
-    else
-	mv fglrx*.o fglrx.o;
-	gzip fglrx.o; # crea il file con nome uguale a $MODULE_NAME
-    fi
-    mv ${MODULE_NAME} ${ROOT_DIR}/${MODULE_PKG_DIR};
+    mv fglrx*.ko fglrx.ko;
+    gzip fglrx.ko;
+
+    mv fglrx.ko.gz ${ROOT_DIR}/${MODULE_PKG_DIR};
     
     cd ${ROOT_DIR};
     
     _make_module_pkg;
     
-    return;
+    return 0;
 }
