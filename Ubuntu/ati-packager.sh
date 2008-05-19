@@ -1,7 +1,8 @@
 #!/bin/sh
 #
 # Purpose
-#   Sample packaging script
+#   Create packages and install dependencies
+#   for the Ubuntu Linux distribution
 #
 # Usage
 #   See README.distro document
@@ -15,6 +16,7 @@ EDGY="edgy 6.10"
 FEISTY="feisty 7.04"
 GUTSY="gutsy 7.10"
 HARDY="hardy 8.04"
+INTREPID="intrepid 8.10"
 
 # set locale to sane value
 export LANG=C
@@ -24,7 +26,7 @@ export LC_ALL=C
 umask 002
 
 #Root command
-if [ `whoami` != "root" ]; then
+if [ "$USER" != "root" ]; then
     if [ -x /usr/bin/gksudo ] && [ ! -z "$DISPLAY" ]; then
         ROOT="/usr/bin/gksudo --description 'AMD_Installer' "
     elif [ -x /usr/bin/kdesu ] && [ ! -z "$DISPLAY" ]; then
@@ -37,7 +39,7 @@ else
 fi
 
 #Synaptic availablity
-if [ -x /usr/sbin/synaptic ]; then
+if [ -x `which synaptic` ]; then
     SYNAPTIC="TRUE"
 else
     SYNAPTIC=""
@@ -47,49 +49,73 @@ fi
 InstallerRootDir=`pwd`              # Absolute path of the <installer root> directory
 AbsInstallerParentDir=`cd ${InstallerRootDir}/.. 2>/dev/null && pwd`    # Absolute path to the installer parent directory
 
+#Function: getAPIVersion()
+#Purpose: return the current API compatibility level that we support
+getAPIVersion()
+{
+    #level 1 is --get-supported and --buildpkg
+    #exit 1
+
+    #level 2 adds --identify, --buildprep, --installprep, --installpkg and --getAPIVersion
+    exit 2
+}
+
 #Function: buildDepends()
 #Purpose: checks that all build dependencies are resolved
 buildDepends()
 {
-    if [ ! -x /usr/bin/dpkg-checkbuilddeps ] || [ ! -x /usr/bin/gcc ]; then
-        if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
-            TEMPFILE=`/bin/tempfile`
-            cat > $TEMPFILE << EOF
+    release=$1
+
+    if [ ! -x /usr/bin/dpkg-checkbuilddeps ]; then
+        if [ "$2" != "--dryrun" ]; then
+            if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
+                TEMPFILE=`/bin/tempfile`
+                cat > $TEMPFILE << EOF
 dpkg-dev install
-build-essential install
 EOF
-            $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
-            rm $TEMPFILE -f
+                $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
+                rm $TEMPFILE -f
+            else
+                $ROOT apt-get -y install dpkg-dev
+            fi
+            #do a check again in case we have failed here
+            if [ ! -x /usr/bin/dpkg-checkbuilddeps ]; then
+                echo "Unable to install dpkg-dev.  Please manually install and try again."
+                exit ${ATI_INSTALLER_ERR_PREP}
+            fi
         else
-            $ROOT apt-get -y install dpkg-dev build-essential
-        fi
-        #do a check again in case we have failed here
-        if [ ! -x /usr/bin/dpkg-checkbuilddeps ]; then
-            echo "Unable to install dpkg-dev and build-essential.  Please manually install and try again."
-            exit 4
+            echo "We would have installed dpkg-dev here."
         fi
     fi
-    release=$1
+    if [ "$2" = "--dryrun" ] && [ ! -x /usr/bin/dpkg-checkbuilddeps ]; then
+        echo "We would have installed more dependencies here, but since dpkg-dev"
+        echo "is not installed we would not proceed until this happened"
+    fi
     missing_dependencies=$(dpkg-checkbuilddeps packages/Ubuntu/dists/$release/control 2>&1 | awk -F: '{ print $3 }' | sed 's/([^)]*)//g' | sed 's/|\s[^\s]*//g')
     #'
     if [ ! -z "$missing_dependencies" ]; then
-        echo "Resolving build dependencies..."
-        if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
-            TEMPFILE=`/bin/tempfile`
-            echo $missing_dependencies | sed 's/$/\ /' | sed 's/\ /\ install\r\n/g' > $TEMPFILE
-            $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
-            rm $TEMPFILE -f
+        if [ "$2" != "--dryrun" ]; then
+            echo "Resolving build dependencies..."
+            if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
+                TEMPFILE=`/bin/tempfile`
+                echo $missing_dependencies | sed 's/$/\ /' | sed 's/\ /\ install\r\n/g' > $TEMPFILE
+                $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
+                rm $TEMPFILE -f
+            else
+                $ROOT apt-get -y install $missing_dependencies
+            fi
+            #do a check again, abort if we still have some not installed
+            missing_dependencies=$(dpkg-checkbuilddeps packages/Ubuntu/dists/$release/control 2>&1 | awk -F: '{ print $3 }' | sed 's/([^)]*)//g' | sed 's/|\s[^\s]*//g')
+            #'
+            if [ ! -z "$missing_dependencies" ]; then
+                echo "Unable to resolve $missing_dependencies.  Please manually install and try again."
+                exit ${ATI_INSTALLER_ERR_PREP}
+            fi
+            echo "Continuing package build"
         else
-            $ROOT apt-get -y install $missing_dependencies
+            echo "We would have installed $missing_dependencies here"
+            exit 0
         fi
-        #do a check again, abort if we still have some not installed
-        missing_dependencies=$(dpkg-checkbuilddeps packages/Ubuntu/dists/$release/control 2>&1 | awk -F: '{ print $3 }' | sed 's/([^)]*)//g' | sed 's/|\s[^\s]*//g')
-        #'
-        if [ ! -z "$missing_dependencies" ]; then
-            echo "Unable to resolve $missing_dependencies.  Please manually install and try again."
-            exit 5
-        fi
-        echo "Continuing package build"
     fi
 }
 
@@ -97,7 +123,7 @@ EOF
 #Purpose: lists distribution supported packages
 getSupportedPackages()
 {
-    echo $DAPPER $EDGY $FEISTY $GUTSY $HARDY
+    echo $DAPPER $EDGY $FEISTY $GUTSY $HARDY $INTREPID
 }
 
 makeChangelog()
@@ -110,36 +136,60 @@ makeChangelog()
     >> ${TmpDrvFilesDir}/debian/changelog
 }
 
-installPackages()
+installPrep()
 {
     #check for dkms
     if [ ! -x /usr/sbin/dkms ] || [ ! -f /usr/lib/libGL.so.1.2 ]; then
-        if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
-            TEMPFILE=`/bin/tempfile`
-            cat > $TEMPFILE << EOF
+        if [ "$2" != "--dryrun"]; then
+            if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
+                TEMPFILE=`/bin/tempfile`
+                cat > $TEMPFILE << EOF
 dkms install
 libgl1-mesa-glx install
 EOF
-            $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
-            rm $TEMPFILE -f
+                $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
+                rm $TEMPFILE -f
+            else
+                $ROOT apt-get -y install dkms libgl1-mesa-glx
+            fi
         else
-            $ROOT apt-get -y install dkms libgl1-mesa-glx
+            echo "We would have installed dkms and libgl1-mesa-glx here"
+            exit 0
         fi
     fi
+}
 
+installPackages()
+{
+    if [ "$2" = "--dryrun" ]; then
+        echo "We would have installed the generated packages here"
+        exit 0
+    fi
     #Detect target architecture if not set
     if [ -z "$ARCH" ]; then
         ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
     fi
     file="fglrx-installer_${DRV_RELEASE}-0ubuntu${REVISION}_${ARCH}.changes"
     if [ ! -f "${AbsInstallerParentDir}/$file" ]; then
-    	echo "Unable to find ${AbsInstallerParentDir}/$file.  Please manually install"
-    	exit 10
-    else
-    	cd ${AbsInstallerParentDir}
-    	packages=$(cat $file | grep extra | awk '{print $5}' | grep -v dev | tr "\n" " ")
-    	echo $packages
-    	$ROOT "sh -c 'dpkg -i ${packages}'"
+        echo "Unable to find ${AbsInstallerParentDir}/$file.  Please manually install"
+        exit 1
+    fi
+    cd ${AbsInstallerParentDir}
+    packages=$(cat $file | grep extra | awk '{print $5}' | grep -v dev | tr "\n" " ")
+    echo $packages
+    $ROOT "sh -c 'dpkg -i ${packages}'"
+    RET=$?
+    if [ ! $RET -eq 0 ]; then
+        echo "Error installing packages"
+        exit 1
+    fi
+    cleanup=$(cat $file | grep extra | awk '{print $5}' | tr "\n" " ")
+    echo "Cleaning up removed packages"
+    rm ${file} ${cleanup} -f
+    RET=$?
+    if [ ! $RET -eq 0 ]; then
+        echo "Error cleaning up packages"
+        exit 1
     fi
 }
 
@@ -148,9 +198,14 @@ EOF
 #Purpose: build the requested package if it is supported
 buildPackage()
 {
+    if [ "$2" = "--dryrun" ]; then
+        echo "We would have generated packages here."
+        exit 0
+    fi
+
     export X_NAME=$1                    # Well known X or distro name (exported for dpkg rules)
     RelDistroDir=`dirname $0`           # Relative path to the distro directory
-    AbsDistroDir=`cd ${RelDistroDir} 2>/dev/null && pwd` # Absolute path to the distro directory 
+    AbsDistroDir=`cd ${RelDistroDir} 2>/dev/null && pwd` # Absolute path to the distro directory
     TmpPkgBuildOut="/tmp/pkg_build.out"         # Temporary file to output diagnostics of the package build utility
     TmpDrvFilesDir=`mktemp -d -t fglrx.XXXXXX`  # Temporary directory to merge files from the common and x* directories
 
@@ -162,13 +217,11 @@ buildPackage()
         feisty|7.04) X_DIR=x710; X_NAME=feisty;;
         gutsy|7.10)  X_DIR=x710; X_NAME=gutsy;;
         hardy|8.04)  X_DIR=x710; X_NAME=hardy;;
+        intrepid|8.10) X_DIR=x710; X_NAME=intrepid;;
         *)
         #Automatically detect
         echo "Error: invalid package name passed to --buildpkg" ; exit 1 ;;
     esac
-
-    #resolve build dependencies
-    buildDepends $X_NAME
 
     #Detect target architecture if not set
     if [ -z "$ARCH" ]; then
@@ -241,46 +294,16 @@ buildPackage()
     rm -f ${TmpPkgBuildOut} > /dev/null
 }
 
-query_lsb()
+identify()
 {
-    package=$1
-    #First determine if we are explicitly calling a release build
-    support_flag=false
-    for supported_list in `getSupportedPackages`
-    do
-        if [ "${supported_list}" = "${package}" ]
-        then
-            support_flag=true
-            break
-        fi
-    done
-    #If we haven't explicitly called, or failed to type something coherent
-    #automatically detect
-    if [ "${support_flag}" != "true" ]
+    lsb=`lsb_release -s -c`
+    check=$1
+    if [ "${lsb}" = "${check}" ]
     then
-        package=`lsb_release -s -c`
-        for supported_list in `getSupportedPackages`
-        do
-            if [ "${supported_list}" = "${package}" ]
-            then
-                support_flag=true
-                echo "Automatically detected" ${package}
-                break
-            fi
-        done
-        #If we are explicitly trying to build something that isn't supported
-        if [ "${support_flag}" != "true" ] && [ "${package}" != "Ubuntu" ]
-        then
-            echo ${package} "is invalid.  Attempting automatic detection."
-        fi
+        exit 0
     fi
-    if [ "${support_flag}" = "true" ]
-    then
-        buildPackage ${package}
-    else
-        echo "Unable to build package for" ${package}
-        exit 1
-    fi
+    exit ${ATI_INSTALLER_ERR_VERS}
+
 }
 
 #Starting point of this script, process the {action} argument
@@ -289,24 +312,36 @@ query_lsb()
 action=$1
 
 case "${action}" in
+#API v1+ stuff:
 --get-supported)
     getSupportedPackages
     ;;
---autopkg)
-    query_lsb $2
-    installPackages
-    #aticonfig doesn't work on Hardy atm.
-    #$ROOT "aticonfig --initial"
+--buildpkg)
+    buildPackage $2
+    ;;
+#API v2+ stuff:
+--getAPIVersion)
+    getAPIVersion
+    ;;
+--identify)
+    identify $2
+    ;;
+--buildprep)
+    buildDepends $2 $3
+    ;;
+--installprep)
+    installPrep $2 $3
     ;;
 --installpkg)
-    installPackages
-    ;;
---buildpkg)
-    query_lsb $2
+    #install packages
+    installPackages $2
+    #turn us on in xorg.conf
+    if [ -z "$3" ] || [ "$3" != "--dryrun" ]; then
+        aticonfig --initial
+    fi
     ;;
 *|--*)
     echo ${action}: unsupported option passed by ati-installer.sh
     exit 0
     ;;
 esac
-

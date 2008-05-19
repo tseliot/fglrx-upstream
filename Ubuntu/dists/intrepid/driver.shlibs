@@ -1,0 +1,4 @@
+libGL           1 libgl1-mesa | libgl1
+libfglrx_dm     1 #PKGNAME#
+libfglrx_gamma  1 #PKGNAME#
+libfglrx_pp     1 #PKGNAME#

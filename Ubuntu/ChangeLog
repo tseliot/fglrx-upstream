@@ -1,3 +1,13 @@
+2008-05-19 Mario Limonciello <superm1@ubuntu.com>
+        * dists/*/rules
+        - Add two new binaries in bin/
+        * dists/hardy/control
+        - Change depends to linux-libc-dev rather than libc6-dev
+        * ati-packager.sh
+        - Add support for API v2
+        * dists/intrepid
+        - Copy hardy target for initial intrepid target
+
 2008-05-16 Mario Limonciello <superm1@ubuntu.com>
         * dists/{gutsy,hardy}/*prerm
         - Remove modules on both upgrade and removal
