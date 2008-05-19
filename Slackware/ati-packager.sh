@@ -60,6 +60,9 @@ function _init_env
     ATI_DRIVER_VER=$(./ati-packager-helper.sh --version);
     ATI_DRIVER_REL=$(./ati-packager-helper.sh --release);
     
+    # Nome del modulo del kernel
+    MODULE_NAME=fglrx.ko.gz
+
     # Directory in cui verranno messi i file per la creazione del pacchetto del modulo
     # del kernel
     MODULE_PKG_DIR=${SCRIPT_DIR}/module_pkg;

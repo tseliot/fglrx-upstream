@@ -1,7 +1,7 @@
 # Usata da make_module. Crea il pacchetto per la Slackware
 function _make_module_pkg
 {
-    cd ${MODULE_PKG_DIR};
+    cd ${ROOT_DIR}/${MODULE_PKG_DIR};
     
     # Estraggo la versione del kernel dal modulo creato
     local MODULE_KERNEL_VERSION=$(modinfo ./${MODULE_NAME} | grep vermagic| tr -s ' ' ' '| cut -d' ' -f2);
@@ -45,14 +45,7 @@ function _make_module
     fi
 
     # Make module package
-    cd ..;
-    mv fglrx*.ko fglrx.ko;
-    gzip fglrx.ko;
-
-    mv fglrx.ko.gz ${ROOT_DIR}/${MODULE_PKG_DIR};
-    
-    cd ${ROOT_DIR};
-    
+    cat ../fglrx*.ko | gzip -c >> ${ROOT_DIR}/${MODULE_PKG_DIR}/$MODULE_NAME;
     _make_module_pkg;
     
     return 0;
