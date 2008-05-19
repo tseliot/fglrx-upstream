@@ -70,7 +70,7 @@ function _make_x
     # 4.1) Nella directory usr, tolgo i diritti di esecuzione a tutti i file che non siano:
     #      - binari
     #      - librerie (a meno che non siano .a, a questi tolgo il permesso di esecuzion)
-    #      - direcoty
+    #      - directory
     ( cd usr;
 	find . -not \( -wholename "*bin*" -o \( -wholename "*lib*" -a -not -wholename "*.a" \) \) -not -type d\
 	   | xargs chmod -x
@@ -137,8 +137,9 @@ function _make_x
     
     makepkg -l y -c n ${X_PACK_NAME};
     mv ${X_PACK_NAME} ${DEST_DIR};
-    
+    echo ${X_PACK_NAME} >> ${TMP_FILE};
+
     cd ${ROOT_DIR};
     
-    return;
+    return 0;
 }

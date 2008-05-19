@@ -2,12 +2,18 @@ ATI SlackBuild Versione
 di: Emanuele Tomasi <tomasiATcli.di.unipi.it>
     Ezio Ghibaudo <ekxiusATgmail.com>
     Federico Rota <federico.rota01ATgmail.com>
-Eseguibile
-mancante. Devi installare
+ERRORE: installare il comando
+Controllo il comando
 Devi essere root per fare questo!
 Il nome della directory corrente non deve contenere spazi
-Errore -> Versione kernel non rilevata
-Errore -> Make module non rilevato
+ERRORE: versione del kernel non rilevata
+ERRORE: non sono riuscito a creare il modulo
 non supportato.
 Script make_module.sh non trovato!
 Script make_x.sh non trovato!
+ERRORE: la versione del server Xorg deve essere
+ERRORE: la versione del kernel deve essere
+ERRORE: la versione delle librerie glibc deve essere
+ERRORE:
+file non trovato
+deve essere o blank o --dryrun

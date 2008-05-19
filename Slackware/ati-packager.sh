@@ -3,137 +3,12 @@
 #    Ezio Ghibaudo   <ekxius@gmail.com>
 #    Federico Rota   <federico.rota01@gmail.com>
 
-function _buildpkg
-{
-    [ ! -e ${SCRIPT_DIR}/make_module.sh ] && echo -e "\E[00;31m${MESSAGE[11]}\E[00m\n" && exit 1;
-    [ ! -e ${SCRIPT_DIR}/make_x.sh ] && echo -e "\E[00;31m${MESSAGE[12]}\E[00m\n" && exit 1;
-    
-    local OPTIONS=`echo $1 | tr [:upper:] [:lower:]`;
-    case $OPTIONS in
-	only_module | slack_module)
-	    source ${SCRIPT_DIR}/make_module.sh;
-	    _make_module;
-	    ;;
-	only_x | slack_x)
-	    source ${SCRIPT_DIR}/make_x.sh;
-	    _make_x;
-	    ;;
-	all | slackware)
-	    source ${SCRIPT_DIR}/make_module.sh;
-	    _make_module;
-	    source ${SCRIPT_DIR}/make_x.sh;
-	    _make_x;
-	    ;;
-	test)
-	    local CHECK_SCRIPT=./check.sh;
-	    PATH=$PATH:/usr/X11/bin:/usr/X11R6/bin
-	    source ${CHECK_SCRIPT} --noprint;
-	    set;
-	    ;;
-	*) echo "$1 ${MESSAGE[10]}";
-	    exit 2;
-	    ;;
-    esac
-}
-
-function _detect_kernel_ver_from_PATH_KERNEL
-{
-    local INCLUDES=${KERNEL_PATH}/include/linux;
-    KNL_VER=$(grep UTS_RELEASE ${INCLUDES}/version.h | cut -d'"' -f2);
-    if [ -z ${KNL_VER} ]; then
-	KNL_VER=$(grep UTS_RELEASE ${INCLUDES}/utsrelease.h | cut -d'"' -f2);
-	if [ -z ${KNL_VER} ]; then
-	    KNL_VER=$(grep UTS_RELEASE ${INCLUDES}/version-*.h 2>/dev/null | cut -d'"' -f2);
-	fi
-    fi
-    
-    if [ -z ${KNL_VER} ]; then
-	echo ${MESSAGE[8]};
-	exit 1;
-    fi
-}
-
-function _init_env
-{
-    [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
-    
-    BUILD_VER=1.2.4;
-    
-    ROOT_DIR=$PWD; # Usata dal file patch_function (se esiste)
-    echo "$ROOT_DIR" | grep -q " " && echo ${MESSAGE[7]} && exit 1;
-    
-    
-    ARCH=$(arch); # Usata dal file patch_function (se esiste)
-    [[ $ARCH != x86_64 ]] && ARCH="x86";
-    
-    # Setto il nome del modulo
-    if [ ! -z ${KERNEL_PATH} ]; then
-	_detect_kernel_ver_from_PATH_KERNEL; # Setta KNL_VER, variabile usata dalfile patch_function (se esiste)
-    else
-	KNL_VER=$(uname -r) # Usata dal file patch_function (se esiste)
-    fi
-    
-    if [[ $KNL_VER == "2.6."* ]]; then
-	MODULE_NAME=fglrx.ko.gz;
-    else
-	MODULE_NAME=fglrx.o.gz;
-    fi
-    
-    SCRIPT_DIR=packages/Slackware; # Usata anche dal file patch_function (se esiste)
-    ATI_DRIVER_VER=$(./ati-packager-helper.sh --version); # Usata dal file patch_function (se esiste)
-    ATI_DRIVER_REL=$(./ati-packager-helper.sh --release);
-    
-    MODULE_PKG_DIR=${SCRIPT_DIR}/module_pkg;
-    MODULE_PACK_NAME=fglrx-module-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}
-    
-    X_PKG_DIR=${SCRIPT_DIR}/x_pkg;
-    X_PACK_PARTIAL_NAME=fglrx-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL};
-    
-    DEST_DIR=${PWD%/*};
-}
-
-function _check_builder_dependencies 
-{
-    local DEPS=(ln coreutils\
-                cp coreutils\ 
-	        mv coreutils\
-                rm coreutils\ 
-	        mkdir coreutils\
-                chmod coreutils\
-                find findutils\
-                strip binutils\ 
-                grep grep\
-                sed sed\
-                makepkg pkgtools\
-                file file\
-                xargs findutils\
-                gzip gzip\
-                depmod module-init-tools\
-                mount linux-utils);
-    
-    local i=0;
-    local DEPS_OK=0;
-    while [ $i -lt ${#DEPS[@]} ];
-    do
-	which ${DEPS[$i]} &> /dev/null;
-	if [ $? != 0 ];
-	then
-	    echo -e "\E[00;31m${MESSAGE[4]} ${DEPS[$i]} ${MESSAGE[5]} ${DEPS[${i}+1]}. \E[00m";
-	    DEPS_OK=1;
-	fi
-	let i+=2;
-    done
-    
-    if [ $DEPS_OK != 0 ];
-    then
-	exit 2;
-    fi
-}
-
+# Imposta la lingua dei messaggi del builder.
+# Crea l'array MESSAGE usato per le stampe dei messaggi in output
 function _set_builder_language
 {
     local EXT=$(echo $LANG | cut -d '_' -f1);
-    local FILE="/packages/Slackware/languages/ati-packager.en";
+    local FILE='/packages/Slackware/languages/ati-packager.en';
     
     if [ -e "${PWD}"/packages/Slackware/languages/ati-packager.${EXT} ]; then
 	local FILE="/packages/Slackware/languages/ati-packager.${EXT}";
@@ -142,25 +17,332 @@ function _set_builder_language
     local IFS=$(echo -e '\n\t');
     MESSAGE=($(cat "${PWD}"$FILE));
     
-    return;
+    return 0;
 }
 
+# Inizializzazione: esegue alcuni controlli di base e imposta delle variabili
+# d'ambiente utitli per le altre funzioni.
+function _init_env
+{
+    [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
+    
+    BUILD_VER=1.3.0;
+    
+    # ROOT_DIR = directory attuale
+    ROOT_DIR=$PWD;
+    echo "$ROOT_DIR" | grep -q ' ' && echo ${MESSAGE[7]} && exit 1;
+    
+    # Comandi interni alla bash da cui il builder dipende
+    BUILTIN_DEPS=([ cd echo exit local return set source);
+
+    # Comandi esterni da cui il builder dipende nella fase di creazione dei pacchetti
+    BUILD_DEPS=(chmod cp cut file find grep gzip id ln makepkg mkdir modinfo mv rm sed sh 
+	strip tar tr xargs);
+	
+    # Comandi esterni da cui il builder dipende nella fase di installazione dei pacchetti
+    INSTALL_DEPS=(basename dirname depmod installpkg md5sum upgradepkg);
+    
+    # Mi assicuro che tutti i comandi interni alla bash necessari, siano abilitati
+    enable ${BUILTIN_DEPS[@]};
+    
+    # Architettura, può essere 'x86' o 'x86_64'
+    ARCH=$(arch);
+    [[ $ARCH != x86_64 ]] && ARCH='x86';
+    
+    # major e minor number del kernel attuale
+    KNL_VER=$(uname -r | cut -d '.' -f -2)
+
+    # Directory, relativa alla root directory attuale, in cui si trova questo script.
+    # Si ricorda che quando l'ati-installer.sh esegue questo script, la root directory
+    # non è quella in cui si trova questo script.
+    SCRIPT_DIR=packages/Slackware;
+    
+    ATI_DRIVER_VER=$(./ati-packager-helper.sh --version);
+    ATI_DRIVER_REL=$(./ati-packager-helper.sh --release);
+    
+    # Nome del modulo del kernel
+    MODULE_NAME=fglrx.ko.gz
+
+    # Directory in cui verranno messi i file per la creazione del pacchetto del modulo
+    # del kernel
+    MODULE_PKG_DIR=${SCRIPT_DIR}/module_pkg;
+
+    # Nome del pacchetto del modulo del kernel
+    MODULE_PACK_NAME=fglrx-module-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}
+    
+    # Directory in cui verranno messi i file per la creazione del pacchetto per il server X
+    X_PKG_DIR=${SCRIPT_DIR}/x_pkg;
+
+    # Nome parziale (verrà poi integrato) del pacchetto per il server X
+    X_PACK_PARTIAL_NAME=fglrx-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL};
+    
+    # Directory in cui verranno spostati i pacchetti creati e altri file
+    DEST_DIR=${PWD%/*};
+    
+    # Directory che contiene l'elenco dei pacchetti installati nelle distribuzioni 
+    # basate su Slackware
+    DIR_PACKAGE=/var/log/packages/;
+
+    # File temporaneo che contiene l'elenco dei pacchetti creati.
+    # Questo file è creato/modificato dalle funzioni che creano i pacchetti
+    # e viene cancellato quando questo script viene invocato con il paramentro
+    # --install
+    TMP_FILE=${DEST_DIR}tmpSlackwarePkg.txt;
+
+    # Controllo l'esistenza di alcuni comandi utili ma non necessari
+    which -V &> /dev/null && USE_WHICH=1 || USE_WHICH=0;
+    tput -V &> /dev/null && USE_TPUT=1 || USE_TPUT=0;
+}
+
+# Controlla l'esistenza dei comandi necessari, ma esterni al build
+# $1 può essere:
+# 'build': controlla l'esistenza dei comandi necessari alla costruzione dei pacchetti
+# 'install': controlla l'esistenza dei comandi necessari all'installazione dei pacchetti
+# $2 può essere:
+# '': stampa a video solo il nome dei comandi non trovati
+# '--dryrun': stampa a video il nome del comando che sta controllando
+function _check_external_command
+{
+    local i=0;
+    local DEPS_OK=0;
+    local DRYRUN=0;
+    [ "x$2" = 'x--dryrun' ] && DRYRUN=1;
+
+    # Se non ho il comando which e neanche il comando grep, errore
+    if (( ! $USE_WHICH )) && ! grep -V &> /dev/null; then
+	_print_with_color '1;31' "${MESSAGE[4]} grep";
+	return 1;
+    fi
+    
+    case $1 in
+	build)
+	    local DEPS=(${BUILD_DEPS[@]});
+	    ;;
+	install)
+	    local DEPS=(${INSTALL_DEPS[@]});
+	    ;;
+    esac
+
+    while [ $i -lt ${#DEPS[@]} ];
+    do
+	if (( $DRYRUN )); then
+	    echo -n "${MESSAGE[5]} ${DEPS[$i]}";
+	    (( $USE_TPUT )) && tput hpa 35;
+	    echo -n '[ ';
+	fi
+	
+	if (( $USE_WHICH )); then
+	    which ${DEPS[$i]} &> /dev/null;
+	else
+	    grep bin/${DEPS[$i]} ${DIR_PACKAGE}/* &> /dev/null;
+	fi
+
+	if [ $? != 0 ]; then
+	    (( $DRYRUN )) && local OPT='_n';
+	    _print_with_color "1;31${OPT}" "${MESSAGE[4]} ${DEPS[$i]}";
+	    DEPS_OK=1;
+	elif (( $DRYRUN )); then
+	    _print_with_color '1;32_n' 'OK';
+	fi
+	
+	(( $DRYRUN )) && echo ' ]';
+	let i++;
+    done
+    
+    if [ $DEPS_OK != 0 ];
+    then
+	return 1;
+    fi
+
+    return 0;
+}
+
+# Stampa a video i parametri $[2-*]
+# $1 è nella forma COLORE[_n], dove 
+# COLORE può essere uno dei seguenti valori (quelli nella forma ?;??):
+#
+# Nero           0;30     Grigio Scuro  1;30
+# Blu            0;34     Blu Chiaro    1;34
+# Verde          0;32     Verde Chiaro  1;32
+# Ciano          0;36     Ciano Chiaro  1;36
+# Rosso          0;31     Rosso Chiaro  1;31
+# Viola          0;35     Viola Chiaro  1;35
+# Marrone        0;33     Giallo        1;33
+# Grigio Chiaro  0;37     Bianco        1;37
+function _print_with_color
+{
+    local COLOR=${1%_*};
+    local NEW_LINE=${1#*_};
+    [ $1 = $NEW_LINE ] && NEW_LINE='';
+    shift;
+    echo -e${NEW_LINE} "\E[${COLOR}m${*}\E[00m";
+    return 0;
+}
+
+# Implementa l'opzione --buildpkg dello script
+# $1: nome del pacchetto da costruire
+# $2 puè essere:
+# '' : costruisce il pacchetto
+# '--dryrun': controlla solo che il parametro $1 sia corretto
+#             ritorna 0 se lo è, 1 altrimenti
+function _buildpkg
+{
+    [ ! -e ${SCRIPT_DIR}/make_module.sh ] && _print_with_color '1;31' "${MESSAGE[11]}\n" && return 1;
+    [ ! -e ${SCRIPT_DIR}/make_x.sh ] && _print_with_color '1;31' "${MESSAGE[12]}\n" && return 1;
+    
+    local DRYRUN=0;
+    [ "x$2" != 'x' ] && DRYRUN=1;
+
+    local OPTIONS=`echo $1 | tr [:upper:] [:lower:]`;
+    case $OPTIONS in
+	only_module | slack_module)
+	    (( $DRYRUN )) && return 0;
+	    source ${SCRIPT_DIR}/make_module.sh;
+	    _make_module;
+	    ;;
+	only_x | slack_x)
+	    (( $DRYRUN )) && return 0;
+	    source ${SCRIPT_DIR}/make_x.sh;
+	    _make_x;
+	    ;;
+	all | slackware)
+	    (( $DRYRUN )) && return 0;
+	    source ${SCRIPT_DIR}/make_module.sh;
+	    _make_module;
+	    source ${SCRIPT_DIR}/make_x.sh;
+	    _make_x;
+	    ;;
+	test)
+	    (( $DRYRUN )) && return 0;
+	    local CHECK_SCRIPT=./check.sh;
+	    PATH=$PATH:/usr/X11/bin:/usr/X11R6/bin
+	    source ${CHECK_SCRIPT} --noprint;
+	    set;
+	    ;;
+	*) echo "$1 ${MESSAGE[10]}";
+           return 1;
+	   ;;
+    esac
+    
+    return 0;
+}
+
+_set_builder_language;
+_init_env;
 case $1 in
+    # Stampa l'elenco dei nomi di pacchetto che è possibile costruire
     --get-supported)
-	echo -e "All\tOnly_Module\tOnly_X";
+	echo -e 'All\tOnly_Module\tOnly_X';
 	;;
-    --buildpkg)
-	_set_builder_language;
-	_check_builder_dependencies;
-	_init_env;
+
+    # Controllo che tutto il necessario alla costruzione dei pacchetti 
+    # sia correttamente installato
+    --buildprep)
 	echo -e "\n${MESSAGE[0]} $BUILD_VER"\
 		"\n--------------------------------------------"\
 		"\n${MESSAGE[1]}"\
 		"\n${MESSAGE[2]}"\
 		"\n${MESSAGE[3]}\n";
-	_buildpkg $2;
+
+	EXIT_STATUS=0;
+
+	# Controllo che $3 sia un blank oppure --dryrun
+	if [ "x$3" != 'x' ] && [ "x$3" != 'x--dryrun' ]; then
+	    _print_with_color '1;31' "${MESSAGE[16]} $3 ${MESSAGE[18]}";
+	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
+	fi
+	
+	# Controllo che il parametro $2 sia un nome di pacchetto da costruire, valido
+	! _buildpkg $2 '--dryrun' && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
+
+	# Controllo l'esistenza dei comandi esterni necessari alla costruzione del pacchetto
+        ! _check_external_command 'build' $3 && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
+
+	# Elimino, se esiste, il file temporaneo creato/modificato da --buildpkg
+	rm -f ${TMP_FILE};
+	
+	exit $EXIT_STATUS;
 	;;
+    # Creo il/i pacchetto/i
+    --buildpkg)
+	_buildpkg $2;
+	exit $?;
+	;;
+
+    # Controllo che tutto il necessario alla corretta installazione del/i pacchetto/i
+    # sia correttamente installato
+    --installprep)
+	DRYRUN=0;
+	[ "x$3" = 'x--dryrun' ] && DRYRUN=1;
+
+	EXIT_STATUS=0;
+
+	# Controllo l'esistenza dei comandi esterni necessari
+	! _check_external_command 'install' $3 && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
+
+	# Controllo che la versione del server Xorg sia maggiore o uguale a 6.7
+	source ./check.sh --noprint;
+	if [ -z ${X_VERSION} ]; then
+	    (( $DRYRUN )) && _print_with_color '1;31' "${MESSAGE[13]} >= 6.7";
+	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
+	fi
+
+	# Controllo che la versione del kernel sia maggiore o uguale a 2.6
+	if [ $(echo $KNL_VER | cut -d'.' -f1) -lt 2 ] || [ $(echo $KNL_VER | cut -d'.' -f2) -lt 6 ]; then
+	    (( $DRYRUN )) && _print_with_color '1;31' "${MESSAGE[14]} >= 2.6";
+	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
+	fi
+
+	# Controllo la versione delle librerie glibc
+	GLIBC_VER=$(ldconfig --version| head -n1 | grep -o [[:digit:]]\.[[:digit:]]);
+	if [ $(echo $GLIBC_VER | cut -d'.' -f1) -lt 2 ] || [ $(echo $GLIBC_VER | cut -d'.' -f2) -lt 2 ]; then
+	    (( $DRYRUN )) && _print_with_color '1;31' "${MESSAGE[15]} >= 2.2";
+	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
+	fi
+	
+	exit $EXIT_STATUS;
+	;;
+    
+    # Installo i pacchetti creati dall'opzione --buildpkg, il nome dei pacchetti creati
+    # si trova nel file ${TMP_FILE}. Alla fine elimino suddetto file.
+    --installpkg)
+	[ ! -f ${TMP_FILE} ] && echo "${MESSAGE[16]} ${TMP_FILE}, ${MESSAGE[17]}" && exit 1;
+
+	for pkg in $(<${TMP_FILE});
+	do
+	    if [ -f ${DIR_PACKAGE}${pkg%.tgz} ]; then
+		upgradepkg --reinstall "${DEST_DIR}/$pkg"; # Il pacchetto era già installato
+	    elif [ -f ${DIR_PACKAGE}$(echo $pkg | cut -d'-' -f-2)* ]; then
+		upgradepkg "${DEST_DIR}/$pkg"; # Il pacchetto era installato ad una versione diversa
+	    else
+		installpkg "${DEST_DIR}/$pkg"; # Il pacchetto non era installato
+	    fi
+	done
+	
+	rm -f ${TMP_FILE};
+	exit 0;
+	;;
+
+    # Ritorna:
+    # ${ATI_INSTALLER_ERR_VERS}: se la distribuzione su cui si sta tentando di eseguire lo script
+    #                            non è basata su Slackware
+    # 0: Se la distribuzione su cui si sta tentando di eseguire lo script è basata su Slackware
+    #    e se il pacchetto che si vuole creare è 'All'.
+    --identify)
+	[ $2 != 'All' ] && exit ${ATI_INSTALLER_ERR_VERS};
+	
+	[ -d ${DIR_PACKAGE} ] && exit 0;
+	
+	exit ${ATI_INSTALLER_ERR_VERS};
+	;;
+    
+    # Questo script onora le API versione 2 dell'ati-installer.sh
+    --getAPIVersion)
+	exit 2;
+	;;
+    
     *)
 	echo "${1}: unsupported option passed by ati-installer.sh";
+	exit 1;
 	;;
 esac
