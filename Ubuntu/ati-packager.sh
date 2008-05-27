@@ -11,9 +11,6 @@ DRV_RELEASE="`./ati-packager-helper.sh --version`"
 DEBEMAIL="`./ati-packager-helper.sh --vendor` <`./ati-packager-helper.sh --url`>"
 REVISION="`./ati-packager-helper.sh --release`"
 
-DAPPER="dapper 6.06"
-EDGY="edgy 6.10"
-FEISTY="feisty 7.04"
 GUTSY="gutsy 7.10"
 HARDY="hardy 8.04"
 INTREPID="intrepid 8.10"
@@ -123,14 +120,14 @@ EOF
 #Purpose: lists distribution supported packages
 getSupportedPackages()
 {
-    echo $DAPPER $EDGY $FEISTY $GUTSY $HARDY $INTREPID
+    echo $GUTSY $HARDY $INTREPID source
 }
 
 makeChangelog()
 {
     printf "%b\n" "fglrx-installer (2:${DRV_RELEASE}-0ubuntu${REVISION}) ${1}; urgency=low\n" \
     > ${TmpDrvFilesDir}/debian/changelog
-    printf "%b\n" "  * new release\n" \
+    printf "%b\n" "  * New Release\n" \
     >> ${TmpDrvFilesDir}/debian/changelog
     printf "%b\n" " -- ${DEBEMAIL}  `date --rfc-822`\n" \
     >> ${TmpDrvFilesDir}/debian/changelog
@@ -139,21 +136,20 @@ makeChangelog()
 installPrep()
 {
     #check for dkms
-    if [ ! -x /usr/sbin/dkms ] || [ ! -f /usr/lib/libGL.so.1.2 ]; then
+    if [ ! -x /usr/sbin/dkms ]; then
         if [ "$2" != "--dryrun"]; then
             if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
                 TEMPFILE=`/bin/tempfile`
                 cat > $TEMPFILE << EOF
 dkms install
-libgl1-mesa-glx install
 EOF
                 $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
                 rm $TEMPFILE -f
             else
-                $ROOT apt-get -y install dkms libgl1-mesa-glx
+                $ROOT apt-get -y install dkms
             fi
         else
-            echo "We would have installed dkms and libgl1-mesa-glx here"
+            echo "We would have installed DKMS here"
             exit 0
         fi
     fi
@@ -176,8 +172,8 @@ installPackages()
     fi
     cd ${AbsInstallerParentDir}
     packages=$(cat $file | grep extra | awk '{print $5}' | grep -v dev | tr "\n" " ")
-    echo $packages
     $ROOT "sh -c 'dpkg -i ${packages}'"
+    echo ${packages}
     RET=$?
     if [ ! $RET -eq 0 ]; then
         echo "Error installing packages"
@@ -212,12 +208,10 @@ buildPackage()
 
     #Detect x* dir name corresponding to X_NAME
     case ${X_NAME} in
-        dapper|6.06) X_DIR=x690; X_NAME=dapper;;
-        edgy|6.10)   X_DIR=x710; X_NAME=edgy;;
-        feisty|7.04) X_DIR=x710; X_NAME=feisty;;
         gutsy|7.10)  X_DIR=x710; X_NAME=gutsy;;
         hardy|8.04)  X_DIR=x710; X_NAME=hardy;;
         intrepid|8.10) X_DIR=x710; X_NAME=intrepid;;
+        source) X_DIR=x710; X_NAME=intrepid;;
         *)
         #Automatically detect
         echo "Error: invalid package name passed to --buildpkg" ; exit 1 ;;
@@ -232,13 +226,19 @@ buildPackage()
     fi
 
     case ${ARCH} in
-    amd64) ARCH_DIR=x86_64; X_DIR=${X_DIR}_64a;;
+    amd64) ARCH_DIR=x86_64;;
     i386)  ARCH_DIR=x86;;
         *) echo "Error: unsupported architecture: ${ARCH}" ; exit 1 ;;
     esac
 
     PKG_BUILD_UTIL="dpkg-buildpackage" # Package build utility
-    PKG_BUILD_OPTIONS="-a${ARCH} -b -nc -tc -uc -d"
+    PKG_BUILD_OPTIONS="-a${ARCH} -tc -uc -d"
+
+    if [ "$1" = "source" ]; then
+        PKG_BUILD_OPTIONS="${PKG_BUILD_OPTIONS} -us -S"
+    else
+        PKG_BUILD_OPTIONS="${PKG_BUILD_OPTIONS} -nc -b"
+    fi
     EXIT_CODE=0 # Script exit code
 
     if [ "$USER" != "root" ]; then
@@ -251,37 +251,50 @@ buildPackage()
     fi
 
     #Merge files from different source directories
-    cp -f -R ${InstallerRootDir}/${X_DIR}/* ${TmpDrvFilesDir}
-    cp -f -R ${InstallerRootDir}/arch/${ARCH_DIR}/* ${TmpDrvFilesDir}
+    cp -f -R ${InstallerRootDir}/${X_DIR} ${TmpDrvFilesDir}
+    cp -f -R ${InstallerRootDir}/${X_DIR}_64a ${TmpDrvFilesDir}
+    cp -f -R ${InstallerRootDir}/arch ${TmpDrvFilesDir}
     cp -f -R ${InstallerRootDir}/common/* ${TmpDrvFilesDir}
-
-    if [ "$ARCH" = "amd64" ]; then
-        cp -f -R ${InstallerRootDir}/arch/x86/usr/X11R6/lib \
-        ${TmpDrvFilesDir}/usr/X11R6/
-    fi
 
     # Merge package files from the appropriate directories
     chmod -R u+w ${AbsDistroDir}
-    cp -f -R ${AbsDistroDir}/dists/${X_NAME} ${TmpDrvFilesDir}/debian
-    cp -f -R ${AbsDistroDir}/module ${TmpDrvFilesDir}
+    cp -f -R -H ${AbsDistroDir}/dists/${X_NAME} ${TmpDrvFilesDir}/debian
 
     # generate a temporary changelog with version information
     makeChangelog ${X_NAME}
 
     #Build the package
     cd ${TmpDrvFilesDir}
-    ${PKG_BUILD_UTIL} ${PKG_BUILD_OPTIONS} > ${TmpPkgBuildOut} 2>&1
+
+    #if we are a source package, make a .orig.tar.gz too
+    if [ "$1" = "source" ]; then
+        tar --exclude=debian --exclude=*orig.tar.gz -czf ../fglrx-installer_${DRV_RELEASE}.orig.tar.gz ./
+        echo "building fglrx-installer in fglrx-installer_${DRV_RELEASE}.orig.tar.gz" > ${TmpPkgBuildOut}
+    fi
+
+    ${PKG_BUILD_UTIL} ${PKG_BUILD_OPTIONS} >> ${TmpPkgBuildOut} 2>&1
 
     if [ $? -eq 0 ]; then
         #String containing info where the package was created
-        PACKAGE_FILES=`grep 'building package .* in .*\.deb' ${TmpPkgBuildOut} | sed -e 's/.*in \`\(.*\.deb\).*/\1/'`
+        if [ "$1" = "source" ]; then
+            PACKAGE_FILES=`grep 'building fglrx\-installer in' ${TmpPkgBuildOut} | sed -e 's/.*\ in\ //'`
+        else
+            PACKAGE_FILES=`grep 'building package .* in .*\.deb' ${TmpPkgBuildOut} | sed -e 's/.*in \`\(.*\.deb\).*/\1/'`
+        fi
 
         for i in ${PACKAGE_FILES}; do
-            mv $i ${AbsInstallerParentDir}  # move the created package to the directory where the self-extracting driver archive is located
+
+            # move the created package to the directory where the self-extracting driver archive is located
+            if [ "$1" = "source" ]; then
+                mv ../$i ${AbsInstallerParentDir}
+            else
+                mv $i ${AbsInstallerParentDir}
+            fi
             echo "Package ${AbsInstallerParentDir}/`basename ${i}` has been successfully generated"
         done
 
         mv ../fglrx-installer*.changes ${AbsInstallerParentDir}
+
     else
         echo "Package build failed!"
         echo "Package build utility output:"
@@ -337,7 +350,9 @@ case "${action}" in
     installPackages $2
     #turn us on in xorg.conf
     if [ -z "$3" ] || [ "$3" != "--dryrun" ]; then
-        aticonfig --initial
+        if [ -x /usr/bin/aticonfig ]; then
+            aticonfig --initial
+        fi
     fi
     ;;
 *|--*)
