@@ -3,13 +3,24 @@ Section: restricted
 Priority: extra
 Maintainer: Mario Limonciello <superm1@ubuntu.com>
 Uploaders: Mario Limonciello <superm1@ubuntu.com>, Aric Cyr <Aric.Cyr@gmail.com>
-Build-Depends: debhelper (>= 4.2.11), libxext6, libxext6, libxrandr2, libice6, libsm6, libfontconfig1, libxi6, libxcursor1, xserver-xorg, fakeroot, ia32-libs [amd64]
+Build-Depends: debhelper (>= 5),
+               cdbs,
+               libxext6, 
+               libxrandr2, 
+               libice6, 
+               libsm6, 
+               libfontconfig1, 
+               libxi6, 
+               libxcursor1, 
+               fakeroot, 
+               ia32-libs [amd64]
 Standards-Version: 3.7.3
+Homepage: http://ati.amd.com/support/driver.html
 
 Package: xorg-driver-fglrx
 Architecture: amd64 i386
-Depends: ${shlibs:Depends}, xserver-xorg
-Conflicts: fglrx-driver, xfree86-driver-fglrx, nvidia-glx, nvidia-glx-legacy
+Depends: ${shlibs:Depends}, xserver-xorg-core, fglrx-kernel-source
+Conflicts: fglrx-driver, xfree86-driver-fglrx, nvidia-glx, nvidia-glx-legacy, nvidia-glx-new
 Replaces: fglrx-driver, xfree86-driver-fglrx
 Description: Video driver for the ATI graphics accelerators
  Video driver for the ATI Radeon and FireGL graphics accelerators.
@@ -26,7 +37,7 @@ Description: Video driver for the ATI graphics accelerators
  .
  .
  This package provides 2D display drivers
- and hardware accelerated OpenGL for ${XTYPE} ${XVERSION}.
+ and hardware accelerated OpenGL.
 
 Package: xorg-driver-fglrx-dev
 Section: restricted
@@ -41,7 +52,7 @@ Description: Video driver for the ATI graphics accelerators (devel files)
  and the FGLRXGAMMA extension interface library.
 
 Package: fglrx-kernel-source
-Architecture: amd64 i386
+Architecture: all
 Depends: make, dkms, linux-libc-dev
 Suggests: xorg-driver-fglrx
 Description: Kernel module source for the ATI graphics accelerators

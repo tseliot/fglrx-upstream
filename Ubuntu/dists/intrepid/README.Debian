@@ -15,3 +15,14 @@ DKMS
    the kernel (or as necessary)
 
    See the DKMS man page for more information.
+
+Source building
+-------------------------
+Starting with Intrepid, an extra target has been added to allow
+--buildpkg Ubuntu/source.  This target should be adequate for 
+sending up to the Ubuntu archive.  By keeping the same source package
+in both places, there should be less conflicts for people.
+
+On a semiregular basis, the debian/changelog should be merged
+into this package, but people adding to the Ubuntu archive should
+be sure to update these sorts of things otherewise.

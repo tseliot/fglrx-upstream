@@ -1,0 +1,7 @@
+PACKAGE_NAME="fglrx"
+PACKAGE_VERSION="#CVERSION#"
+CLEAN="rm -f *.*o"
+BUILT_MODULE_NAME[0]="fglrx"
+MAKE[0]="pushd ${dkms_tree}/fglrx/#CVERSION#/build; sh make.sh --nohints; popd"
+DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
+AUTOINSTALL="yes"
