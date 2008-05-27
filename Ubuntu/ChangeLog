@@ -1,3 +1,23 @@
+2008-05-26 Mario Limonciello <superm1@ubuntu.com>
+        * dists/edgy:
+        - Drop, 6.10 has reached EOL, see http://www.ubuntu.com/news/ubuntu610end-of-life
+        * dists/{dapper,feisty}:
+        - Drop as they don't have support for DKMS, which we will require going forward.
+        * Remove old modules/ skeleton.
+        * dists/intrepid:
+        - Revamp to be CDBS based and much more maintainable
+        * dists/{gutsy,hardy}:
+        - Add symlink to current dev release.  This will prevent the necessity to port
+          changes to old releases.  If ever they don't match up, they can be made into
+          explicit directories instead.
+        * dists/source:
+        - Add source target that is a symlink to current dev release
+        * ati-packager.sh:
+        - Add source target for building source packages that will go
+          "directly" into the Ubuntu archive.
+        - Drop libgl1-mesa-glx dependency.
+        - Drop old retired release(s)
+
 2008-05-19 Mario Limonciello <superm1@ubuntu.com>
         * dists/*/rules
         - Add two new binaries in bin/
