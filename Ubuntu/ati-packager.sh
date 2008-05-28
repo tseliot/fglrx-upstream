@@ -128,10 +128,11 @@ makeChangelog()
 {
     printf "%b\n" "fglrx-installer (2:${PADDED_DRV_RELEASE}-0ubuntu${REVISION}) ${1}; urgency=low\n" \
     > ${TmpDrvFilesDir}/debian/changelog
-    printf "%b\n" "  * New Release\n" \
+    printf "%b\n" "  * New upstream release.\n" \
     >> ${TmpDrvFilesDir}/debian/changelog
     printf "%b\n" " -- ${DEBEMAIL}  `date --rfc-822`\n" \
     >> ${TmpDrvFilesDir}/debian/changelog
+    cat ${TmpDrvFilesDir}/debian/changelog.in >> ${TmpDrvFilesDir}/debian/changelog
 }
 
 installPrep()
