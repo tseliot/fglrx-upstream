@@ -65,6 +65,11 @@ configure/$(PKG_driver)::
 	# set exec bit on scripts
 	find lib etc debian -name "*.sh" -type f | xargs chmod +x
 
+	# Generate modaliases
+	sh -e debian/modaliases/fglrx_supported \
+		$(XARCH)/usr/X11R6/$(LIBDIR)/modules/drivers/fglrx_drv.so > \
+		debian/modaliases/fglrx-modules.alias.override
+
 clean::
 	rm -f debian/{10fglrx, \
 		dkms.conf, \
@@ -72,7 +77,8 @@ clean::
 		$(PKG_driver_dev).install, \
 		$(PKG_kernel_src).install, \
 		$(PKG_control).install, \
-		overrides/$(PKG_kernel_src)}
+		overrides/$(PKG_kernel_src), \
+		modaliases/fglrx-modules.alias.override}
 
 binary-install/$(PKG_driver)::
 ifeq ($(DEB_BUILD_ARCH),amd64)

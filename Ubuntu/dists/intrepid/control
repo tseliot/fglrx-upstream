@@ -1,5 +1,5 @@
 Source: fglrx-installer
-Section: restricted
+Section: restricted/misc
 Priority: extra
 Maintainer: Mario Limonciello <superm1@ubuntu.com>
 Uploaders: Mario Limonciello <superm1@ubuntu.com>, Aric Cyr <Aric.Cyr@gmail.com>
@@ -40,7 +40,6 @@ Description: Video driver for the ATI graphics accelerators
  and hardware accelerated OpenGL.
 
 Package: xorg-driver-fglrx-dev
-Section: restricted
 Architecture: amd64 i386
 Depends: xorg-driver-fglrx
 Conflicts: fglrx-driver-dev, xfree86-driver-fglrx-dev
@@ -52,8 +51,8 @@ Description: Video driver for the ATI graphics accelerators (devel files)
  and the FGLRXGAMMA extension interface library.
 
 Package: fglrx-kernel-source
-Architecture: all
-Depends: make, dkms, linux-libc-dev
+Architecture: amd64 i386
+Depends: make, dkms, linux-libc-dev, linux-headers
 Suggests: xorg-driver-fglrx
 Description: Kernel module source for the ATI graphics accelerators
  Video driver for the ATI Radeon and FireGL graphics accelerators.
@@ -70,3 +69,11 @@ Description: Catalyst Control Center for the ATI graphics accelerators
  .
  This package provides the Catalyst Control Center, Linux Edition
 
+Package: fglrx-modaliases
+Architecture: amd64 i386
+Description: Identifiers supported by the ATI graphics driver
+ In order to identify what hardware is supported by Jockey,
+ there must be a static list of what the current driver in the Ubuntu
+ archive supports.
+ .
+ This package provides that list.
