@@ -1,3 +1,17 @@
+This package was debianized by Mario Limonciello <superm1@ubuntu.com> on
+Tue, 27 May 2008 10:22:21 -0600.
+
+The latest Linux graphics driver was downloaded (at this time 8.5) from the
+AMD website (www.amd.com), and then this package was generated using:
+
+	sh $VERSION.run --buildpkg Ubuntu/source
+
+----------------------------------------------------------------------------
+
+Driver License:
+
+Copyright 2008 AMD Inc.
+
 ATI Software End User License Agreement
 
 PLEASE  READ  THIS  LICENSE  CAREFULLY  BEFORE  USING   THE   SOFTWARE.   BY
@@ -179,13 +193,25 @@ or  agreements,  written  or  oral,  regarding  such  subject  matter.    No
 amendment to or modification of this  License  will  be  binding  unless  in
 writing and signed by a duly authorized representative of ATI.
 
-
+----------------------------------------------------------------------------
 Packaging scripts:
   Copyright (C) 2002-2005 Flavio Stanchina
   Copyright (C) 2005-2006 Aric Cyr
-  Copyright (C) 2007 Mario Limonciello
-  Licensed under the GNU GPL
+  Copyright (C) 2007-2008 Mario Limonciello
 
-On Debian GNU/Linux systems, the complete text of the GNU General
-Public License can be found in `/usr/share/common-licenses/GPL'.
+ This Package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 3 of the License, or (at your option) any later version.
 
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+On Debian & Ubuntu systems, a complete copy of the GPL can be found under
+/usr/share/common-licenses/GPL
