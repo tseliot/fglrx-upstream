@@ -1,3 +1,9 @@
+2008-05-28 Mario Limonciello <mario_limonciello@dell.com>
+        * ati-packager.sh:
+        - Use `ls` to determine supported releases
+        * dists/:
+        - Add numeric symlinks for more supported releases
+
 2008-05-27 Mario Limonciello <superm1@ubuntu.com>
         * dists/intrepid/copyright:
         - Update to packaging standards for Ubuntu.
