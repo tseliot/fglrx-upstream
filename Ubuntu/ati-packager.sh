@@ -7,7 +7,8 @@
 # Usage
 #   See README.distro document
 
-DRV_RELEASE="`./ati-packager-helper.sh --version`"
+DRV_RELEASE=`./ati-packager-helper.sh --version`
+PADDED_DRV_RELEASE=`printf '%5.3f' "$DRV_RELEASE"`
 DEBEMAIL="`./ati-packager-helper.sh --vendor` <`./ati-packager-helper.sh --url`>"
 REVISION="`./ati-packager-helper.sh --release`"
 
@@ -125,7 +126,7 @@ getSupportedPackages()
 
 makeChangelog()
 {
-    printf "%b\n" "fglrx-installer (2:${DRV_RELEASE}-0ubuntu${REVISION}) ${1}; urgency=low\n" \
+    printf "%b\n" "fglrx-installer (2:${PADDED_DRV_RELEASE}-0ubuntu${REVISION}) ${1}; urgency=low\n" \
     > ${TmpDrvFilesDir}/debian/changelog
     printf "%b\n" "  * New Release\n" \
     >> ${TmpDrvFilesDir}/debian/changelog
@@ -165,7 +166,7 @@ installPackages()
     if [ -z "$ARCH" ]; then
         ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
     fi
-    file="fglrx-installer_${DRV_RELEASE}-0ubuntu${REVISION}_${ARCH}.changes"
+    file="fglrx-installer_${PADDED_DRV_RELEASE}-0ubuntu${REVISION}_${ARCH}.changes"
     if [ ! -f "${AbsInstallerParentDir}/$file" ]; then
         echo "Unable to find ${AbsInstallerParentDir}/$file.  Please manually install"
         exit 1
@@ -268,8 +269,8 @@ buildPackage()
 
     #if we are a source package, make a .orig.tar.gz too
     if [ "$1" = "source" ]; then
-        tar --exclude=debian --exclude=*orig.tar.gz -czf ../fglrx-installer_${DRV_RELEASE}.orig.tar.gz ./
-        echo "building fglrx-installer in fglrx-installer_${DRV_RELEASE}.orig.tar.gz" > ${TmpPkgBuildOut}
+        tar --exclude=debian --exclude=*orig.tar.gz -czf ../fglrx-installer_${PADDED_DRV_RELEASE}.orig.tar.gz ./
+        echo "building fglrx-installer in fglrx-installer_${PADDED_DRV_RELEASE}.orig.tar.gz" > ${TmpPkgBuildOut}
     fi
 
     ${PKG_BUILD_UTIL} ${PKG_BUILD_OPTIONS} >> ${TmpPkgBuildOut} 2>&1
