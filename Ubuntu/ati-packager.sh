@@ -12,10 +12,6 @@ PADDED_DRV_RELEASE=`printf '%5.3f' "$DRV_RELEASE"`
 DEBEMAIL="`./ati-packager-helper.sh --vendor` <`./ati-packager-helper.sh --url`>"
 REVISION="`./ati-packager-helper.sh --release`"
 
-GUTSY="gutsy 7.10"
-HARDY="hardy 8.04"
-INTREPID="intrepid 8.10"
-
 # set locale to sane value
 export LANG=C
 export LC_ALL=C
@@ -121,7 +117,7 @@ EOF
 #Purpose: lists distribution supported packages
 getSupportedPackages()
 {
-    echo $GUTSY $HARDY $INTREPID source
+    echo `ls packages/Ubuntu/dists`
 }
 
 makeChangelog()
