@@ -1,0 +1,32 @@
+fglrx-installer (2:8.493.1-0ubuntu4) intrepid; urgency=low
+
+  * debian/control:
+  - Force the Section to be restricted/misc instead of just restricted.
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Tue, 27 May 2008 15:26:38 -0500
+
+fglrx-installer (2:8.493.1-0ubuntu3) intrepid; urgency=low
+
+  * debian/control:
+  - Explicitly only indicate i386 and amd64 for ALL binary packages.  We don't want
+    sparc, hppa, or lpia showing up.
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Tue, 27 May 2008 14:34:13 -0500
+
+fglrx-installer (2:8.493.1-0ubuntu2) intrepid; urgency=low
+
+  * debian/rules:
+    - Specify $(LIBDIR) for calculating modaliases.
+      Fixes transient failure on AMD64 boxes.
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Tue, 27 May 2008 14:23:21 -0500
+
+fglrx-installer (2:8.493.1-0ubuntu1) intrepid; urgency=low
+
+  * Initial release.
+    - This package was directly generated from the upstream AMD driver's built-in
+      scripts.  By generating this way, the driver will always be in sync without
+      integration problems.
+
+ -- Mario Limonciello <Mario_Limonciello@Dell.com>  Tue, 27 May 2008 10:50:16 -0500
+

@@ -1,3 +1,15 @@
+2008-05-27 Mario Limonciello <superm1@ubuntu.com>
+        * dists/intrepid/copyright:
+        - Update to packaging standards for Ubuntu.
+        * dists/intrepid/control:
+        - Add additional package for creating module
+        - Hardcode to i386/amd64 only
+          aliases so that Jockey will know how to install this
+        * dists/intrepid/{rules,modaliases}:
+        - Adapt to rules for package creation as well.
+        * ati-packager.sh:
+        - Pad the version number using printf so we don't run into conflicts later.
+
 2008-05-26 Mario Limonciello <superm1@ubuntu.com>
         * dists/edgy:
         - Drop, 6.10 has reached EOL, see http://www.ubuntu.com/news/ubuntu610end-of-life
