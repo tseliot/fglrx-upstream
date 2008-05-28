@@ -122,6 +122,16 @@ function _make_x
     fi
     
     # 7)
+    # - Sposto, se esiste, la directory usr/share/man in usr.
+    # - Comprimo le pagine di manuale, se esistono
+    if [ -d usr/share/man ]; then
+      mv usr/share/man usr;
+      for file in usr/man/*/*; do
+        gzip $file;
+      done
+    fi
+
+    # 8)
     # MAKE PACKAGE
     local X_PACK_NAME=${X_PACK_PARTIAL_NAME/fglrx-/fglrx-${X_VERSION}-}.tgz;
     
