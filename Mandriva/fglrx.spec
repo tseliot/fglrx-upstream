@@ -12,12 +12,12 @@
 # NOTE: These version definitions are overridden by ati-packager.sh when
 # building with the --buildpkg method of the installer.
 # version in installer filename:
-%define oversion	8-3
+%define oversion	8-5
 # advertized version:
-%define mversion	8.3
-# version from release notes and ati-packager-helper.sh:
-%define version		8.471
-%define rel		3
+%define mversion	8.5
+# driver version from ati-packager-helper.sh:
+%define version		8.493.1
+%define rel		1
 %else
 %define oversion	%{version}
 %define mversion	%{version}
@@ -40,8 +40,15 @@
 # The LIBGL_DRIVERS_(PATH|DIR) env vars could be used some day.
 # Debian does a binary replace in libGL.so, but we prefer not to
 # touch it.
-%define ati_dridir	/usr/X11R6/%{_lib}/modules/dri
-%define ati_dridir32	/usr/X11R6/lib/modules/dri
+# The actual directory is /usr/X11R6/lib/modules/dri, but as of 2009.0
+# /usr/X11R6 => /usr.
+%define ati_dridir	/usr/%{_lib}/modules/dri
+%define ati_dridir32	/usr/lib/modules/dri
+
+%if %{mdkversion} <= 200810
+%define ati_dridir      /usr/X11R6/%{_lib}/modules/dri
+%define ati_dridir32    /usr/X11R6/lib/modules/dri
+%endif
 
 %if %{mdkversion} <= 200710
 %define driverpkgname	ati
@@ -149,6 +156,17 @@ Requires:	kmod(fglrx) = %{version}
 Requires:	kmod(fglrx)
 %endif
 %endif
+%if %{mdkversion} >= 200900
+%ifarch x86_64
+# Before -15 there were no DRI symlinks in x11-server-common.
+# In -15 the DRI directory symlink was in 32-bit directory pointing to 64-bit dri
+# drivers. In -16 it does not exist for 32-bit stuff on 64-bit systems. In -17
+# it was removed again.
+# We continue to have it as a normal directory until further notice, and thus
+# conflict with these versions.
+Conflicts:	x11-server-common < 1.4.0.90-17
+%endif
+%endif
 Provides:	atieventsd = %{version}-%{release}
 Obsoletes:	atieventsd < %{version}-%{release}
 
@@ -232,6 +250,7 @@ cd fglrx_tools # ensure patch does not touch outside
 %patch2 -p1
 cd -
 cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_gamma/fglrx_gamma.h
+[ "%version" = "$(./ati-packager-helper.sh --version)" ]
 %endif
 
 cd common # ensure patch does not touch outside
@@ -407,9 +426,7 @@ install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_gamma.so.1.0 %{buildroot}%{_
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_pp.so.1.0 %{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_dm.so.1.0 %{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_tvout.so.1.0 %{buildroot}%{_libdir}/%{drivername}
-if [ -e %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so ]; then
-       install -m755 %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so %{buildroot}%{_libdir}/%{drivername}
-fi
+install -m755 %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so %{buildroot}%{_libdir}/%{drivername}
 /sbin/ldconfig -n					%{buildroot}%{_libdir}/%{drivername}
 ln -s libfglrx_gamma.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_gamma.so
 ln -s libfglrx_pp.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_pp.so
@@ -444,6 +461,9 @@ install -m755 %{archdir}/usr/X11R6/%{_lib}/modules/dri/*	%{buildroot}%{xorg_drid
 install -d -m755						%{buildroot}%{xorg_dridir32}
 install -m755 arch/x86/usr/X11R6/lib/modules/dri/*		%{buildroot}%{xorg_dridir32}
 %endif
+
+# 2006.0 and older have identical xorg_dridir and ati_dridir
+# 2007.0 and newer need a symlink
 %if %{mdkversion} >= 200700
 install -d -m755			%{buildroot}%{ati_dridir}
 ln -s %{xorg_dridir}/fglrx_dri.so	%{buildroot}%{ati_dridir}
@@ -629,21 +649,29 @@ rm -rf %{buildroot}
 %{_prefix}/lib/%{drivername}/libGL.so.1.*
 %endif
 
-%if %{atibuild}
-%{_libdir}/%{drivername}/*.so*
-%else
 %{_libdir}/%{drivername}/libfglrx_gamma.so.1*
 %{_libdir}/%{drivername}/libfglrx_pp.so.1*
 %{_libdir}/%{drivername}/libfglrx_dm.so.1*
 %{_libdir}/%{drivername}/libfglrx_tvout.so.1*
 %{_libdir}/%{drivername}/libatiadlxx.so
-%endif
 
 %if !%{atibuild}
 %{_mandir}/man1/fglrx_xgamma.1*
 %endif
 %{_mandir}/man8/atieventsd.8*
 
+%if %{mdkversion} >= 200900
+# 2009.0 and newer
+%dir /usr/%{_lib}/modules
+%dir /usr/%{_lib}/modules/dri
+/usr/%{_lib}/modules/dri/fglrx_dri.so
+%ifarch x86_64
+%dir /usr/lib/modules
+%dir /usr/lib/modules/dri
+/usr/lib/modules/dri/fglrx_dri.so
+%endif
+%else
+# 2008.1 and older
 %dir /usr/X11R6/%{_lib}
 %dir /usr/X11R6/%{_lib}/modules
 %dir /usr/X11R6/%{_lib}/modules/dri
@@ -653,6 +681,7 @@ rm -rf %{buildroot}
 %dir /usr/X11R6/lib/modules
 %dir /usr/X11R6/lib/modules/dri
 /usr/X11R6/lib/modules/dri/fglrx_dri.so
+%endif
 %endif
 
 %files -n %{drivername}-control-center
@@ -699,8 +728,25 @@ rm -rf %{buildroot}
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
 
-* Fri Apr 18 2008 Anssi Hannula <anssi@mandriva.org> 8.471-3mdv2008.0
-+ Revision: 195716
+* Thu May 29 2008 Anssi Hannula <anssi@mandriva.org> 8.493.1-1mdv2008.0
++ Revision: 212852
+- 8.493.1 aka 8.5
+- adapt to X11 directory changes of cooker
+
+* Wed May 07 2008 Anssi Hannula <anssi@mandriva.org> 8.476-3mdv2009.0
++ Revision: 202692
+- readd 32-bit dri compatibility directories and symlink on x86_64
+
+* Tue May 06 2008 Anssi Hannula <anssi@mandriva.org> 8.476-2mdv2009.0
++ Revision: 201797
+- drop /usr/X11R6/ dri symlink from cooker, now handled in
+  x11-server-common
+
+* Fri Apr 18 2008 Anssi Hannula <anssi@mandriva.org> 8.476-1mdv2009.0
++ Revision: 195718
+- new version (8.476 aka 8.4)
+- ensure correct version with ati-packager-helper.sh on non-atibuild
+  builds
 - suggests acpid for atieventsd
 - fix authfile locations in authatieventsd.sh for Mandriva XDM and KDM,
   preventing atieventsd from working properly (partially fixes #33095)
