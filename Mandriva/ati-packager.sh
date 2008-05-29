@@ -10,7 +10,7 @@
 export LC_ALL=C
 
 # List of supported distributions.
-SuppDistro="2006 2007 2008"
+SuppDistro="2006 2007 2008 2009"
 
 #Function: getSupportedPackages()
 #Purpose: lists distribution supported packages
