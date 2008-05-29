@@ -344,6 +344,8 @@ install -m755 %{archdir}/usr/sbin/amdnotifyui		%{buildroot}%{_sbindir}
 install -m755 common/usr/sbin/*				%{buildroot}%{_sbindir}
 install -d -m755					%{buildroot}%{_bindir}
 install -m755 %{archdir}/usr/X11R6/bin/aticonfig	%{buildroot}%{_bindir}
+install -m755 %{archdir}/usr/X11R6/bin/atiodcli		%{buildroot}%{_bindir}
+install -m755 %{archdir}/usr/X11R6/bin/atiode		%{buildroot}%{_bindir}
 install -m755 %{archdir}/usr/X11R6/bin/fglrxinfo	%{buildroot}%{_bindir}
 install -m755 %{archdir}/usr/X11R6/bin/amdcccle		%{buildroot}%{_bindir}
 %if !%{atibuild}
@@ -627,6 +629,8 @@ rm -rf %{buildroot}
 %{_sbindir}/atigetsysteminfo.sh
 
 %{_bindir}/aticonfig
+%{_bindir}/atiodcli
+%{_bindir}/atiode
 %{_bindir}/fgl_glxgears
 %{_bindir}/fglrxinfo
 %{_bindir}/fglrx_xgamma
@@ -634,6 +638,7 @@ rm -rf %{buildroot}
 %{xorg_libdir}/modules/drivers/fglrx_drv.so
 %{xorg_libdir}/modules/linux/libfglrxdrm.so
 %{xorg_libdir}/modules/glesx.*o
+%{xorg_libdir}/modules/amdxmm.so
 
 %{xorg_dridir}/fglrx_dri.so
 %ifarch x86_64
