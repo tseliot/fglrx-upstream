@@ -1,3 +1,8 @@
+2008-06-05 Mario Limonciello <mario_limonciello@dell.com>
+        * ati-packager.sh:
+        - Check for lsb_release and synaptic rather than assuming
+          they are present.
+
 2008-05-28 Mario Limonciello <mario_limonciello@dell.com>
         * ati-packager.sh:
         - Use `ls` to determine supported releases

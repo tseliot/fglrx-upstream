@@ -33,7 +33,7 @@ else
 fi
 
 #Synaptic availablity
-if [ -x `which synaptic` ]; then
+if [ -x /usr/sbin/synaptic ]; then
     SYNAPTIC="TRUE"
 else
     SYNAPTIC=""
@@ -307,11 +307,14 @@ buildPackage()
 
 identify()
 {
-    lsb=`lsb_release -s -c`
-    check=$1
-    if [ "${lsb}" = "${check}" ]
-    then
-        exit 0
+    lsb_launcher=`which lsb_release 2>/dev/null`
+    if [ ! -z "$lsb_launcher" ]; then
+        lsb=`lsb_release -s -c`
+        check=$1
+        if [ "${lsb}" = "${check}" ]
+        then
+            exit 0
+        fi
     fi
     exit ${ATI_INSTALLER_ERR_VERS}
 
