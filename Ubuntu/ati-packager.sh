@@ -7,17 +7,18 @@
 # Usage
 #   See README.distro document
 
-DRV_RELEASE=`./ati-packager-helper.sh --version`
-PADDED_DRV_RELEASE=`printf '%5.3f' "$DRV_RELEASE"`
-DEBEMAIL="`./ati-packager-helper.sh --vendor` <`./ati-packager-helper.sh --url`>"
-REVISION="`./ati-packager-helper.sh --release`"
-
 # set locale to sane value
 export LANG=C
 export LC_ALL=C
 
 # set umask to sane value
 umask 002
+
+DRV_RELEASE=`./ati-packager-helper.sh --version`
+PADDED_DRV_RELEASE=`printf '%5.3f' "$DRV_RELEASE"`
+DEBEMAIL="`./ati-packager-helper.sh --vendor` <`./ati-packager-helper.sh --url`>"
+REVISION="`./ati-packager-helper.sh --release`"
+
 
 #Root command
 if [ "$USER" != "root" ]; then
