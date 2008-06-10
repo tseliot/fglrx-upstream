@@ -325,6 +325,13 @@ if [ "$1" -eq 0 ]; then
   fi
   # cleanup
   rm -rf usr/src/kernel-modules/fglrx/
+  # try to unload the kernel module, which fails if it is still in use
+  rmmod fglrx &> /dev/null
+  # now remove it 
+  if modinfo fglrx 2> /dev/null | grep -q ^filename:; then 
+    modfile=$(modinfo fglrx | grep ^filename: | cut -d : -f 2 | head -n 1)
+    rm $modfile
+  fi
 fi
 exit 0
 
