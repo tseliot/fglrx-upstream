@@ -180,6 +180,9 @@ pushd $tmpdir/fglrx
 popd
 pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   # add kernel patches here
+%if %suse_version > 1030
+  patch -p0 -s < $RPM_SOURCE_DIR/ati-2.6.25-build-fix.diff
+%endif
   rm -f *.orig
 popd
 install -m 755 $RPM_SOURCE_DIR/fglrx-kernel-build.sh \
