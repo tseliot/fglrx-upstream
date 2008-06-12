@@ -1,3 +1,12 @@
+2008-06-12 Mario Limonciello <mario_limonciello@dell.com>
+        * dists/intrepid/replacements/{Makefile,make.sh}:
+        - Include variants that allow the version to be specified.
+        * dists/intrepid/dkms.conf.in:
+        - Call the build script w/ a kernel version argument
+        * dists/intrepid/fglrx-kernel-source.install.in:
+        - Include our files from replacements/ until upstream
+          fixes them.
+
 2008-06-09 Mario Limonciello <superm1@ubuntu.com>
         * ati-packager.sh:
         - Set LC_ALL=C before anything else rather than after printf.
