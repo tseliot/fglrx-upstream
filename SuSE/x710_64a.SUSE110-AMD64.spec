@@ -2,7 +2,7 @@
 # spec file header                                                          #
 #############################################################################
 
-Name: fglrx_6_9_0_SUSE101
+Name: fglrx64_7_1_0_SUSE110
 Summary: %ATI_DRIVER_SUMMARY
 Version: %ATI_DRIVER_VERSION
 Release: %ATI_DRIVER_RELEASE
@@ -180,6 +180,9 @@ pushd $tmpdir/fglrx
 popd
 pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   # add kernel patches here
+%if %suse_version > 1030
+  patch -p0 -s < $RPM_SOURCE_DIR/ati-2.6.25-build-fix.diff
+%endif
   rm -f *.orig
 popd
 install -m 755 $RPM_SOURCE_DIR/fglrx-kernel-build.sh \
@@ -325,6 +328,13 @@ if [ "$1" -eq 0 ]; then
   fi
   # cleanup
   rm -rf usr/src/kernel-modules/fglrx/
+  # try to unload the kernel module, which fails if it is still in use
+  rmmod fglrx &> /dev/null
+  # now remove it 
+  if modinfo fglrx 2> /dev/null | grep -q ^filename:; then 
+    modfile=$(modinfo fglrx | grep ^filename: | cut -d : -f 2 | head -n 1)
+    rm $modfile
+  fi
 fi
 exit 0
 
