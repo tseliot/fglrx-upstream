@@ -1,3 +1,16 @@
+fglrx-installer (2:8.493.1-0ubuntu5) intrepid; urgency=low
+
+  * debian/replacements/*
+    - Include Makefile and make.sh that support passing kernel version
+      as a parameter until upstream resolves issues.
+  * debian/dkms.conf.in:
+    - Explicitly use kernel version as parameter to make scripts.
+  * debian/fglrx-kernel-source.in:
+    - Include our variants of make scripts since upstream hasn't fixed
+      there's yet.
+
+ -- Mario Limonciello <superm1@ubuntu.com>  Thu, 12 Jun 2008 15:34:14 -0500
+
 fglrx-installer (2:8.493.1-0ubuntu4) intrepid; urgency=low
 
   * debian/control:

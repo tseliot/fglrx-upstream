@@ -6,6 +6,8 @@
         * dists/intrepid/fglrx-kernel-source.install.in:
         - Include our files from replacements/ until upstream
           fixes them.
+        * dists/intrepid/changelog.in:
+        - Sync w/ Ubuntu
 
 2008-06-09 Mario Limonciello <superm1@ubuntu.com>
         * ati-packager.sh:
