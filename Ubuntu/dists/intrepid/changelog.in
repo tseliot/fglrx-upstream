@@ -1,3 +1,9 @@
+fglrx-installer (2:8.501-0ubuntu1) intrepid; urgency=low
+
+  * New upstream release.
+
+ -- Mario Limonciello <superm1@ubuntu.com>  Thu, 19 Jun 2008 01:46:54 -0500
+
 fglrx-installer (2:8.493.1-0ubuntu5) intrepid; urgency=low
 
   * debian/replacements/*

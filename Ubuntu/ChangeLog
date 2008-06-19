@@ -1,3 +1,7 @@
+2008-06-19 Mario Limonciello <superm1@ubuntu.com>
+        * dists/intrepid/changelog.in:
+	- Sync changelog w/ Ubuntu
+        
 2008-06-12 Mario Limonciello <mario_limonciello@dell.com>
         * dists/intrepid/replacements/{Makefile,make.sh}:
         - Include variants that allow the version to be specified.
