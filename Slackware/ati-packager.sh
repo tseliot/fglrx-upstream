@@ -26,7 +26,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
     
-    BUILD_VER=1.3.1;
+    BUILD_VER=1.3.2;
     
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD;
@@ -227,14 +227,36 @@ function _buildpkg
     return 0;
 }
 
-_set_builder_language;
-_init_env;
+
+# Per queste opzioni, non c'è bisogno dell'inizializzazione
 case $1 in
     # Stampa l'elenco dei nomi di pacchetto che è possibile costruire
     --get-supported)
 	echo -e 'All\tOnly_Module\tOnly_X';
 	;;
 
+    # Ritorna:
+    # ${ATI_INSTALLER_ERR_VERS}: se la distribuzione su cui si sta tentando di eseguire lo script
+    #                            non è basata su Slackware
+    # 0: Se la distribuzione su cui si sta tentando di eseguire lo script è basata su Slackware
+    #    e se il pacchetto che si vuole creare è 'All'.
+    --identify)
+	[ $2 != 'All' ] && exit ${ATI_INSTALLER_ERR_VERS};
+	
+	[ -d ${DIR_PACKAGE} ] && exit 0;
+	
+	exit ${ATI_INSTALLER_ERR_VERS};
+	;;
+    
+    # Questo script onora le API versione 2 dell'ati-installer.sh
+    --getAPIVersion)
+	exit 2;
+	;;
+esac
+
+_set_builder_language;
+_init_env;
+case $1 in
     # Controllo che tutto il necessario alla costruzione dei pacchetti 
     # sia correttamente installato
     --buildprep)
@@ -321,24 +343,6 @@ case $1 in
 	
 	rm -f ${TMP_FILE};
 	exit 0;
-	;;
-
-    # Ritorna:
-    # ${ATI_INSTALLER_ERR_VERS}: se la distribuzione su cui si sta tentando di eseguire lo script
-    #                            non è basata su Slackware
-    # 0: Se la distribuzione su cui si sta tentando di eseguire lo script è basata su Slackware
-    #    e se il pacchetto che si vuole creare è 'All'.
-    --identify)
-	[ $2 != 'All' ] && exit ${ATI_INSTALLER_ERR_VERS};
-	
-	[ -d ${DIR_PACKAGE} ] && exit 0;
-	
-	exit ${ATI_INSTALLER_ERR_VERS};
-	;;
-    
-    # Questo script onora le API versione 2 dell'ati-installer.sh
-    --getAPIVersion)
-	exit 2;
 	;;
     
     *)
