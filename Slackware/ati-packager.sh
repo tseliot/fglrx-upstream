@@ -78,10 +78,6 @@ function _init_env
     
     # Directory in cui verranno spostati i pacchetti creati e altri file
     DEST_DIR=${PWD%/*};
-    
-    # Directory che contiene l'elenco dei pacchetti installati nelle distribuzioni 
-    # basate su Slackware
-    DIR_PACKAGE=/var/log/packages/;
 
     # File temporaneo che contiene l'elenco dei pacchetti creati.
     # Questo file è creato/modificato dalle funzioni che creano i pacchetti
@@ -226,7 +222,10 @@ function _buildpkg
     
     return 0;
 }
-
+    
+# Directory che contiene l'elenco dei pacchetti installati nelle distribuzioni 
+# basate su Slackware
+DIR_PACKAGE=/var/log/packages/;
 
 # Per queste opzioni, non c'è bisogno dell'inizializzazione
 case $1 in
@@ -242,7 +241,7 @@ case $1 in
     #    e se il pacchetto che si vuole creare è 'All'.
     --identify)
 	[ $2 != 'All' ] && exit ${ATI_INSTALLER_ERR_VERS};
-	
+
 	[ -d ${DIR_PACKAGE} ] && exit 0;
 	
 	exit ${ATI_INSTALLER_ERR_VERS};
