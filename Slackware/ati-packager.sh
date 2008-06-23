@@ -232,6 +232,7 @@ case $1 in
     # Stampa l'elenco dei nomi di pacchetto che è possibile costruire
     --get-supported)
 	echo -e 'All\tOnly_Module\tOnly_X';
+	exit 0;
 	;;
 
     # Ritorna:
