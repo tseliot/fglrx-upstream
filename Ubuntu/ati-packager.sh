@@ -15,7 +15,7 @@ export LC_ALL=C
 umask 002
 
 DRV_RELEASE=`./ati-packager-helper.sh --version`
-PADDED_DRV_RELEASE=`printf '%5.3f' "$DRV_RELEASE"`
+PADDED_DRV_RELEASE=`printf '%5.3f' "$DRV_RELEASE" 2>/dev/null`
 DEBEMAIL="`./ati-packager-helper.sh --vendor` <`./ati-packager-helper.sh --url`>"
 REVISION="`./ati-packager-helper.sh --release`"
 
