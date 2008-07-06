@@ -113,6 +113,13 @@ pushd $tmpdir/fglrx
     install -m 755 libatiadlxx.so          $RPM_BUILD_ROOT/usr/lib
     rm libatiadlxx.so
   fi
+  for file in libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0; do
+    if [ -f usr/X11R6/lib/$file ]; then
+      mv usr/X11R6/lib/$file .
+      install -m 755 $file                 $RPM_BUILD_ROOT/usr/lib
+      rm $file
+    fi
+  done
 %endif
   for i in `find . -type f`; do mv --backup $i .; done
   # make sure we don't overwrite something
@@ -177,6 +184,11 @@ pushd $tmpdir/fglrx
     install -m 755 atiodcli              $RPM_BUILD_ROOT/usr/bin
   test -f atiode && \
     install -m 755 atiode                $RPM_BUILD_ROOT/usr/bin
+  test -f amdxdg-su && \
+    install -m 755 amdxdg-su             $RPM_BUILD_ROOT/usr/bin
+  mkdir -p $RPM_BUILD_ROOT/usr/share/applications
+  test -f amdccclesu.kdelnk && \
+    install -m 644 amdccclesu.kdelnk     $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
 popd
 pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   # add kernel patches here
@@ -187,7 +199,6 @@ pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
 popd
 install -m 755 $RPM_SOURCE_DIR/fglrx-kernel-build.sh \
   $RPM_BUILD_ROOT/usr/bin
-mkdir -p $RPM_BUILD_ROOT/usr/share/applications
 install -m 644 $RPM_SOURCE_DIR/fglrx.desktop \
   $RPM_BUILD_ROOT/usr/share/applications
 cp $RPM_SOURCE_DIR/fglrx.png $RPM_BUILD_ROOT/usr/share/pixmaps
@@ -234,6 +245,12 @@ if [ -f $RPM_BUILD_ROOT/usr/bin/atiodcli ]; then
 fi
 if [ -f $RPM_BUILD_ROOT/usr/bin/atiode ]; then
   echo "/usr/bin/atiode" >> files.fglrx
+fi
+if [ -f $RPM_BUILD_ROOT/usr/bin/amdxdg-su ]; then
+  echo "/usr/bin/amdxdg-su" >> files.fglrx
+fi
+if [ -f  $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop ]; then
+  echo  "/usr/share/applications/amdccclesu.desktop" >> files.fglrx
 fi
 if [ -f $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_tvout.a ]; then
   echo "/usr/X11R6/%{_lib}/libfglrx_tvout.a" >> files.fglrx
