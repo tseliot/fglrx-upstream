@@ -8,6 +8,7 @@
         - Add patching system that only affects dev release
         - Update README.Debian for other possible maintainers
         - Install modaliases to new location (as per Jockey req)
+        - Add libstdc++5 to build-depends
 
 2008-06-24 Mario Limonciello <mario_limonciello@Dell.com>
         * ati-packager.sh:
