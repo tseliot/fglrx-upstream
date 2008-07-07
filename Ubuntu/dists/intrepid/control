@@ -14,11 +14,12 @@ Build-Depends: debhelper (>= 5),
                libxcursor1, 
                fakeroot, 
                ia32-libs [amd64]
-Standards-Version: 3.7.3
+Standards-Version: 3.8.0
 Homepage: http://ati.amd.com/support/driver.html
 
 Package: xorg-driver-fglrx
 Architecture: amd64 i386
+Recommends: fglrx-amdcccle
 Depends: ${shlibs:Depends}, xserver-xorg-core, fglrx-kernel-source
 Conflicts: fglrx-driver, xfree86-driver-fglrx, nvidia-glx, nvidia-glx-legacy, nvidia-glx-new
 Replaces: fglrx-driver, xfree86-driver-fglrx
