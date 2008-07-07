@@ -26,3 +26,12 @@ in both places, there should be less conflicts for people.
 On a semiregular basis, the debian/changelog should be merged
 into this package, but people adding to the Ubuntu archive should
 be sure to update these sorts of things otherewise.
+
+Kernel Patches
+-------------------------
+If you need to provide a kernel patch (say for a kernel not formally
+supported yet by AMD), you can add this patch in the debian/patches
+directory.  It will only be used for the current development release,
+as indicated in debian/rules.  When upgrading from current development
+release to next development release, this codename in debian/rules should
+be bumped too.
