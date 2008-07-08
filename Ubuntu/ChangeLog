@@ -1,3 +1,7 @@
+2008-07-08 Mario Limonciello <mario_limonciello@Dell.com>
+        * dists/intrepid/xorg-driver-fglrx.postrm:
+        - Clean up AMD64 diversions properly.
+
 2008-07-07 Mario Limonciello <mario_limonciello@Dell.com>
         * dists/intrepid/*
         - Sync changelog w/ Ubuntu
