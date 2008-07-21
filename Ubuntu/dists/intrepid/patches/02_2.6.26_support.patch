@@ -2,9 +2,9 @@
 #It is originally by   Zilvina Valinskas <zilvinas@ilibox.com>
 #and adapted for AMD's 8-6 driver by Mario Limonciello <Mario_Limonciello@Dell.com>
 
-diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/firegl_public.c fglrx-installer-8.501.new/lib/modules/fglrx/build_mod/firegl_public.c
---- fglrx-installer-8.501/lib/modules/fglrx/build_mod/firegl_public.c	2008-06-19 01:45:20.000000000 -0500
-+++ fglrx-installer-8.501.new/lib/modules/fglrx/build_mod/firegl_public.c	2008-07-07 14:06:02.000000000 -0500
+diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.512/lib/modules/fglrx/build_mod/firegl_public.c fglrx-installer-8.512.new/lib/modules/fglrx/build_mod/firegl_public.c
+--- fglrx-installer-8.512/lib/modules/fglrx/build_mod/firegl_public.c	2008-07-21 14:32:08.000000000 -0400
++++ fglrx-installer-8.512.new/lib/modules/fglrx/build_mod/firegl_public.c	2008-07-21 14:31:48.000000000 -0400
 @@ -24,13 +24,13 @@
  // ============================================================
  #include <linux/version.h>
@@ -55,16 +55,16 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  #include <linux/utsrelease.h>
  #endif
  
-@@ -210,7 +210,7 @@
- int __ke_debuglevel = 0;
- int __ke_moduleflags = 0;
+@@ -215,7 +215,7 @@
+ 
+ static void ATI_API_CALL __ke_printstr(const char *str);
  
 -static struct pci_device_id fglrx_pci_table[] = 
 +static struct pci_device_id fglrx_pci_table[] =
  {
  #define FGL_ASIC_ID(x)                      \
     {                           \
-@@ -278,7 +278,7 @@
+@@ -283,7 +283,7 @@
  
  static int firegl_pat_enabled = 0;
  static unsigned long KCL_pat[2];
@@ -73,7 +73,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
  static int ATI_API_CALL KCL_enable_pat(void);
  static void ATI_API_CALL KCL_disable_pat(void);
-@@ -305,7 +305,7 @@
+@@ -322,7 +322,7 @@
  #endif
  
  __ke_ssize_t ip_firegl_read( struct file *filp,
@@ -82,7 +82,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
                           __ke_size_t size,
                           __ke_loff_t *off_ptr)
  {
-@@ -313,7 +313,7 @@
+@@ -334,7 +334,7 @@
  }
  
  __ke_ssize_t ip_firegl_write( struct file *filp,
@@ -91,9 +91,9 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
                            __ke_size_t size,
                            __ke_loff_t *off_ptr)
  {
-@@ -449,34 +449,34 @@
- READ_PROC_WRAP(firegl_bios_version)
- READ_PROC_WRAP(firegl_interrupt_info)
+@@ -477,34 +477,34 @@
+     return firegl_debug_proc_write(file, buffer, count, data);     
+ }
  
 -static int 
 +static int
@@ -138,7 +138,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  {
      if(firegl_interrupt_poll(user_file, (__ke_poll_table*)pt))
      {
-@@ -488,11 +488,11 @@
+@@ -516,11 +516,11 @@
      }
  }
  
@@ -154,7 +154,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
          loff_t *user_file_pos)
  {
      return (ssize_t) firegl_interrupt_write(user_file, user_buf, user_buf_size, user_file_pos);
-@@ -502,7 +502,7 @@
+@@ -530,7 +530,7 @@
   *  \param func function to be wrapped
   *  \return None */
  
@@ -163,7 +163,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  firegl_smp_func_parameter_wrap(
  void *func)
  {
-@@ -517,7 +517,7 @@
+@@ -545,7 +545,7 @@
      .write      = firegl_interrupt_write_wrap
  };
  
@@ -172,7 +172,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  {
      { "name",           drm_name_info_wrap,         NULL},
      { "mem",            drm_mem_info_wrap,          NULL},
-@@ -586,11 +586,11 @@
+@@ -613,11 +613,11 @@
          {
  		    ent->proc_fops = (struct file_operations*)list->fops;
          }
@@ -186,7 +186,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
          list++;
  	}
  
-@@ -623,7 +623,7 @@
+@@ -663,7 +663,7 @@
      {
          remove_proc_entry("dri", NULL);
          __KE_DEBUG("remove proc dri. \n");
@@ -195,7 +195,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      return 0;
  }
  
-@@ -661,12 +661,12 @@
+@@ -701,12 +701,12 @@
  {
  	int i;
          int count = 0;
@@ -211,7 +211,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
              {
  		firegl_stub_list[i].name = name;
  		firegl_stub_list[i].fops = fops;
-@@ -693,16 +693,16 @@
+@@ -733,16 +733,16 @@
      if (minor < 0 || minor >= FIREGL_STUB_MAXCARDS)
      {
          return -1;
@@ -231,7 +231,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      return 0;
  }
  
-@@ -726,7 +726,7 @@
+@@ -766,7 +766,7 @@
          return -1;
      } else if(err == -EBUSY) {
  
@@ -240,7 +240,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
          // because there was already some other drm module loaded.
          __KE_DEBUG("register_chrdev() failed with -EBUSY\n");
  	return -1;
-@@ -758,7 +758,7 @@
+@@ -798,7 +798,7 @@
  /* Starting from 2.6.14, kernel has new struct defined for pm_message_t,
     we have to handle this case separately.
     2.6.11/12/13 kernels have pm_message_t defined as int and older kernels
@@ -249,7 +249,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
   */
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,14)
  static int fglrx_pci_suspend(struct pci_dev *pdev, pm_message_t pm_event)
-@@ -794,9 +794,9 @@
+@@ -834,9 +834,9 @@
  
      if (!ret)
      {
@@ -262,7 +262,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
          firegl_pci_save_state((__ke_pci_dev_t*)pdev, privdev);
          pci_disable_device(pdev);
          PMSG_EVENT(pdev->dev.power.power_state) = state;
-@@ -848,13 +848,13 @@
+@@ -888,13 +888,13 @@
      // before pci_set_master!
      firegl_pci_restore_state((__ke_pci_dev_t*)pdev, privdev);
  
@@ -279,7 +279,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      firegl_cail_powerup(privdev);
  
      if (PMSG_EVENT(pdev->dev.power.power_state) == PM_EVENT_SUSPEND)
-@@ -865,7 +865,7 @@
+@@ -905,7 +905,7 @@
      return 0;
  }
  
@@ -288,7 +288,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  {
      .name           = "fglrx_pci",
      .id_table       = fglrx_pci_table,
-@@ -921,10 +921,10 @@
+@@ -961,10 +961,10 @@
      {
          pid = (struct pci_device_id *) &fglrx_pci_table[i];
          pdev = NULL;
@@ -303,7 +303,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
                                         pdev)) != NULL)
          {
              num_of_devices++;
-@@ -934,7 +934,7 @@
+@@ -974,7 +974,7 @@
  
      if (firegl_init_device_heads(num_of_devices))
      {
@@ -312,7 +312,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      }
  
      for (i=0; fglrx_pci_table[i].vendor != 0; i++)
-@@ -942,15 +942,15 @@
+@@ -982,15 +982,15 @@
          pid = (struct pci_device_id *) &fglrx_pci_table[i];
  
          pdev = NULL;
@@ -333,7 +333,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
              }
  
              j++;
-@@ -983,7 +983,7 @@
+@@ -1023,7 +1023,7 @@
      // init global vars that are in fact constants
      __ke_HZ = HZ;
  
@@ -342,7 +342,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      __ke_SetSerialPort();
  #endif
  
-@@ -995,11 +995,11 @@
+@@ -1035,11 +1035,11 @@
          return retcode;
      }
  
@@ -357,7 +357,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      // init DRM proc list
      drm_proclist = kmalloc((DRM_PROC_ENTRIES + 1) * sizeof(__ke_proc_list_t), GFP_KERNEL);
      if ( drm_proclist == NULL )
-@@ -1087,7 +1087,7 @@
+@@ -1127,7 +1127,7 @@
  	        dev->pubdev.date,
  		    firegl_minors);
  
@@ -366,7 +366,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  #ifdef FIREGL_POWER_MANAGEMENT
      if (pci_register_driver (&fglrx_pci_driver) < 0)
      {
-@@ -1117,12 +1117,12 @@
+@@ -1157,12 +1157,12 @@
      {
         KCL_disable_pat();
         __KE_INFO("Disable PAT\n");
@@ -381,7 +381,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
          {
              __KE_ERROR("Cannot unload module on minor: %d\n", i);
          }
-@@ -1144,10 +1144,10 @@
+@@ -1184,10 +1184,10 @@
  	        dev->pubdev.patchlevel,
  	        dev->pubdev.date);
  
@@ -395,7 +395,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
      firegl_private_cleanup (&dev->pubdev);
  
-@@ -1225,18 +1225,18 @@
+@@ -1265,18 +1265,18 @@
  void ATI_API_CALL __ke_remove_wait_queue(__ke_wait_queue_head_t* queue_head, __ke_wait_queue_t* entry)
  {
  //    current->state = TASK_RUNNING;
@@ -417,7 +417,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  }
  
  void ATI_API_CALL __ke_poll_wait(struct file* filp, __ke_wait_queue_head_t* queue_head, __ke_poll_table* pt)
-@@ -1247,13 +1247,13 @@
+@@ -1287,13 +1287,13 @@
  void ATI_API_CALL *__ke_asyncio_alloc_sema()
  {
      int i;
@@ -433,7 +433,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
              return &(fireglAsyncioSemaphore[i]);
          }
      }
-@@ -1263,7 +1263,7 @@
+@@ -1303,7 +1303,7 @@
  void ATI_API_CALL __ke_asyncio_free_sema(struct semaphore *pSema)
  {
      int i;
@@ -442,7 +442,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      for(i=0; i<FIREGL_ASYNCIO_MAX_SEMA; i++)
      {
          if( &(fireglAsyncioSemaphore[i]) == pSema )
-@@ -1277,15 +1277,15 @@
+@@ -1317,15 +1317,15 @@
  void ATI_API_CALL __ke_asyncio_init_sema(void)
  {
      int i;
@@ -462,7 +462,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
                          int mode,
                          struct fasync_struct **pasync_queue)
  {
-@@ -1359,33 +1359,33 @@
+@@ -1403,33 +1403,33 @@
  {
     struct task_struct *p;
     int process_terminated = 1;
@@ -509,7 +509,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
   *  /return Nonzero if a system call was awakened by a signal
   */
  int ATI_API_CALL KCL_GetSignalStatus(void)
-@@ -1439,15 +1439,15 @@
+@@ -1483,15 +1483,15 @@
      unblock_all_signals();
  }
  
@@ -533,7 +533,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
          __asm__ __volatile__(LOCK_PREFIX "cmpxchgb %b1,%2"
                               : "=a"(prev)
                               : "q"(new), "m"(*__xg(ptr)), "0"(old)
-@@ -1558,7 +1558,7 @@
+@@ -1602,7 +1602,7 @@
   */
  KCL_TYPE_Pid ATI_API_CALL KCL_GetPid(void)
  {
@@ -542,7 +542,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  }
  
  /** /brief Return the current Thread Group ID
-@@ -1566,7 +1566,7 @@
+@@ -1610,7 +1610,7 @@
   */
  KCL_TYPE_Pid ATI_API_CALL KCL_GetTgid(void)
  {
@@ -551,7 +551,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  }
  
  /** /brief Return the effective user ID
-@@ -1662,7 +1662,7 @@
+@@ -1706,7 +1706,7 @@
      1
  #else
      0
@@ -560,7 +560,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  };
  
  /** /brief Check whether a kernel configuration parameter is defined
-@@ -1730,13 +1730,13 @@
+@@ -1792,13 +1792,13 @@
  #if defined(__x86_64__) || defined(__ia64__)
  void* ATI_API_CALL __ke_pci_alloc_consistent(__ke_pci_dev_t* dev, int size, void *dma_handle)
  {
@@ -576,7 +576,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  		(unsigned long)dma_handle);
  }
  #endif // __ia64__
-@@ -1760,7 +1760,7 @@
+@@ -1822,7 +1822,7 @@
  
  /** \brief This function maps OS independent error conditions to OS defined error codes
   *  \param errcode OS independent error condition code
@@ -585,7 +585,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
   */
  int ATI_API_CALL KCL_GetErrorCode(KCL_ENUM_ErrorCode errcode)
  {
-@@ -1778,7 +1778,7 @@
+@@ -1840,7 +1840,7 @@
  int ATI_API_CALL firegl_get_user_ptr(u32 *src, void **dst)
  {
    unsigned long temp;
@@ -594,89 +594,16 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
    *dst = (void*) temp;
    return err;
  }
-@@ -1918,7 +1918,7 @@
- 
- int ATI_API_CALL __ke_atomic_dec_and_test(void* v)
+@@ -2019,7 +2019,7 @@
+  */
+ int ATI_API_CALL KCL_AtomicDecAndTest(KCL_TYPE_Atomic* v)
  {
 -    return atomic_dec_and_test((atomic_t*)v); 
 +    return atomic_dec_and_test((atomic_t*)v);
  }
  
  /*****************************************************************************/
-@@ -2018,19 +2018,19 @@
- #endif
- 
- #ifdef _KE_SERIAL_DEBUG
--// To enable serial port debug message dumping,just define _KE_SERIAL_DEBUG in firegl_public.h file. 
--// Connect two PC with a null modern serial cable. run Hyper ternimal on the remote machine. 
--// It's useful to debug resume if network not works properly and serial port is not recovered 
-+// To enable serial port debug message dumping,just define _KE_SERIAL_DEBUG in firegl_public.h file.
-+// Connect two PC with a null modern serial cable. run Hyper ternimal on the remote machine.
-+// It's useful to debug resume if network not works properly and serial port is not recovered
- // properly when fglrx resume hook is called...
-- 
-- 
-+
-+
- #define SER_DATA_PORT       0x3f8
- #define SER_INT_CTRL_PORT   SER_DATA_PORT + 1
- #define SER_INT_STAT_PORT   SER_DATA_PORT + 2
- #define SER_LINE_CTRL_PORT  SER_DATA_PORT + 3
- #define SER_MODEM_CTRL_PORT SER_DATA_PORT + 4
- #define SER_LINE_STAT_PORT  SER_DATA_PORT + 5
--    
-+
- void ATI_API_CALL __ke_printc(char c)
- {
-      while((inb(SER_LINE_STAT_PORT) & 0x20) == 0 ); //wait until Transmitter Holding Register Empty
-@@ -2040,7 +2040,7 @@
- void ATI_API_CALL __ke_printstr(const char *str)
- {
-     int len = strlen(str);
--    while(len--)__ke_printc(*str++);  
-+    while(len--)__ke_printc(*str++);
- }
- 
- int ATI_API_CALL __ke_SerPrint(const char *format, ...)
-@@ -2053,26 +2053,26 @@
-     vsprintf(buffer, format, ap);
- 
-     va_end(ap);
--    
-+
-     __ke_printstr(buffer);
--    
-+
-     return 0;
- }
- void ATI_API_CALL __ke_SetSerialPort()
- {
-     DRM_INFO("setup serial port\n");
--    outb(0x00,  SER_INT_CTRL_PORT);   // Turn off interrupts 
-+    outb(0x00,  SER_INT_CTRL_PORT);   // Turn off interrupts
- 
--    outb(0x80,  SER_LINE_CTRL_PORT);  // SET DLAB ON 
--    outb(0x01,  SER_DATA_PORT);  // Set Baud rate - Divisor Latch Low Byte 
--                             // 0x01 = 115,200 ,0x02 =  57,600,  0x06 =  19,200 BPS, 0x0C =   9,600 BPS  
--    outb(0x00,  SER_DATA_PORT + 1);  // Set Baud rate - Divisor Latch High Byte 
--    outb(0x03,  SER_LINE_CTRL_PORT); // reset DLAB ,8 Bits, No Parity, 1 Stop Bit 
--    outb(0xC7,  SER_DATA_PORT + 2);  // FIFO Control Register 
-+    outb(0x80,  SER_LINE_CTRL_PORT);  // SET DLAB ON
-+    outb(0x01,  SER_DATA_PORT);  // Set Baud rate - Divisor Latch Low Byte
-+                             // 0x01 = 115,200 ,0x02 =  57,600,  0x06 =  19,200 BPS, 0x0C =   9,600 BPS
-+    outb(0x00,  SER_DATA_PORT + 1);  // Set Baud rate - Divisor Latch High Byte
-+    outb(0x03,  SER_LINE_CTRL_PORT); // reset DLAB ,8 Bits, No Parity, 1 Stop Bit
-+    outb(0xC7,  SER_DATA_PORT + 2);  // FIFO Control Register
-     outb(0x0b,  SER_DATA_PORT + 4);  // Turn on DTR, RTS, and OUT2
--  
-+
-     __ke_printstr("serial port 0x3f8 is set ready for message print out \n");
--}  
-+}
- #endif
- 
- /** \brief Get number of available RAM pages
-@@ -2256,7 +2256,7 @@
+@@ -2394,7 +2394,7 @@
      struct page *page = NULL;
  
      page = vmalloc_to_page(vmalloc_addr);
@@ -685,7 +612,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      {
          __KE_ERROR("__ke_vmalloc_to_addr: invalid page!");
          return NULL;
-@@ -2298,7 +2298,7 @@
+@@ -2436,7 +2436,7 @@
      retcode = do_munmap(current->mm,
                          addr,
                          len);
@@ -694,7 +621,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      up_write(&current->mm->mmap_sem);
      return retcode;
  }
-@@ -2342,10 +2342,10 @@
+@@ -2480,10 +2480,10 @@
         minus = !minus;
      }
      else
@@ -707,7 +634,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      do_div(un, ubase);
      return (minus? -un : un);
  }
-@@ -2375,7 +2375,7 @@
+@@ -2513,7 +2513,7 @@
      else
      {
         ubase = base;
@@ -716,7 +643,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
      rem = do_div(un, ubase);
      return (minus? -rem : rem);
-@@ -2406,7 +2406,7 @@
+@@ -2544,7 +2544,7 @@
      vaddr = (void *) vmap(pages, count);
  #else
  #ifdef VM_MAP
@@ -725,7 +652,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  #else
      vaddr = (void *) vmap(pages, count, 0, PAGE_KERNEL);
  #endif
-@@ -2462,7 +2462,7 @@
+@@ -2600,7 +2600,7 @@
  }
  #endif  // defined(VM_MAP) || defined(vunmap)
  
@@ -734,7 +661,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
   *
   * \param pt Kernel logical address of the page
   *
-@@ -2474,7 +2474,7 @@
+@@ -2612,7 +2612,7 @@
      SetPageReserved(virt_to_page((unsigned long)pt));
  }
  
@@ -743,7 +670,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
   *
   * \param pt Kernel logical address of the page
   *
-@@ -2486,7 +2486,7 @@
+@@ -2624,7 +2624,7 @@
      ClearPageReserved(virt_to_page((unsigned long)pt));
  }
  
@@ -752,7 +679,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
   *
   * \param pt Kernel logical address of the page
   *
-@@ -2495,14 +2495,14 @@
+@@ -2633,14 +2633,14 @@
   */
  void ATI_API_CALL KCL_LockMemPage(void* pt)
  {
@@ -769,7 +696,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
   *
   * \param pt Kernel logical address of the page
   *
-@@ -2511,7 +2511,7 @@
+@@ -2649,7 +2649,7 @@
   */
  void ATI_API_CALL KCL_UnlockMemPage(void* pt)
  {
@@ -778,7 +705,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      ClearPageReserved(virt_to_page((unsigned long)pt));
  #else
      unlock_page(virt_to_page((unsigned long)pt));
-@@ -2536,7 +2536,7 @@
+@@ -2674,7 +2674,7 @@
  	return memory->vmptr;
  }
  #endif
@@ -787,7 +714,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  void* ATI_API_CALL __ke_ioremap(unsigned long offset, unsigned long size)
  {
      return ioremap(offset, size);
-@@ -2592,7 +2592,7 @@
+@@ -2724,7 +2724,7 @@
  {
  /*Some kernel developer removed the export of symbol "flush_tlb_page" on 2.6.25 x86_64 SMP kernel.
    Define a simple version here.*/
@@ -796,7 +723,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      on_each_cpu(KCL_flush_tlb_one, &va, 1, 1);
  #else
      flush_tlb_page(vma, va);
-@@ -2698,9 +2698,9 @@
+@@ -2884,9 +2884,9 @@
  static inline int ptep_clear_flush_dirty(struct vm_area_struct *vma, unsigned long addr, pte_t *ptep)
  {
      int ret = 0;
@@ -808,7 +735,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      if (pte_dirty(*ptep))
      {
  #ifdef __x86_64__
-@@ -2715,19 +2715,19 @@
+@@ -2901,19 +2901,19 @@
          {
              pte_update(vma->vm_mm, addr, ptep);
          }
@@ -832,16 +759,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      return ret;
  }
  #endif
-@@ -2754,7 +2754,7 @@
-  * the virtual address
-  *
-  * \param mm Pointer to the memory descriptor structure
-- * \param virtual_addr Virtual address 
-+ * \param virtual_addr Virtual address
-  *
-  * \return Old value of the "dirty" flag on success or negative on error
-  *
-@@ -3015,7 +3015,7 @@
+@@ -3279,7 +3279,7 @@
         return 0;
  #else
      return 1;
@@ -850,7 +768,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  #else /* !CONFIG_MTRR */
      return 0;
  #endif /* !CONFIG_MTRR */
-@@ -3041,7 +3041,7 @@
+@@ -3305,7 +3305,7 @@
  
  int ATI_API_CALL __ke_has_vmap(void)
  {
@@ -859,16 +777,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  #if defined(VM_MAP) || defined(vunmap)
      return 1;
  #else
-@@ -3063,7 +3063,7 @@
- {
-     return 0;
- }
--#endif 
-+#endif
- 
- /*****************************************************************************/
- 
-@@ -3124,7 +3124,7 @@
+@@ -3372,7 +3372,7 @@
  {
      struct pci_dev* dev = (struct pci_dev*)pcidev;
      return PCI_FUNC(dev->devfn);
@@ -877,25 +786,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
  __ke_dma_addr_t ATI_API_CALL __ke_pci_map_single (__ke_pci_dev_t *pdev, void *buffer, __ke_size_t size, int direction)
  {
-@@ -3211,7 +3211,7 @@
-     return IRQ_HANDLED;
- }
- #endif
--            
-+
- int ATI_API_CALL __ke_request_irq(unsigned int irq,
-     void (*ATI_API_CALL handler)(int, void *, void *),
-     const char *dev_name, void *dev_id)
-@@ -3224,7 +3224,7 @@
-         SA_SHIRQ,
- #else
-         IRQF_SHARED,
--#endif                
-+#endif
-         dev_name,
-         dev_id);
- }
-@@ -3260,12 +3260,12 @@
+@@ -3525,12 +3525,12 @@
      return (int)(agpmem->page_count);
  }
  
@@ -911,7 +802,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
                 (unsigned long)agpmem->memory,
                 (agpmem->memory)[0]);
  
-@@ -3274,18 +3274,9 @@
+@@ -3539,18 +3539,9 @@
  
  /*****************************************************************************/
  
@@ -930,7 +821,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
  #ifdef __AGP__BUILTIN__
  #ifdef __ia64__
-@@ -3310,19 +3301,20 @@
+@@ -3575,19 +3566,20 @@
  			return page;
  		}
  	}
@@ -954,7 +845,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      unsigned long vma_offset;
      unsigned long pte_linear;
      mem_map_t* pMmPage;
-@@ -3351,7 +3343,7 @@
+@@ -3616,7 +3608,7 @@
              (unsigned long)__ke_vm_offset(vma));
  
      if (address > vma->vm_end)
@@ -963,7 +854,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
      /*  Calculate offset into VMA */
      vma_offset = address - vma->vm_start;
-@@ -3363,7 +3355,7 @@
+@@ -3628,7 +3620,7 @@
      pte_linear = firegl_get_addr_from_vm(vma);
      if (!pte_linear)
      {
@@ -972,7 +863,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      }
      pte_linear += vma_offset;
  
-@@ -3391,7 +3383,9 @@
+@@ -3656,7 +3648,9 @@
  
      //  __KE_DEBUG3("vm-address 0x%08lx => kernel-page-address 0x%p\n",
      //    address, page_address(pMmPage));
@@ -983,7 +874,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  }
  
  /*
-@@ -3400,8 +3394,10 @@
+@@ -3665,8 +3659,10 @@
        (which is one ore more pages in size)
  
  */
@@ -995,7 +886,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      unsigned long kaddr;
      mem_map_t* pMmPage;
  
-@@ -3417,7 +3413,7 @@
+@@ -3682,7 +3678,7 @@
      kaddr = firegl_get_addr_from_vm(vma);
      if (!kaddr)
      {
@@ -1004,7 +895,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      }
      kaddr += (address - vma->vm_start);
  
-@@ -3429,19 +3425,23 @@
+@@ -3694,19 +3690,23 @@
      // with drm_alloc_pages, which marks all pages as reserved. Reserved
      // pages' usage count is not decremented by the kernel during unmap!!!
      //
@@ -1032,7 +923,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      unsigned long kaddr;
      mem_map_t* pMmPage;
  
-@@ -3451,13 +3451,14 @@
+@@ -3716,13 +3716,14 @@
      if ((pMmPage = (mem_map_t*) firegl_get_pagetable_page_from_vm(vma)))
      {
          get_page(pMmPage);
@@ -1049,7 +940,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      }
      kaddr += (address - vma->vm_start);
  
-@@ -3470,50 +3471,52 @@
+@@ -3735,50 +3736,52 @@
  
      __KE_DEBUG3("vm-address 0x%08lx => kernel-page-address 0x%p\n", address, page_address(pMmPage));
  
@@ -1116,7 +1007,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      /** Find offset in  vma */
      vma_offset = address - vma->vm_start;
      /** Which entry in the pagelist */
-@@ -3525,15 +3528,17 @@
+@@ -3790,15 +3793,17 @@
      if (page_address(pMmPage) == 0x0)
      {
          __KE_ERROR("Invalid page address\n");
@@ -1139,7 +1030,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      unsigned long page_addr;
      unsigned long offset;
      struct page *page;
-@@ -3541,36 +3546,31 @@
+@@ -3806,36 +3811,31 @@
      if (address > vma->vm_end)
      {
          __KE_ERROR("Invalid virtual address\n");
@@ -1178,7 +1069,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
 -                                 unsigned long address,
 -                                 int *type)
 +static int vm_nopage(struct vm_area_struct* vma,
-+		     struct vm_fault *vmf)
++		     struct vm_fault *vmf, int type)
  {
 -    if (type) *type = VM_FAULT_MINOR;
 -        return do_vm_nopage(vma, address);
@@ -1186,7 +1077,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  }
  
  #ifdef __AGP__BUILTIN__
-@@ -3602,12 +3602,10 @@
+@@ -3867,12 +3867,10 @@
      (which is one or more pages in size)
  
   */
@@ -1194,7 +1085,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
 -                                     unsigned long address,
 -                                     int *type)
 +static int vm_shm_nopage(struct vm_area_struct* vma,
-+			 struct vm_fault *vmf)
++			 struct vm_fault *vmf, int type)
  {
 -    if (type) *type = VM_FAULT_MINOR;
 -        return do_vm_shm_nopage(vma, address);
@@ -1202,7 +1093,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  }
  
  /*
-@@ -3616,116 +3614,30 @@
+@@ -3881,115 +3879,29 @@
        (which is one ore more pages in size)
  
  */
@@ -1210,47 +1101,50 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
 -                                     unsigned long address,
 -                                     int *type)
 +static int vm_dma_nopage(struct vm_area_struct* vma,
-+			 struct vm_fault *vmf)
++			 struct vm_fault *vmf, int type)
  {
 -    if (type) *type = VM_FAULT_MINOR;
 -        return do_vm_dma_nopage(vma, address);
-+        return do_vm_dma_nopage(vma, vmf);
- }
- 
+-}
+-
 -static vm_nopage_ret_t vm_kmap_nopage(struct vm_area_struct* vma,
 -                                     unsigned long address,
 -                                     int *type)
-+static int vm_kmap_nopage(struct vm_area_struct* vma,
-+			  struct vm_fault *vmf)
- {
+-{
 -    if (type) *type = VM_FAULT_MINOR;
 -        return do_vm_kmap_nopage(vma, address);
-+        return do_vm_kmap_nopage(vma, vmf);
- }
- 
+-}
+-
 -static vm_nopage_ret_t vm_pcie_nopage(struct vm_area_struct* vma,
 -                                     unsigned long address,
 -                                     int *type)
 -{  
 -       return do_vm_pcie_nopage(vma, address);
--}
--
++        return do_vm_dma_nopage(vma, vmf);
+ }
+ 
 -static vm_nopage_ret_t vm_gart_nopage(struct vm_area_struct* vma,
 -                                      unsigned long address, 
 -                                      int *type)
--{
++static int vm_kmap_nopage(struct vm_area_struct* vma,
++			  struct vm_fault *vmf, int type)
+ {
 -       return do_vm_gart_nopage(vma, address);
--}
--
++        return do_vm_kmap_nopage(vma, vmf);
+ }
+ 
 -#else   /* LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0) */
 -
 -static vm_nopage_ret_t vm_nopage(struct vm_area_struct* vma,
 -                                 unsigned long address,
 -                                 int write_access)
--{
++static int vm_pcie_nopage(struct vm_area_struct* vma,
++			  struct vm_fault *vmf, int type)
+ {
 -    return do_vm_nopage(vma, address);
--}
--
++	return do_vm_pcie_nopage(vma, vmf);
+ }
+ 
 -#ifdef __AGP__BUILTIN__
 -#ifdef __ia64__
 -
@@ -1258,9 +1152,12 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
 -static vm_nopage_ret_t vm_cant_nopage(struct vm_area_struct* vma,
 -                                 unsigned long address,
 -                                 int write_access)
--{
++static int vm_gart_nopage(struct vm_area_struct* vma,
++			  struct vm_fault *vmf, int type)
+ {
 -    return do_vm_cant_nopage(vma, address);
--}
++       return do_vm_gart_nopage(vma, vmf);
+ }
 -#endif /* __ia64__ */
 -#endif /* __AGP__BUILTIN__ */
 -
@@ -1301,13 +1198,10 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
 -static vm_nopage_ret_t vm_kmap_nopage(struct vm_area_struct* vma,
 -                                     unsigned long address,
 -                                     int write_access)
-+static int vm_pcie_nopage(struct vm_area_struct* vma,
-+			  struct vm_fault *vmf)
- {
+-{
 -     return do_vm_kmap_nopage(vma, address);
-+	return do_vm_pcie_nopage(vma, vmf);
- }
- 
+-}
+-
 -static vm_nopage_ret_t vm_pcie_nopage(struct vm_area_struct* vma,
 -                                     unsigned long address,
 -                                     int write_access)
@@ -1318,20 +1212,16 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
 -static vm_nopage_ret_t vm_gart_nopage(struct vm_area_struct* vma,
 -                                      unsigned long address, 
 -                                      int *type)
-+static int vm_gart_nopage(struct vm_area_struct* vma,
-+			  struct vm_fault *vmf)
- {
+-{
 -       return do_vm_gart_nopage(vma, address);
-+       return do_vm_gart_nopage(vma, vmf);
- }
- 
+-}
+-
 -
 -#endif /* LINUX_VERSION_CODE > KERNEL_VERSION(2,6,0) */
--
+ 
  void* ATI_API_CALL __ke_vma_file_priv(struct vm_area_struct* vma)
  {
-     return vma->vm_file->private_data;
-@@ -3775,7 +3687,7 @@
+@@ -4040,7 +3952,7 @@
      *(buf + i++) = pgprot & _PAGE_DIRTY    ? 'd' : '-';
      *(buf + i++) = pgprot & _PAGE_PSE      ? 'm' : 'k';
      *(buf + i++) = pgprot & _PAGE_GLOBAL   ? 'g' : 'l';
@@ -1340,7 +1230,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      *(buf + i++) = 0;
  
      return buf;
-@@ -3804,9 +3716,9 @@
+@@ -4069,9 +3981,9 @@
      return buf;
  }
  
@@ -1353,110 +1243,92 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
                              __ke_dma_addr_t* phys_address)
  {
      pgd_t* pgd_p;
-@@ -3830,7 +3742,7 @@
+@@ -4174,7 +4086,7 @@
  
  static struct vm_operations_struct vm_ops =
  {
--    nopage:  vm_nopage,
-+    fault:   vm_nopage,
+-    nopage:  ip_vm_nopage,
++    fault:  ip_vm_nopage,
      open:    ip_drm_vm_open,
      close:   ip_drm_vm_close,
  };
-@@ -3848,42 +3760,42 @@
+@@ -4183,7 +4095,7 @@
+ #ifdef __ia64__
+ static struct vm_operations_struct vm_cant_ops =
+ {
+-    nopage:  ip_vm_cant_nopage,
++    fault:  ip_vm_cant_nopage,
+     open:    ip_drm_vm_open,
+     close:   ip_drm_vm_close,
+ };
+@@ -4192,42 +4104,42 @@
  
  static struct vm_operations_struct vm_shm_ops =
  {
--    nopage:  vm_shm_nopage,
-+    fault:   do_vm_shm_nopage,
+-    nopage:  ip_vm_shm_nopage,
++    fault:  ip_vm_shm_nopage,
      open:    ip_drm_vm_open,
      close:   ip_drm_vm_close,
  };
  
  static struct vm_operations_struct vm_pci_bq_ops =
  {
--    nopage:  vm_dma_nopage,
-+    fault:   vm_dma_nopage,
+-    nopage:  ip_vm_dma_nopage,
++    fault:  ip_vm_dma_nopage,
      open:    ip_drm_vm_open,
      close:   ip_drm_vm_close,
  };
  
  static struct vm_operations_struct vm_ctx_ops =
  {
--    nopage:  vm_dma_nopage,
-+    fault:   vm_dma_nopage,
+-    nopage:  ip_vm_dma_nopage,
++    fault:  ip_vm_dma_nopage,
      open:    ip_drm_vm_open,
      close:   ip_drm_vm_close,
  };
  
--static struct vm_operations_struct vm_pcie_ops = 
-+static struct vm_operations_struct vm_pcie_ops =
+ static struct vm_operations_struct vm_pcie_ops = 
  {
--    nopage:  vm_pcie_nopage,
-+    fault:   vm_pcie_nopage,
+-    nopage:  ip_vm_pcie_nopage,
++    fault:  ip_vm_pcie_nopage,
      open:    ip_drm_vm_open,
      close:   ip_drm_vm_close,
  };
  
  static struct vm_operations_struct vm_kmap_ops =
  {
--    nopage:  vm_kmap_nopage,
-+    fault:   vm_kmap_nopage,
+-    nopage:  ip_vm_kmap_nopage,
++    fault:  ip_vm_kmap_nopage,
      open:    ip_drm_vm_open,
      close:   ip_drm_vm_close,
  };
  
  static struct vm_operations_struct vm_gart_ops =
  {
--    nopage:  vm_gart_nopage,
-+    fault:   vm_gart_nopage,
+-    nopage:  ip_vm_gart_nopage,
++    fault:  ip_vm_gart_nopage,
      open:    ip_drm_vm_open,
      close:   ip_drm_vm_close,
  };
-@@ -3892,14 +3804,14 @@
+@@ -4236,14 +4148,14 @@
  #ifndef __ia64__
  static struct vm_operations_struct vm_agp_bq_ops =
  {
--    nopage:  vm_nopage,
-+    fault:   vm_nopage,
+-    nopage:  ip_vm_nopage,
++    fault:  ip_vm_nopage,
      open:    ip_drm_vm_open,
      close:   ip_drm_vm_close,
  };
--#else		
-+#else
+ #else		
  static struct vm_operations_struct vm_cant_agp_bq_ops =
  {
--    nopage:  vm_cant_nopage,
-+    fault:   vm_cant_nopage,
+-    nopage:  ip_vm_cant_nopage,
++    fault:  ip_vm_cant_nopage,
      open:    ip_drm_vm_open,
      close:   ip_drm_vm_close,
  };
-@@ -3934,19 +3846,19 @@
- #ifdef __i386__
-                 if (boot_cpu_data.x86 > 3)
-                 {
--#ifdef FIREGL_USWC_SUPPORT                
-+#ifdef FIREGL_USWC_SUPPORT
-                     if (!firegl_pat_enabled)
--#endif                    
-+#endif
-                     {
-                         pgprot_val(vma->vm_page_prot) |= _PAGE_PCD;
-                         pgprot_val(vma->vm_page_prot) &= ~_PAGE_PWT;
-                     }
--#ifdef FIREGL_USWC_SUPPORT                    
-+#ifdef FIREGL_USWC_SUPPORT
-                     else
-                     {
-                         vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
--                    }    
--#endif                    
-+                    }
-+#endif
-                 }
- #endif /* __i386__ */
- #ifdef __ia64__
-@@ -3965,7 +3877,7 @@
-             }
+@@ -4298,7 +4210,7 @@
+             vma->vm_ops = &vm_ops;
  			break;
  
 -#ifdef FIREGL_USWC_SUPPORT                
@@ -1464,7 +1336,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
          case __KE_ADPT_REG:
  			{
  #ifdef __ia64__
-@@ -3985,7 +3897,7 @@
+@@ -4318,7 +4230,7 @@
                      }
                      else
                      {
@@ -1473,7 +1345,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
                      }
                  }
  #endif /* __i386__ */
-@@ -4004,7 +3916,7 @@
+@@ -4337,7 +4249,7 @@
              vma->vm_ops = &vm_ops;
              }
  			break;
@@ -1482,7 +1354,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
          case __KE_SHM:
              vma->vm_flags |= VM_SHM | VM_RESERVED; /* Don't swap */
-@@ -4038,7 +3950,7 @@
+@@ -4371,7 +4283,7 @@
  
  #ifdef __AGP__BUILTIN__
          case __KE_AGP:
@@ -1491,7 +1363,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  #ifdef __ia64__
              {
                  /*
-@@ -4062,9 +3974,9 @@
+@@ -4395,9 +4307,9 @@
                      if( firegl_pat_enabled )
                      {
                          vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
@@ -1503,7 +1375,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
                  if (REMAP_PAGE_RANGE(vma,offset))
                  {
-@@ -4081,8 +3993,8 @@
+@@ -4414,8 +4326,8 @@
  #endif
              break;
          case __KE_AGP_BQS:
@@ -1514,7 +1386,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
              {
                  /*
                   * On some systems we can't talk to bus dma address from
-@@ -4105,9 +4017,9 @@
+@@ -4438,9 +4350,9 @@
                      if( firegl_pat_enabled )
                      {
                         vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
@@ -1526,7 +1398,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
                  if (REMAP_PAGE_RANGE(vma,offset))
                  {
-@@ -4136,15 +4048,15 @@
+@@ -4469,15 +4381,15 @@
              break;
  
           case __KE_GART_USWC:
@@ -1545,7 +1417,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
              // fall through
           case __KE_GART_CACHEABLE:
               vma->vm_flags |= VM_RESERVED;
-@@ -4194,7 +4106,7 @@
+@@ -4527,7 +4439,7 @@
  #define FIREGL_agp_backend_release  _X(agp_backend_release)
  #define FIREGL_agp_memory           _X(agp_memory)
  
@@ -1554,8 +1426,8 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
  #if defined(CONFIG_AGP) || defined(CONFIG_AGP_MODULE)
  /*****************************************************************************/
-@@ -4309,7 +4221,7 @@
- int ATI_API_CALL __ke_agpgart_available(__ke_pci_dev_t *pcidev, int use_internal)
+@@ -4642,7 +4554,7 @@
+ int ATI_API_CALL __ke_agpgart_available(__ke_pci_dev_t *pcidev)
  {
      drm_agp_module_stub = &drm_agp;
 -    __ke_firegl_agpgart_inuse = KERNEL26_AGPGART_INUSE;	
@@ -1563,16 +1435,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      {
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,12)
          firegl_pci_device = (struct pci_dev*)(void*)pcidev;
-@@ -4362,7 +4274,7 @@
-     } else {
-          available = __ke_firegl_agpgart_available();
-     }
--	
-+
-     return available;
- }
- 
-@@ -4467,7 +4379,7 @@
+@@ -4778,7 +4690,7 @@
  
      if (AGP_AVAILABLE(copy_info))
      {
@@ -1581,7 +1444,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,12)
          if (firegl_agp_bridge == NULL)
-@@ -4565,7 +4477,7 @@
+@@ -4876,7 +4788,7 @@
  
  int ATI_API_CALL __ke_read_agp_caps_registers(__ke_pci_dev_t* dev, unsigned int *caps)
  {
@@ -1590,7 +1453,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  }
  
  int ATI_API_CALL __ke_agp_acquire(__ke_pci_dev_t* dev)
-@@ -4607,9 +4519,9 @@
+@@ -4913,9 +4825,9 @@
  
  /** \brief Runs a function on all other CPUs
   *  \param func_to_call function to be called on all other cpus
@@ -1602,7 +1465,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  {
  #ifdef CONFIG_SMP
  	smp_call_function( firegl_smp_func_parameter_wrap, (void*)func_to_call, 0, 1 );
-@@ -4716,7 +4628,7 @@
+@@ -4926,7 +4838,7 @@
  
  int ATI_API_CALL KCL_is_pat_enabled(void)
  {
@@ -1611,7 +1474,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  }
  
  static int ATI_API_CALL KCL_has_pat(void)
-@@ -4732,7 +4644,7 @@
+@@ -4942,7 +4854,7 @@
  {
      unsigned long cr0=0, cr4=0;
      unsigned long flags;
@@ -1620,7 +1483,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      local_irq_save(flags);
      cr0 = read_cr0() | 0x40000000;
      write_cr0(cr0);
-@@ -4763,7 +4675,7 @@
+@@ -4973,7 +4885,7 @@
  {
      unsigned long cr0 = 0, cr4 = 0;
      unsigned long flags;
@@ -1629,7 +1492,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      local_irq_save(flags);
      cr0 = read_cr0() | 0x40000000;
      write_cr0(cr0);
-@@ -4775,7 +4687,7 @@
+@@ -4985,7 +4897,7 @@
         write_cr4(cr4 & ~X86_CR4_PGE);
      }
       __flush_tlb();
@@ -1638,7 +1501,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      wrmsr(MSR_IA32_CR_PAT,  KCL_orig_pat[0], KCL_orig_pat[1]);
  
      cr0 = read_cr0();
-@@ -4798,7 +4710,7 @@
+@@ -5008,7 +4920,7 @@
           __KE_INFO("USWC is disabled in module parameters\n");
           return 0;
       }
@@ -1647,7 +1510,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
       if (!KCL_has_pat())
       {
          return 0;
-@@ -4808,13 +4720,13 @@
+@@ -5018,13 +4930,13 @@
  
       for ( i = 0; i < 2; i++ )
       {
@@ -1664,7 +1527,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
          }
      }
  
-@@ -4886,7 +4798,7 @@
+@@ -5096,7 +5008,7 @@
  } kasContext_t;
  
  /** \brief KAS context */
@@ -1673,7 +1536,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
  /** \brief Kernel support required to enable KAS */
  #if defined(cmpxchg)                        && \
-@@ -5188,7 +5100,7 @@
+@@ -5398,7 +5310,7 @@
      DBG_TRACE("Interrupt handler returned 0x%08X", ret);
  
      kasSetExecutionLevel(orig_level);
@@ -1682,7 +1545,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
      DBG_LEAVE("%d", ret);
      return ret;
-@@ -5463,7 +5375,7 @@
+@@ -5673,7 +5585,7 @@
  #endif
      spinlock_t lock;            /* OS spinlock object protecting the cache */
      unsigned int routine_type;  /* Type of routine the cache might be accessed from */
@@ -1691,7 +1554,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  } kasSlabCache_t;
  
  /** \brief Return Slab Cache object size
-@@ -5501,7 +5413,8 @@
+@@ -5711,7 +5623,8 @@
  
      slabcache_obj->routine_type = access_type;
      spin_lock_init(&(slabcache_obj->lock));
@@ -1701,7 +1564,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  
      DBG_TRACE("creating slab object '%s'", slabcache_obj->name);
  
-@@ -6417,7 +6330,7 @@
+@@ -6627,7 +6540,7 @@
  
      kas_xadd(puiDestination, iAdd, ret, "l");
  
@@ -1710,7 +1573,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
  #else
      return 0xDEADC0DE; /* To make compiler happy */
  #endif
-@@ -6500,7 +6413,7 @@
+@@ -6710,7 +6623,7 @@
  #ifdef FIREGL_CF_SUPPORT
  
  void *ATI_API_CALL KCL_lock_init()
@@ -1719,7 +1582,7 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      spinlock_t *lock;
  
      lock = kmalloc(sizeof(*lock), GFP_KERNEL);
-@@ -6512,7 +6425,7 @@
+@@ -6722,7 +6635,7 @@
  }
  
  void ATI_API_CALL KCL_lock_deinit(void *plock)
@@ -1728,9 +1591,9 @@ diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/
      if (plock == NULL)
      {
          __KE_ERROR("plock is NULL\n");
-diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.501/lib/modules/fglrx/build_mod/firegl_public.h fglrx-installer-8.501.new/lib/modules/fglrx/build_mod/firegl_public.h
---- fglrx-installer-8.501/lib/modules/fglrx/build_mod/firegl_public.h	2008-06-19 01:45:20.000000000 -0500
-+++ fglrx-installer-8.501.new/lib/modules/fglrx/build_mod/firegl_public.h	2008-07-07 14:06:44.000000000 -0500
+diff -Nur -x '*.orig' -x '*~' fglrx-installer-8.512/lib/modules/fglrx/build_mod/firegl_public.h fglrx-installer-8.512.new/lib/modules/fglrx/build_mod/firegl_public.h
+--- fglrx-installer-8.512/lib/modules/fglrx/build_mod/firegl_public.h	2008-07-21 14:32:08.000000000 -0400
++++ fglrx-installer-8.512.new/lib/modules/fglrx/build_mod/firegl_public.h	2008-07-21 14:32:14.000000000 -0400
 @@ -78,7 +78,7 @@
      if (!pgd_present(*(pgd_p)))	\
      { \

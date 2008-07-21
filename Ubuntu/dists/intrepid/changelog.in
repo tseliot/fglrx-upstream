@@ -1,3 +1,14 @@
+fglrx-installer (2:8.512-0ubuntu1) intrepid; urgency=low
+
+  * New upstream release.
+  * Update 02_2.6.26_support.dpatch for changes in firegl_public.c.
+  * debian/control:
+    - Depend upon libstdc++5.
+  * debian/xorg-driver-fglrx.postrm:
+    - Clean up AMD64 diversions properly.
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Mon, 21 Jul 2008 13:58:26 -0500
+
 fglrx-installer (2:8.501-0ubuntu3) intrepid; urgency=low
 
   * drop debian/patches/01_2.6.25.patch:
