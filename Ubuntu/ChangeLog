@@ -1,3 +1,9 @@
+2008-07-24 Mario Limonciello <superm1@ubuntu.com>
+        * dists/intrepid/rules:
+        - Make sure to set DRIDIR32 (LP: #250944)
+        * dists/intrepid/patches:
+        - Drop 2.6.26 patch that no longer applies.
+
 2008-07-21 Mario Limonciello <mario_limonciello@Dell.com>
         * dists/intrepid/patches/02_2.6.26_support.patch:
         - Update to current firegl_public.c in 8.512 release

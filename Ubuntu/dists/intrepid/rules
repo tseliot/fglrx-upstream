@@ -48,6 +48,7 @@ configure/$(PKG_driver)::
 			 overrides/$(PKG_kernel_src); do \
 		sed -e "s|#XMODDIR#|$(XMODDIR)|"     \
 			-e "s|#XMODDIR32#|$(XMODDIR32)|" \
+			-e "s|#DRIDIR32#|$(DRIDIR32)|"   \
 			-e "s|#LIBDIR#|$(LIBDIR)|"       \
 			-e "s|#DRIDIR#|$(DRIDIR)|"       \
 			-e "s|#CVERSION#|$(CVERSION)|"   \
