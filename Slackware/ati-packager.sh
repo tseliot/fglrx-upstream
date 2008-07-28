@@ -26,7 +26,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
     
-    BUILD_VER=1.3.2;
+    BUILD_VER=1.3.2-1;
     
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD;
@@ -83,7 +83,7 @@ function _init_env
     # Questo file è creato/modificato dalle funzioni che creano i pacchetti
     # e viene cancellato quando questo script viene invocato con il paramentro
     # --install
-    TMP_FILE=${DEST_DIR}tmpSlackwarePkg.txt;
+    TMP_FILE=${DEST_DIR}/tmpSlackwarePkg.txt;
 
     # Controllo l'esistenza di alcuni comandi utili ma non necessari
     which -V &> /dev/null && USE_WHICH=1 || USE_WHICH=0;
