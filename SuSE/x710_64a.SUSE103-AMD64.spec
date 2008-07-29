@@ -189,6 +189,7 @@ pushd $tmpdir/fglrx
   mkdir -p $RPM_BUILD_ROOT/usr/share/applications
   test -f amdccclesu.kdelnk && \
     install -m 644 amdccclesu.kdelnk     $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
+  install -m 755 libatiadlxx.so          $RPM_BUILD_ROOT/usr/%{_lib}
 popd
 pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   # add kernel patches here
@@ -365,10 +366,12 @@ exit 0
 /usr/include/GL/glxATI.h
 /usr/include/GL/glATI.h
 %ifarch x86_64
+/usr/lib/*
 /usr/X11R6/lib/libGL.so
 /usr/X11R6/lib/libGL.so.1
 /usr/X11R6/lib/libGL.so.1.2
 %endif
+/usr/%{_lib}/libatiadlxx.so
 /usr/X11R6/%{_lib}/libGL.so
 /usr/X11R6/%{_lib}/libGL.so.1
 /usr/X11R6/%{_lib}/libGL.so.1.2
