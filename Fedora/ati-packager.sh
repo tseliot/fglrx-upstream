@@ -121,6 +121,8 @@ build_package()
        ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/xorg/modules
     mv ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/modules/glesx.so \
        ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/xorg/modules
+    mv ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/modules/amdxmm.so \
+       ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/xorg/modules
       # ln -s ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/dri/fglrx_dri.so ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/lib/modules/dri/fglrx_dri.so
       ln -fs ../../../../${ARCH_LIB}/dri/fglrx_dri.so
     # Same work around for 32-on-64
@@ -135,7 +137,7 @@ build_package()
 
   # Create the directory for the OpenGL libraries on all releases
   mkdir -p ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/fglrx
-  mv ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/lib*.so.* \
+  mv ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/lib*.so* \
      ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/lib*.a \
      ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/fglrx
 

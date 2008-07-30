@@ -25,7 +25,6 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Requires:      kernel-module-%{name}-%{_kmodver} = %{version}-%{release}
 Requires:      system-config-display
-Requires:      compat-libstdc++
 
 Requires(post):   /sbin/ldconfig /sbin/chkconfig
 Requires(postun): /sbin/ldconfig /sbin/service
@@ -277,6 +276,8 @@ fi
 %{_sbindir}/amdnotifyui
 %{_sbindir}/atigetsysteminfo
 %{_bindir}/aticonfig
+%{_bindir}/atiodcli
+%{_bindir}/atiode
 %{_bindir}/fgl_glxgears
 %{_bindir}/fglrxinfo
 %{_bindir}/fglrx_xgamma
@@ -285,7 +286,8 @@ fi
 @X11_MODULE_DIR@/linux/*fglrx*.*
 @X11_MODULE_DIR@/esut.a
 @X11_MODULE_DIR@/glesx.so
-%{_libdir}/fglrx/*.so.*
+@X11_MODULE_DIR@/amdxmm.so
+%{_libdir}/fglrx/*.so*
 %{_mandir}/man[1-9]/atieventsd.*
 # Workaround
 @ICD_PATH_BUG@
@@ -320,6 +322,10 @@ fi
 
 
 %changelog
+* Wed Jul 30 2008 Michael Larabel <Michael AT phoronix DOT com> 8.51.0-1
+- Update packaging scripts to handle atiode, atidxmm, atiodcli, etc.. Patch contributed by stevew.
+
+* Sat Mar 08 2008 Michael Larabel <Michael AT phoronix DOT com> 8.47.1-1
 - Add compat-libstdc++ as a required dependency
 
 * Sat Mar 08 2008 Michael Larabel <Michael AT phoronix DOT com> 8.47.1-1
