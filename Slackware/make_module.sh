@@ -15,7 +15,8 @@ function _make_module_pkg
     makepkg -l y -c n ${MODULE_PACK_NAME};
     
     mv ${MODULE_PACK_NAME} ${DEST_DIR};
-    echo ${MODULE_PACK_NAME} >> ${TMP_FILE};
+
+    [ "x${TMP_FILE}" != "x" ] && echo ${MODULE_PACK_NAME} >> ${TMP_FILE};
 
     cd ${ROOT_DIR};
    

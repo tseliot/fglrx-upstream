@@ -147,7 +147,7 @@ function _make_x
     
     makepkg -l y -c n ${X_PACK_NAME};
     mv ${X_PACK_NAME} ${DEST_DIR};
-    echo ${X_PACK_NAME} >> ${TMP_FILE};
+    [ "x${TMP_FILE}" != "x" ] && echo ${X_PACK_NAME} >> ${TMP_FILE};
 
     cd ${ROOT_DIR};
     

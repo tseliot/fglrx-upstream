@@ -81,9 +81,14 @@ function _init_env
 
     # File temporaneo che contiene l'elenco dei pacchetti creati.
     # Questo file è creato/modificato dalle funzioni che creano i pacchetti
+    # se, e solo se, l'installer ($PPID) viene invocato con l'opzione --buildandinstallpkg,
     # e viene cancellato quando questo script viene invocato con il paramentro
-    # --install
-    TMP_FILE=${DEST_DIR}/tmpSlackwarePkg.txt;
+    # --installpkg
+    if grep -q -- '--buildandinstallpkg' /proc/${PPID}/cmdline; then
+      TMP_FILE=${DEST_DIR}/tmpSlackwarePkg.txt;
+    else
+      TMP_FILE='';
+    fi
 
     # Controllo l'esistenza di alcuni comandi utili ma non necessari
     which -V &> /dev/null && USE_WHICH=1 || USE_WHICH=0;
@@ -177,7 +182,7 @@ function _print_with_color
 
 # Implementa l'opzione --buildpkg dello script
 # $1: nome del pacchetto da costruire
-# $2 puè essere:
+# $2 può essere:
 # '' : costruisce il pacchetto
 # '--dryrun': controlla solo che il parametro $1 sia corretto
 #             ritorna 0 se lo è, 1 altrimenti
