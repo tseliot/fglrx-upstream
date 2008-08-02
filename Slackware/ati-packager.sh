@@ -26,7 +26,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
     
-    BUILD_VER=1.3.3;
+    BUILD_VER=1.3.4;
     
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD;
@@ -40,7 +40,7 @@ function _init_env
 	strip tar tr xargs);
 	
     # Comandi esterni da cui il builder dipende nella fase di installazione dei pacchetti
-    INSTALL_DEPS=(basename dirname depmod installpkg md5sum upgradepkg);
+    INSTALL_DEPS=(basename dirname depmod installpkg lsmod md5sum modprobe ps upgradepkg);
     
     # Mi assicuro che tutti i comandi interni alla bash necessari, siano abilitati
     enable ${BUILTIN_DEPS[@]};
@@ -227,6 +227,45 @@ function _buildpkg
     
     return 0;
 }
+
+# Implemente l'opzione --installpkg dello script
+function _installpkg
+{
+  _print_with_color '1;32' "${MESSAGE[19]}";
+
+  # Controllo l'esistenza del file temporaneo in cui sono scritti i nomi dei pacchetti
+  # da installare
+  [ ! -f ${TMP_FILE} ] && _print_with_color '1;31' "${MESSAGE[16]} ${TMP_FILE}, ${MESSAGE[17]}" && return 1;
+
+  # Controllo che il server X non sia attivo
+  ps -C X >/dev/null && _print_with_color '1;31' "${MESSAGE[16]} ${MESSAGE[20]}" && return 1;
+
+  # Se MODULE_IN_MEMORY == 1 il modulo è già presente in memoria
+  local MODULE_IN_MEMORY=0;
+  lsmod | grep -q ${MODULE_NAME%.ko.gz} && MODULE_IN_MEMORY=1;
+
+  # Installo i pacchetti
+  for pkg in $(<${TMP_FILE});
+    do
+      if [ -f ${DIR_PACKAGE}${pkg%.tgz} ]; then
+        upgradepkg --reinstall "${DEST_DIR}/$pkg"; # Il pacchetto era già installato
+      elif [ -f ${DIR_PACKAGE}$(echo $pkg | cut -d'-' -f-2)* ]; then
+	upgradepkg "${DEST_DIR}/$pkg"; # Il pacchetto era installato ad una versione diversa
+      else
+	installpkg "${DEST_DIR}/$pkg"; # Il pacchetto non era installato
+      fi
+    done
+
+  # Se il modulo è già in memoria, scarico il vecchio e
+  # ricarico il nuovo
+  if [ $MODULE_IN_MEMORY -eq 1 ]; then
+    echo "${MESSAGE[21]} ${MODULE_NAME%.ko.gz};";
+    modprobe -r ${MODULE_NAME%.ko.gz};
+    modprobe ${MODULE_NAME%.ko.gz};
+  fi
+
+  return 0;
+}
     
 # Directory che contiene l'elenco dei pacchetti installati nelle distribuzioni 
 # basate su Slackware
@@ -333,23 +372,13 @@ case $1 in
     # Installo i pacchetti creati dall'opzione --buildpkg, il nome dei pacchetti creati
     # si trova nel file ${TMP_FILE}. Alla fine elimino suddetto file.
     --installpkg)
-	[ ! -f ${TMP_FILE} ] && echo "${MESSAGE[16]} ${TMP_FILE}, ${MESSAGE[17]}" && exit 1;
-
-	for pkg in $(<${TMP_FILE});
-	do
-	    if [ -f ${DIR_PACKAGE}${pkg%.tgz} ]; then
-		upgradepkg --reinstall "${DEST_DIR}/$pkg"; # Il pacchetto era già installato
-	    elif [ -f ${DIR_PACKAGE}$(echo $pkg | cut -d'-' -f-2)* ]; then
-		upgradepkg "${DEST_DIR}/$pkg"; # Il pacchetto era installato ad una versione diversa
-	    else
-		installpkg "${DEST_DIR}/$pkg"; # Il pacchetto non era installato
-	    fi
-	done
+        _installpkg;
+        VALUE=$?;
 	
 	rm -f ${TMP_FILE};
-	exit 0;
+	exit $VALUE;
 	;;
-    
+
     *)
 	echo "${1}: unsupported option passed by ati-installer.sh";
 	exit 1;

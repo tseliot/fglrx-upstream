@@ -17,3 +17,6 @@ ERROR: the version of glibc must be
 ERROR:
 file not found
 must be either blank or --dryrun
+Install/Upgrade package/s
+must be kill server X
+Refresh module

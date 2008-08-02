@@ -17,3 +17,6 @@ ERRORE: la versione delle librerie glibc deve essere
 ERRORE:
 file non trovato
 deve essere o blank o --dryrun
+Installazione/Upgrade dei pacchetti
+si deve killare il server X
+Ricarico il modulo
