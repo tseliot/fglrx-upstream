@@ -113,7 +113,7 @@ pushd $tmpdir/fglrx
     install -m 755 libatiadlxx.so          $RPM_BUILD_ROOT/usr/lib
     rm libatiadlxx.so
   fi
-  for file in libAMDXvBA.cap libAMDXvBA.so.1.0; do
+  for file in libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0; do
     if [ -f usr/X11R6/lib/$file ]; then
       mv usr/X11R6/lib/$file .
       install -m 755 $file                 $RPM_BUILD_ROOT/usr/lib
@@ -190,9 +190,7 @@ pushd $tmpdir/fglrx
   test -f amdccclesu.kdelnk && \
     install -m 644 amdccclesu.kdelnk     $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
   install -m 755 libatiadlxx.so          $RPM_BUILD_ROOT/usr/%{_lib}
-%ifarch %ix86
-  install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
-%endif
+  install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
 popd
 pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   # add kernel patches here
@@ -375,10 +373,9 @@ exit 0
 /usr/X11R6/lib/libGL.so.1.2
 %endif
 /usr/%{_lib}/libatiadlxx.so
-%ifarch %ix86
-/usr/%{_lib}/libAMDXvBA.cap 
+/usr/%{_lib}/libAMDXvBA.cap
 /usr/%{_lib}/libAMDXvBA.so.1.0
-%endif
+/usr/%{_lib}/libXvBAW.so.1.0
 /usr/X11R6/%{_lib}/libGL.so
 /usr/X11R6/%{_lib}/libGL.so.1
 /usr/X11R6/%{_lib}/libGL.so.1.2
