@@ -19,10 +19,9 @@ if [ `dpkg --print-installation-architecture` = "amd64" ]; then
 	HAS_LIB32="yes"
 fi
 
-
 fix_diversions()
 {
-    # remove old-style diversions
+    # Remove very old style diversions
     if [ -d /usr/share/fglrx/diversions ]; then
 	if [ -n "$HAS_LIB32" ]; then
 	    dpkg-divert --remove --package $PKGNAME \
@@ -36,6 +35,25 @@ fix_diversions()
 
 	rmdir /usr/share/fglrx/diversions || true
     fi
+
+    #remove old and unnecessary libGL.so.1 symlinks
+    if [ -L /usr/lib/fglrx/libGL.so.1.xlibmesa ]; then
+        rm  /usr/lib/fglrx/libGL.so.1.xlibmesa
+    fi
+
+    if [ -L /usr/lib32/fglrx/libGL.so.1.xlibmesa ]; then
+        rm  /usr/lib32/fglrx/libGL.so.1.xlibmesa
+    fi
+    #remove unnecessary X11R6 symlinks that may not have
+    #been cleaned up in earlier releases
+    for i in /usr/lib/libGL.so.1 \
+             /usr/lib32/libGL.so.1 \
+             /usr/X11R6/lib/libGL.so.1 \
+             /usr/X11R6/lib/libGL.so.1.2 \
+             /usr/X11R6/lib32/libGL.so.1 \
+             /usr/X11R6/lib32/libGL.so.1.2 ; do \
+	dpkg-divert --remove --package $PKGNAME $i > /dev/null; \
+     done
 }
 
 case "$1" in
@@ -44,32 +62,16 @@ case "$1" in
         # remove old fglrx diversions
 	fix_diversions
 
-	# create new diversion directories
-	if [ ! -d /usr/lib/fglrx ]; then
-		mkdir -p /usr/lib/fglrx || true
-	fi
-	if [ -d /usr/X11R6 ] && [ ! -d /usr/X11R6/lib/fglrx ]; then
-		mkdir -p /usr/X11R6/lib/fglrx || true
-	fi
-	if [ -n "$HAS_LIB32" ] && [ ! -d /usr/lib32/fglrx ]; then
-		mkdir -p /usr/lib32/fglrx || true
-	fi
-	if [ -n "$HAS_LIB32" ] && [ -d /usr/X11R6 ] && [ ! -d /usr/X11R6/lib32/fglrx ]; then
-		mkdir -p /usr/X11R6/lib32/fglrx || true
-	fi
-				
 	# make new diversions
-	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libGL.so.1.xlibmesa /usr/lib/libGL.so.1 > /dev/null
+	if [ ! -d /usr/lib/fglrx ]; then
+		mkdir -p /usr/lib/fglrx
+	fi
 	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libGL.so.1.2.xlibmesa /usr/lib/libGL.so.1.2 > /dev/null
 
-	dpkg-divert --add --rename --package $PKGNAME --divert /usr/X11R6/lib/fglrx/libGL.so.1.xlibmesa /usr/X11R6/lib/libGL.so.1 > /dev/null
-	dpkg-divert --add --rename --package $PKGNAME --divert /usr/X11R6/lib/fglrx/libGL.so.1.2.xlibmesa /usr/X11R6/lib/libGL.so.1.2 > /dev/null
-
 	if [ -n "$HAS_LIB32" ]; then
-		dpkg-divert --add --rename --package $PKGNAME --divert /usr/X11R6/lib32/fglrx/libGL.so.1.xlibmesa /usr/X11R6/lib32/libGL.so.1 > /dev/null
-		dpkg-divert --add --rename --package $PKGNAME --divert /usr/X11R6/lib32/fglrx/libGL.so.1.2.xlibmesa /usr/X11R6/lib32/libGL.so.1.2 > /dev/null
-
-		dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib32/fglrx/libGL.so.1.xlibmesa /usr/lib32/libGL.so.1 > /dev/null
+		if [ ! -d /usr/lib32/fglrx ]; then
+			mkdir -p /usr/lib32/fglrx
+		fi
 		dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib32/fglrx/libGL.so.1.2.xlibmesa /usr/lib32/libGL.so.1.2 > /dev/null
 	fi
     ;;

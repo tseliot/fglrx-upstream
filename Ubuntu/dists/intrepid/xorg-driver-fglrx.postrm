@@ -21,30 +21,7 @@ PKGNAME=xorg-driver-fglrx
 case "$1" in
     remove|purge)
 	dpkg-divert --remove --rename --package $PKGNAME --divert /usr/lib/fglrx/libGL.so.1.2.xlibmesa /usr/lib/libGL.so.1.2 > /dev/null
-
-	dpkg-divert --remove --rename --package $PKGNAME --divert /usr/X11R6/lib32/fglrx/libGL.so.1.2.xlibmesa /usr/X11R6/lib32/libGL.so.1.2 > /dev/null
-
-	dpkg-divert --remove --rename --package $PKGNAME --divert /usr/X11R6/lib32/fglrx/libGL.so.1.xlibmesa /usr/X11R6/lib32/libGL.so.1 > /dev/null
-
 	dpkg-divert --remove --rename --package $PKGNAME --divert /usr/lib32/fglrx/libGL.so.1.2.xlibmesa /usr/lib32/libGL.so.1.2 > /dev/null
-
-	dpkg-divert --remove --rename --package $PKGNAME --divert /usr/lib32/fglrx/libGL.so.1.xlibmesa /usr/lib32/libGL.so.1 > /dev/null
-
-	dpkg-divert --remove --rename --package $PKGNAME --divert /usr/X11R6/lib/fglrx/libGL.so.1.2.xlibmesa /usr/X11R6/lib/libGL.so.1.2 > /dev/null
-
-	if [ -d /usr/lib/fglrx ]; then
-		rmdir /usr/lib/fglrx || true;
-	fi
-	if [ -d /usr/X11R6/lib/fglrx ]; then	
-		rmdir /usr/X11R6/lib/fglrx || true;
-	fi
-	if [ -d /usr/X11R6/lib32/fglrx ]; then
-		rmdir /usr/X11R6/lib32/fglrx || true;
-	fi
-	if [ -d /usr/lib32/fglrx ]; then
-		rmdir /usr/lib32/fglrx || true;
-	fi
-	ldconfig
     ;;
     
     upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
