@@ -14,7 +14,9 @@ Build-Depends: debhelper (>= 5),
                libxcursor1, 
                fakeroot, 
                ia32-libs [amd64],
-               libstdc++5
+               libstdc++5,
+               libdrm2,
+               libgl1-mesa-glx
 Standards-Version: 3.8.0
 Homepage: http://ati.amd.com/support/driver.html
 
