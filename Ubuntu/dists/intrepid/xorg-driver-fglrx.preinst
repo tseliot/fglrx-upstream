@@ -59,14 +59,15 @@ fix_diversions()
 case "$1" in
     install|upgrade)
 
-        # remove old fglrx diversions
+        ### remove old fglrx diversions ###
 	fix_diversions
 
-	# make new diversions
-	if [ ! -d /usr/lib/fglrx ]; then
+	### make new diversions ###
+	if [ ! -d /usr/lib/fglrx ]; then ###
 		mkdir -p /usr/lib/fglrx
 	fi
 	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libGL.so.1.2.xlibmesa /usr/lib/libGL.so.1.2 > /dev/null
+	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libdri.so.xlibmesa /usr/lib/xorg/modules/extensions/libdri.so > /dev/null
 
 	if [ -n "$HAS_LIB32" ]; then
 		if [ ! -d /usr/lib32/fglrx ]; then

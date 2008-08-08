@@ -18,3 +18,4 @@ arch/#ARCH#/usr/X11R6/#LIBDIR#/modules/dri     #DRIDIR#
 #XARCH#/usr/X11R6/#LIBDIR#/modules/*.so        #XMODDIR#
 #XARCH#/usr/X11R6/#LIBDIR#/modules/drivers     #XMODDIR#
 #XARCH#/usr/X11R6/#LIBDIR#/modules/linux       #XMODDIR#
+#XARCH#/usr/X11R6/#LIBDIR#/modules/extensions  #XMODDIR#

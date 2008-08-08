@@ -1,3 +1,7 @@
+2008-08-08 Mario Limonciello <superm1@ubuntu.com>
+        * dists/intrepid/{xorg-driver-fglrx.preinst,xorg-driver-fglrx.postrm,xorg-driver-fglrx.install.in}:
+        - Divert the real libdri, but install the AMD one
+
 2008-08-06 Mario Limonciello <superm1@ubuntu.com>
         * dists/intrepid/control:
         - Adjust build depends to include libgl1-mesa-glx for symlink
