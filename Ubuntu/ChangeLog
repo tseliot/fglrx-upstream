@@ -1,3 +1,14 @@
+2008-08-06 Mario Limonciello <superm1@ubuntu.com>
+        * dists/intrepid/control:
+        - Adjust build depends to include libgl1-mesa-glx for symlink
+        - Adjust build depends to include libdrm2 for new depends in dpkg-shlibdepends
+        * dists/intrepid/rules:
+        - Install diversion directory for 64 bit
+        * dists/intrepid/xorg-driver-fglrx.dirs
+        - Install diversion directory for 32 bit
+        * dists/intrepid/xorg-driver-fglrx.{preinst,postrm}
+        - Adjust symlinks made and clean up old ones
+
 2008-07-24 Mario Limonciello <superm1@ubuntu.com>
         * dists/intrepid/rules:
         - Make sure to set DRIDIR32 (LP: #250944)
