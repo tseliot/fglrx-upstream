@@ -49,6 +49,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin \
          $RPM_BUILD_ROOT%{DRI_DRIVERS32_DIR} \
 %endif
          $RPM_BUILD_ROOT%{MODULES_DIR}/{linux,drivers,extensions} \
+         $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions \
          $RPM_BUILD_ROOT%{DRI_DRIVERS_DIR} \
          $RPM_BUILD_ROOT/usr/include/GL \
          $RPM_BUILD_ROOT/usr/X11R6/%{_lib} \
@@ -193,6 +194,7 @@ pushd $tmpdir/fglrx
 %ifarch %ix86
   install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
 %endif
+  install -m 755 libdri.so              $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
 popd
 pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   # add kernel patches here
@@ -399,6 +401,7 @@ exit 0
 /usr/X11R6/%{_lib}/libfglrx_pp.so*
 %verify(not mtime) %{MODULES_DIR}/drivers/fglrx_drv.*
 %{MODULES_DIR}/linux/libfglrxdrm.*
+%{MODULES_DIR}/updates/extensions/libdri.so
 # km_fglrx
 %dir /usr/src/kernel-modules
 /usr/src/kernel-modules/fglrx/
