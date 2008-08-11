@@ -24,7 +24,7 @@ Package: xorg-driver-fglrx
 Architecture: amd64 i386
 Recommends: fglrx-amdcccle
 Depends: ${shlibs:Depends}, xserver-xorg-core, fglrx-kernel-source
-Conflicts: fglrx-driver, xfree86-driver-fglrx, nvidia-glx, nvidia-glx-legacy, nvidia-glx-new
+Conflicts: fglrx-driver, xfree86-driver-fglrx, nvidia-glx, nvidia-glx-legacy, nvidia-glx-new, nvidia-glx-71, nvidia-glx-96, nvidia-glx-173, nvidia-glx-177
 Replaces: fglrx-driver, xfree86-driver-fglrx
 Description: Video driver for the ATI graphics accelerators
  Video driver for the ATI Radeon and FireGL graphics accelerators.
