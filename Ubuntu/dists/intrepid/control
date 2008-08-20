@@ -58,6 +58,7 @@ Package: fglrx-kernel-source
 Architecture: amd64 i386
 Depends: make, dkms, linux-libc-dev, linux-headers
 Suggests: xorg-driver-fglrx
+Conflicts: pentium-builder
 Description: Kernel module source for the ATI graphics accelerators
  Video driver for the ATI Radeon and FireGL graphics accelerators.
  .
