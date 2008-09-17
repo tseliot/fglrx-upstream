@@ -1,3 +1,11 @@
+2008-09-17  Aric Cyr <Aric.Cyr@gmail.com>
+
+	* dists/*/fglrx-driver.{preinst,postrm}
+	- Added diversion of libdri.so required by latest driver
+
+	* dists/*/rules
+	- Added extensions directory to package
+
 2008-02-08  Mario Limonciello <superm1@uubntu.com>
 
        * dists/lenny/rules

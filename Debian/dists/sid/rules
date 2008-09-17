@@ -163,6 +163,7 @@ ifeq ($(DEB_BUILD_ARCH),amd64)
 	dh_install -p$(PKG_driver) "usr/X11R6/lib64/modules/dri"     "usr/lib"
 	dh_install -p$(PKG_driver) "usr/X11R6/lib64/modules/linux"   "usr/lib/xorg/modules"
 	dh_install -p$(PKG_driver) "usr/X11R6/lib64/modules/drivers" "usr/lib/xorg/modules"
+	dh_install -p$(PKG_driver) "usr/X11R6/lib64/modules/extensions" "usr/lib/xorg/modules"
 	dh_install -p$(PKG_driver) "usr/X11R6/lib64/modules/*.so"    "usr/lib/xorg/modules"
 	dh_install -p$(PKG_driver) "usr/X11R6/lib64/modules/*.a"     "usr/lib/xorg/modules"
 
@@ -173,6 +174,7 @@ else
 	dh_install -p$(PKG_driver) "usr/X11R6/lib/modules/dri"     "usr/lib"
 	dh_install -p$(PKG_driver) "usr/X11R6/lib/modules/linux"   "usr/lib/xorg/modules"
 	dh_install -p$(PKG_driver) "usr/X11R6/lib/modules/drivers" "usr/lib/xorg/modules"
+	dh_install -p$(PKG_driver) "usr/X11R6/lib/modules/extensions" "usr/lib/xorg/modules"
 	dh_install -p$(PKG_driver) "usr/X11R6/lib/modules/*.so"    "usr/lib/xorg/modules"
 	dh_install -p$(PKG_driver) "usr/X11R6/lib/modules/*.a"     "usr/lib/xorg/modules"
 endif

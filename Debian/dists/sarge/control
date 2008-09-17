@@ -2,7 +2,7 @@ Source: fglrx-installer
 Section: non-free/x11
 Priority: extra
 Maintainer: Aric Cyr <Aric.Cyr@gmail.com>
-Build-Depends: debhelper (>= 4.2.11), wget, rpm, bzip2, xserver-xfree86 | xserver-xorg, x-dev, ia32-libs [amd64]
+Build-Depends: debhelper (>= 4.2.11), wget, rpm, bzip2, xserver-xfree86 | xserver-xorg, x-dev, ia32-libs [amd64], libstdc++5
 Standards-Version: 3.6.1
 
 Package: fglrx-driver

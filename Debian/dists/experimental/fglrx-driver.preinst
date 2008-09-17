@@ -36,6 +36,9 @@ divert_libGL ()
     dpkg-divert --add --package fglrx-driver \
         --divert "$1/fglrx/diversions/libGL.so.1" \
         --rename "$1/libGL.so.1"
+	dpkg-divert --add --package fglrx-driver \
+        --divert "$1/fglrx/diversions/libdri.so" \
+        --rename "$1/xorg/modules/extensions/libdri.so"
 
     if [ "$2" ]; then
         # move our libGL back in its place
