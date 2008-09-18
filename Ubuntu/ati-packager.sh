@@ -30,7 +30,7 @@ if [ "$USER" != "root" ]; then
         ROOT="/usr/bin/sudo"
     fi
 else
-    ROOT=""
+    ROOT="sh -c"
 fi
 
 #Synaptic availablity
