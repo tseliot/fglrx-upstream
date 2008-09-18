@@ -136,7 +136,7 @@ installPrep()
 {
     #check for dkms
     if [ ! -x /usr/sbin/dkms ]; then
-        if [ "$2" != "--dryrun"]; then
+        if [ "$2" != "--dryrun" ]; then
             if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
                 TEMPFILE=`/bin/tempfile`
                 cat > $TEMPFILE << EOF
