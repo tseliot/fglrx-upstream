@@ -71,7 +71,7 @@ EOF
                 $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
                 rm $TEMPFILE -f
             else
-                $ROOT apt-get -y install dpkg-dev
+                $ROOT "apt-get -y install dpkg-dev"
             fi
             #do a check again in case we have failed here
             if [ ! -x /usr/bin/dpkg-checkbuilddeps ]; then
@@ -97,7 +97,7 @@ EOF
                 $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
                 rm $TEMPFILE -f
             else
-                $ROOT apt-get -y install $missing_dependencies
+                $ROOT "apt-get -y install $missing_dependencies"
             fi
             #do a check again, abort if we still have some not installed
             missing_dependencies=$(dpkg-checkbuilddeps packages/Ubuntu/dists/$release/control 2>&1 | awk -F: '{ print $3 }' | sed 's/([^)]*)//g' | sed 's/|\s[^\s]*//g')
@@ -145,7 +145,7 @@ EOF
                 $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
                 rm $TEMPFILE -f
             else
-                $ROOT apt-get -y install dkms
+                $ROOT "apt-get -y install dkms"
             fi
         else
             echo "We would have installed DKMS here"

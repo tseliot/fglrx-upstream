@@ -2,6 +2,7 @@
         * ati-packager.sh:
         - Correct typo with space in dry run
         - When running as root, launch commands with sh -c
+        - Wrap commands launched as root in ""
 
 2008-08-20 Mario Limonciello <superm1@ubuntu.com>
         * dists/intrepid/control:
