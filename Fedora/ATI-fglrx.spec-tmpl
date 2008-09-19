@@ -275,6 +275,7 @@ fi
 %{_sbindir}/atieventsd
 %{_sbindir}/amdnotifyui
 %{_sbindir}/atigetsysteminfo
+%{_bindir}/amdxdg-su
 %{_bindir}/aticonfig
 %{_bindir}/atiodcli
 %{_bindir}/atiode
@@ -288,6 +289,7 @@ fi
 @X11_MODULE_DIR@/glesx.so
 @X11_MODULE_DIR@/amdxmm.so
 %{_libdir}/fglrx/*.so*
+%{_libdir}/fglrx/*.cap
 %{_mandir}/man[1-9]/atieventsd.*
 # Workaround
 @ICD_PATH_BUG@
@@ -322,6 +324,9 @@ fi
 
 
 %changelog
+* Fri Sep 19 2008 Michael Larabel <Michael AT phoronix DOT com> 8.53.2-1
+- Update packaging scripts so they build properly with latest driver. Patch contributed by stevew.
+
 * Wed Jul 30 2008 Michael Larabel <Michael AT phoronix DOT com> 8.51.0-1
 - Update packaging scripts to handle atiode, atidxmm, atiodcli, etc.. Patch contributed by stevew.
 

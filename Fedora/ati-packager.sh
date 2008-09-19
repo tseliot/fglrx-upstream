@@ -109,6 +109,8 @@ build_package()
 
   # Move files as required for X11R7-based distribution releases
   if echo "${X11_RELEASE}"|grep "x7.0" &> /dev/null ; then
+    # get rid of libdri.so so we don't conflict with system package!
+    rm -rf ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/modules/extensions
     mv ${TMP_RPM_BUILD_DIR}/usr/X11R6/include/X11 \
        ${TMP_RPM_BUILD_DIR}/usr/include
     mkdir -p ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/dri
@@ -137,8 +139,7 @@ build_package()
 
   # Create the directory for the OpenGL libraries on all releases
   mkdir -p ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/fglrx
-  mv ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/lib*.so* \
-     ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/lib*.a \
+  mv ${TMP_RPM_BUILD_DIR}/usr/X11R6/${ARCH_LIB}/lib* \
      ${TMP_RPM_BUILD_DIR}/usr/${ARCH_LIB}/fglrx
 
   # Create some symlinks so the package owns and will remove them on package removal
