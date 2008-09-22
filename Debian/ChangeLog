@@ -1,3 +1,11 @@
+2008-09-22  Aric Cyr <Aric.Cyr@gmail.com>
+
+	* dists/*/fglrx-driver.{preinst,postrm}
+	- Fixed diversion of libdri.so for upgrade case from APT fglrx-driver
+
+	* ati-package.sh
+	- remove Sarge support due to lack of XFree86 4.3.0 support upstream
+
 2008-09-17  Aric Cyr <Aric.Cyr@gmail.com>
 
 	* dists/*/fglrx-driver.{preinst,postrm}
