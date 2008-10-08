@@ -209,8 +209,8 @@ buildPackage()
     case ${X_NAME} in
         gutsy|7.10)  X_DIR=x710; X_NAME=gutsy;;
         hardy|8.04)  X_DIR=x710; X_NAME=hardy;;
-        intrepid|8.10) X_DIR=x710; X_NAME=intrepid;;
-        source) X_DIR=x710; X_NAME=intrepid;;
+        intrepid|8.10) X_DIR=x740; X_NAME=intrepid;;
+        source) X_DIR=x740; X_NAME=intrepid;;
         *)
         #Automatically detect
         echo "Error: invalid package name passed to --buildpkg" ; exit 1 ;;

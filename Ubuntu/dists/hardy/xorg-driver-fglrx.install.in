@@ -1,0 +1,21 @@
+debian/overrides/xorg-driver-fglrx             usr/share/lintian/overrides
+debian/acpi/fglrx-*-aticonfig                  etc/acpi/events
+debian/acpi/fglrx-powermode.sh                 etc/acpi
+debian/10fglrx                                 etc/X11/Xsession.d
+etc/ati                                        etc
+
+#binaries
+arch/#ARCH#/usr/sbin/*                         usr/sbin
+arch/#ARCH#/usr/X11R6/bin/ati*                 usr/bin
+arch/#ARCH#/usr/X11R6/bin/fgl*                 usr/bin
+usr/sbin/*sh                                   usr/share/fglrx
+
+#DRI stuff
+arch/#ARCH#/usr/X11R6/#LIBDIR#/*.so*           usr/lib
+arch/#ARCH#/usr/X11R6/#LIBDIR#/modules/dri     #DRIDIR#
+
+#Xorg stuff
+#XARCH#/usr/X11R6/#LIBDIR#/modules/*.so        #XMODDIR#
+#XARCH#/usr/X11R6/#LIBDIR#/modules/drivers     #XMODDIR#
+#XARCH#/usr/X11R6/#LIBDIR#/modules/linux       #XMODDIR#
+#XARCH#/usr/X11R6/#LIBDIR#/modules/extensions  #XMODDIR#

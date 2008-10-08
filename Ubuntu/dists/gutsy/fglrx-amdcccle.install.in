@@ -1,0 +1,7 @@
+debian/overrides/fglrx-amdcccle usr/share/lintian/overrides
+usr/share/icons/*.xpm usr/share/pixmaps
+debian/amdcccle.desktop usr/share/applications
+debian/amdcccle.kdelnk usr/share/applnk
+usr/share/ati usr/share
+arch/#ARCH#/usr/X11R6/bin/amdcccle usr/bin
+

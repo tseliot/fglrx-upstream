@@ -1,0 +1,100 @@
+#!/usr/bin/make -f
+# Copyright (C) 2002-2005 Flavio Stanchina
+# Copyright (C) 2005-2006 Aric Cyr
+# Copyright (C) 2007-2008 Mario Limonciello
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+# Figure out some magic versioning
+CVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d- -f1 | cut -d\: -f2)
+DVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d\: -f2)
+DISTRO   := $(shell dpkg-parsechangelog | grep '^Distribution:' | cut -d' ' -f2 | cut -d\: -f2)
+
+#Kernel patches for newer development release kernel
+#In case these break stuff, don't apply to stable
+ifeq ($(DISTRO),intrepid)
+	include /usr/share/cdbs/1/rules/simple-patchsys.mk
+endif
+
+#Directory naming schemes
+DRIDIR := usr/lib
+DRIDIR32 := usr/lib32
+XMODDIR := $(DRIDIR)/xorg/modules
+ifeq ($(DEB_BUILD_ARCH),amd64)
+	LIBDIR=lib64
+	ARCH=x86_64
+	XARCH=x710_64a
+else
+	LIBDIR=lib
+	ARCH=x86
+	XARCH=x710
+endif
+
+# Package names
+PKG_driver      := xorg-driver-fglrx
+PKG_driver_dev  := xorg-driver-fglrx-dev
+PKG_kernel_src  := fglrx-kernel-source
+PKG_control     := fglrx-amdcccle
+
+configure/$(PKG_driver)::
+
+	#Create important strings
+	for i in 10fglrx \
+			 dkms.conf \
+			 $(PKG_driver).install \
+			 $(PKG_driver_dev).install \
+			 $(PKG_kernel_src).install \
+			 $(PKG_control).install \
+			 overrides/$(PKG_kernel_src); do \
+		sed -e "s|#XMODDIR#|$(XMODDIR)|"     \
+			-e "s|#XMODDIR32#|$(XMODDIR32)|" \
+			-e "s|#DRIDIR32#|$(DRIDIR32)|"   \
+			-e "s|#LIBDIR#|$(LIBDIR)|"       \
+			-e "s|#DRIDIR#|$(DRIDIR)|"       \
+			-e "s|#CVERSION#|$(CVERSION)|"   \
+			-e "s|#XARCH#|$(XARCH)|"   \
+			-e "s|#ARCH#|$(ARCH)|"   \
+			debian/$$i.in > debian/$$i;      \
+	done
+
+	# remove exec bit on everything
+	find arch \
+		etc \
+		lib \
+		module \
+		usr \
+		$(XARCH)     -type f | xargs chmod -x
+
+	# set executable on user apps
+	find arch/$(ARCH)/usr/sbin \
+		arch/$(ARCH)/usr/X11R6/bin \
+		usr/sbin/ -type f | xargs chmod a+x
+
+	# set exec bit on scripts
+	find lib etc debian -name "*.sh" -type f | xargs chmod +x
+
+	# Generate modaliases
+	sh -e debian/modaliases/fglrx_supported \
+		$(XARCH)/usr/X11R6/$(LIBDIR)/modules/drivers/fglrx_drv.so > \
+		debian/modaliases/fglrx-modules.alias.override
+
+clean::
+	rm -f debian/{10fglrx, \
+		dkms.conf, \
+		$(PKG_driver).install, \
+		$(PKG_driver_dev).install, \
+		$(PKG_kernel_src).install, \
+		$(PKG_control).install, \
+		overrides/$(PKG_kernel_src), \
+		modaliases/fglrx-modules.alias.override}
+
+binary-install/$(PKG_driver)::
+ifeq ($(DEB_BUILD_ARCH),amd64)
+	#driver package
+	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/*.so*"           "usr/lib32"
+	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/modules/dri"     "$(DRIDIR32)"
+	dh_installdirs -p$(PKG_driver) "usr/lib32/fglrx"
+endif
+
+	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude ATI_LICENSE.TXT
+	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start

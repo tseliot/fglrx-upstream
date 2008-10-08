@@ -1,6 +1,11 @@
 2008-10-07 Mario Limonciello <superm1@ubuntu.com>
         * dists/intrepid/xorg-driver-fglrx.{preinst,postrm}
         - Install AMD's libglx.so in place
+        * Break up gutsy and hardy scripts since they're 
+          different than intrepid now.
+        * ati-packager.sh:
+        - Support installing Intrepid stuff from the Xorg 7.4
+          directory
 
 2008-09-18 Mario Limonciello <superm1@ubuntu.com>
         * ati-packager.sh:
