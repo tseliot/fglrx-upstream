@@ -36,9 +36,6 @@ divert_libGL ()
     dpkg-divert --add --package fglrx-driver \
         --divert "$1/fglrx/diversions/libGL.so.1" \
         --rename "$1/libGL.so.1"
-	dpkg-divert --add --package fglrx-driver \
-        --divert "$1/fglrx/diversions/libdri.so" \
-        --rename "$1/xorg/modules/extensions/libdri.so"
 
     if [ "$2" ]; then
         # move our libGL back in its place
@@ -46,29 +43,47 @@ divert_libGL ()
     fi
 }
 
-case "$1" in
-    install)
-        divert_libGL /usr/lib
+# usage: divert_libdri DIR
+divert_libdri ()
+{
+    if [ ! -d "$1/fglrx/diversions" ]; then
+        mkdir -p "$1/fglrx/diversions"
+    fi
 
+	dpkg-divert --add --package fglrx-driver \
+        --divert "$1/fglrx/diversions/libdri.so" \
+        --rename "$1/xorg/modules/extensions/libdri.so"
+}
+
+# usage: fix_diversions <new-version>
+fix_diversions ()
+{
+    if dpkg --compare-versions "$1" lt "8.24.8"; then
+        # fix old diversion
+        divert_libGL /usr/lib \
+            /usr/share/fglrx/diversions/libGL.so.1.2
+
+        if [ "$(dpkg --print-architecture)" = "amd64" ]; then
+            divert_libGL /emul/ia32-linux/usr/lib \
+                /usr/share/fglrx/diversions/libGL.so.1.2_32bit
+        fi
+
+        rmdir /usr/share/fglrx/diversions || true
+        rmdir /usr/share/fglrx            || true
+    fi
+}
+
+case "$1" in
+    install|upgrade)
+
+        fix_diversions "$2"
+
+        divert_libGL /usr/lib
         if [ "$(dpkg --print-architecture)" = "amd64" ]; then
             divert_libGL /emul/ia32-linux/usr/lib
         fi
-    ;;
 
-    upgrade)
-        if dpkg --compare-versions "$2" lt "8.24.8"; then
-            # fix old diversion
-            divert_libGL /usr/lib \
-                /usr/share/fglrx/diversions/libGL.so.1.2
-
-            if [ "$(dpkg --print-architecture)" = "amd64" ]; then
-                divert_libGL /emul/ia32-linux/usr/lib \
-                    /usr/share/fglrx/diversions/libGL.so.1.2_32bit
-            fi
-
-            rmdir /usr/share/fglrx/diversions || true
-            rmdir /usr/share/fglrx            || true
-        fi
+        divert_libdri /usr/lib
     ;;
 
     abort-upgrade)

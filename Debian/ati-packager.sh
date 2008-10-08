@@ -10,7 +10,7 @@ DRV_RELEASE="`./ati-packager-helper.sh --version`"
 DEBEMAIL="`./ati-packager-helper.sh --vendor` <`./ati-packager-helper.sh --url`>"
 
 WOODY="woody"
-SARGE="sarge oldstable"
+SARGE="sarge oldstable"  # no longer advertised or supported
 ETCH="etch stable"
 LENNY="lenny testing"
 SID="sid unstable"
@@ -27,7 +27,7 @@ umask 002
 #Purpose: lists distribution supported packages
 getSupportedPackages()
 {
-    echo $SARGE $SID $ETCH $LENNY $EXPERIMENTAL
+    echo $SID $ETCH $LENNY $EXPERIMENTAL
 }
 
 makeChangelog()
@@ -63,7 +63,6 @@ buildPackage()
     #Detect x* dir name corresponding to X_NAME
     case ${X_NAME} in
         woody|3.0) echo "Error: ${X_NAME} is no longer supported by this installer" ; exit 1 ;;
-        sarge|oldstable|3.1) X_DIR=x430; X_NAME=sarge;;
         etch|stable|4.0) X_DIR=x710; X_NAME=etch;;
         lenny|testing) X_DIR=x710; X_NAME=lenny;;
         sid|unstable) X_DIR=x710; X_NAME=sid;;
@@ -152,7 +151,7 @@ case "${action}" in
     if [ "${package}" != "" ]
     then
         support_flag=false
-        for supported_list in $WOODY $SARGE $ETCH $LENNY $SID $EXPERIMENTAL
+        for supported_list in $ETCH $LENNY $SID $EXPERIMENTAL
         do
             if [ "${supported_list}" = "${package}" ]
             then

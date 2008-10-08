@@ -25,6 +25,16 @@ undivert_libGL ()
     dpkg-divert --remove --package fglrx-driver \
         --divert "$1/fglrx/diversions/libGL.so.1.2" \
         --rename "$1/libGL.so.1.2"
+
+    if [ -d "$1/fglrx/diversions" ]; then
+        rmdir "$1/fglrx/diversions" || true
+        rmdir "$1/fglrx"            || true
+    fi
+}
+
+# usage: undivert_libdri DIR
+undivert_libdri ()
+{
 	dpkg-divert --remove --package fglrx-driver \
         --divert "$1/fglrx/diversions/libdri.so" \
         --rename "$1/xorg/modules/extensions/libdri.so"
@@ -71,28 +81,36 @@ restore_old_diversion ()
     test -h "$1/fglrx-libGL.so.1"   && rm "$1/fglrx-libGL.so.1"
 }
 
-case "$1" in
-    remove|abort-install)
-        undivert_libGL /usr/lib
+# usage: fix_diversions <new-version>
+fix_diversions ()
+{
+    if dpkg --compare-versions "$1" lt "8.24.8"; then
+        restore_old_diversion /usr/lib \
+            /usr/share/fglrx/diversions/libGL.so.1.2
 
+        if [ "$(dpkg --print-architecture)" = "amd64" ]; then
+            restore_old_diversion /emul/ia32-linux/usr/lib \
+                /usr/share/fglrx/diversions/libGL.so.1.2_32bit
+        fi
+    fi
+}
+
+
+case "$1" in
+    remove|abort-install|purge)
+        undivert_libGL /usr/lib
         if [ "$(dpkg --print-architecture)" = "amd64" ]; then
             undivert_libGL /emul/ia32-linux/usr/lib
         fi
+
+        undivert_libdri /usr/lib
     ;;
 
     upgrade|abort-upgrade)
-        if dpkg --compare-versions "$2" lt "8.20.8"; then
-            restore_old_diversion /usr/lib \
-                /usr/share/fglrx/diversions/libGL.so.1.2
-
-            if [ "$(dpkg --print-architecture)" = "amd64" ]; then
-                restore_old_diversion /emul/ia32-linux/usr/lib \
-                    /usr/share/fglrx/diversions/libGL.so.1.2_32bit
-            fi
-        fi
+        fix_diversions "$2"
     ;;
 
-    purge|failed-upgrade|disappear)
+    failed-upgrade|disappear)
     ;;
 
     *)

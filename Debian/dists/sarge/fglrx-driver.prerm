@@ -1,9 +1,0 @@
-#!/bin/sh
-
-set -e
-
-#stop kernel mode driver
-#/sbin/rmmod fglrx 2> /dev/null
-
-#DEBHELPER#
-
