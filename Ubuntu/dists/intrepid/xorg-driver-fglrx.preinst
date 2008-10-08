@@ -68,6 +68,7 @@ case "$1" in
 	fi
 	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libGL.so.1.2.xlibmesa /usr/lib/libGL.so.1.2 > /dev/null
 	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libdri.so.xlibmesa /usr/lib/xorg/modules/extensions/libdri.so > /dev/null
+	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libglx.so.xlibmesa /usr/lib/xorg/modules/extensions/libglx.so > /dev/null
 
 	if [ -n "$HAS_LIB32" ]; then
 		if [ ! -d /usr/lib32/fglrx ]; then
