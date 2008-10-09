@@ -23,11 +23,11 @@ XMODDIR := $(DRIDIR)/xorg/modules
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	LIBDIR=lib64
 	ARCH=x86_64
-	XARCH=x710_64a
+	XARCH=x740_64a
 else
 	LIBDIR=lib
 	ARCH=x86
-	XARCH=x710
+	XARCH=x740
 endif
 
 # Package names

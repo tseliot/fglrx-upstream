@@ -1,3 +1,7 @@
+2008-10-09 Mario Limonciello <superm1@ubuntu.com>
+        * dists/intrepid/rules
+        - Install from the x740 directories instead
+
 2008-10-07 Mario Limonciello <superm1@ubuntu.com>
         * dists/intrepid/xorg-driver-fglrx.{preinst,postrm}
         - Install AMD's libglx.so in place
