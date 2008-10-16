@@ -56,7 +56,7 @@ Description: Video driver for the ATI graphics accelerators (devel files)
 
 Package: fglrx-kernel-source
 Architecture: amd64 i386
-Depends: make, dkms, linux-libc-dev, linux-headers
+Depends: make, dkms, linux-libc-dev, linux-headers-generic | linux-headers
 Suggests: xorg-driver-fglrx
 Conflicts: pentium-builder
 Description: Kernel module source for the ATI graphics accelerators

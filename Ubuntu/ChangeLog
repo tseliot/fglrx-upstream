@@ -1,3 +1,11 @@
+2008-10-16 Mario Limonciello <superm1@ubuntu.com>
+        * dists/*/control:
+        - Depends on linux-headers-generic | linux-headers
+          to cover more cases of missing headers
+        * dists/intrepid/README.Debian:
+        - Update to full update process
+        * Sync changelog with Ubuntu
+
 2008-10-09 Mario Limonciello <superm1@ubuntu.com>
         * dists/intrepid/rules
         - Install from the x740 directories instead
