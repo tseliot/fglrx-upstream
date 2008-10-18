@@ -694,6 +694,7 @@ rm -rf %{buildroot}
 %{_sbindir}/amdnotifyui
 %{_sbindir}/atigetsysteminfo.sh
 
+%{_bindir}/amdupdaterandrconfig
 %{_bindir}/amdxdg-su
 %{_bindir}/aticonfig
 %{_bindir}/atiodcli
