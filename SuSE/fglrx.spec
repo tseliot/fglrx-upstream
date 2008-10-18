@@ -187,6 +187,8 @@ pushd $tmpdir/fglrx
     install -m 755 atiode                $RPM_BUILD_ROOT/usr/bin
   test -f amdxdg-su && \
     install -m 755 amdxdg-su             $RPM_BUILD_ROOT/usr/bin
+  test -f amdupdaterandrconfig && \
+    install -m 755 amdupdaterandrconfig  $RPM_BUILD_ROOT/usr/bin
   mkdir -p $RPM_BUILD_ROOT/usr/share/applications
   test -f amdccclesu.kdelnk && \
     install -m 644 amdccclesu.kdelnk     $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
@@ -254,6 +256,9 @@ if [ -f $RPM_BUILD_ROOT/usr/bin/atiode ]; then
 fi
 if [ -f $RPM_BUILD_ROOT/usr/bin/amdxdg-su ]; then
   echo "/usr/bin/amdxdg-su" >> files.fglrx
+fi
+if [ -f $RPM_BUILD_ROOT/usr/bin/amdupdaterandrconfig ]; then
+  echo "/usr/bin/amdupdaterandrconfig" >> files.fglrx
 fi
 if [ -f  $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop ]; then
   echo  "/usr/share/applications/amdccclesu.desktop" >> files.fglrx
