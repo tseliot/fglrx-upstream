@@ -98,7 +98,7 @@ Source2:	atieventsd.init
 # (for manual use)
 Source10:	generate-fglrx-spec-from-svn.sh
 %endif
-Patch0:		ati-8.32.5-uname_r.patch
+Patch0:		fglrx-uname_r.patch
 %if !%{atibuild}
 Patch1:		ati-8.19.10-fglrx_gamma-extutil-include.patch
 Patch2:		ati-8.19.10-fgl_glxgears-includes.patch

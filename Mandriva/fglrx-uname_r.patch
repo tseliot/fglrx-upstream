@@ -1,0 +1,22 @@
+Index: ati-8.55_RC1/common/lib/modules/fglrx/build_mod/make.sh
+===================================================================
+--- ati-8.55_RC1/common/lib/modules/fglrx/build_mod/make.sh
++++ ati-8.55_RC1/common/lib/modules/fglrx/build_mod/make.sh	2008-10-18 16:00:12.000000000 +0300
+@@ -62,7 +62,7 @@
+ # ==============================================================
+ # system/kernel identification
+ 
+-uname_r=`uname -r`
++[[ -z "$uname_r" ]] && uname_r=`uname -r`
+ uname_v=`uname -v`
+ 
+ # ==============================================================
+@@ -349,7 +349,7 @@
+ make CC=${CC} \
+     LIBIP_PREFIX=$(echo "$LIBIP_PREFIX" | sed -e 's|^\([^/]\)|../\1|') \
+     MODFLAGS="-DMODULE -DATI -DFGL -DPAGE_ATTR_FIX=$PAGE_ATTR_FIX $def_smp $def_modversions" \
+-    PAGE_ATTR_FIX=$PAGE_ATTR_FIX \
++    PAGE_ATTR_FIX=$PAGE_ATTR_FIX KVER=$uname_r KDIR=$KERNEL_PATH \
+     > tlog 2>&1 
+ 
+ res=$?
