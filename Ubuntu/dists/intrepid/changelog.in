@@ -1,3 +1,17 @@
+fglrx-installer (2:8.543-0ubuntu3) intrepid; urgency=low
+
+  * debian/control:
+    - Drop build-depends on libstdc++5. (LP: #271794)
+    - Drop build-depends on ia32-libs
+    - Install libAMDXvBA.so* into it's own package.
+  * debian/rules:
+    - Work around missing libstdc++5 at build-depends time.
+  * Add the following files to support this new binary package:
+    - debian/libamdxvba.postinst
+    - debian/libamdxvba.install.in
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Thu, 16 Oct 2008 15:04:46 -0500
+
 fglrx-installer (2:8.543-0ubuntu2) intrepid; urgency=low
 
   * debian/control:
