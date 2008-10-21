@@ -13,8 +13,6 @@ Build-Depends: debhelper (>= 5),
                libxi6, 
                libxcursor1, 
                fakeroot, 
-               ia32-libs [amd64],
-               libstdc++5,
                libdrm2,
                libgl1-mesa-glx
 Standards-Version: 3.8.0
@@ -22,8 +20,8 @@ Homepage: http://ati.amd.com/support/driver.html
 
 Package: xorg-driver-fglrx
 Architecture: amd64 i386
-Recommends: fglrx-amdcccle
-Depends: ${shlibs:Depends}, xserver-xorg-core, fglrx-kernel-source
+Recommends: fglrx-amdcccle, libamdxvba1
+Depends: ${shlibs:Depends}, xserver-xorg-core, fglrx-kernel-source, ia32-libs [amd64]
 Conflicts: fglrx-driver, xfree86-driver-fglrx, nvidia-glx, nvidia-glx-legacy, nvidia-glx-new, nvidia-glx-71, nvidia-glx-96, nvidia-glx-173, nvidia-glx-177
 Replaces: fglrx-driver, xfree86-driver-fglrx
 Description: Video driver for the ATI graphics accelerators
@@ -82,3 +80,14 @@ Description: Identifiers supported by the ATI graphics driver
  archive supports.
  .
  This package provides that list.
+
+Package: libamdxvba1
+Architecture: amd64 i386
+Depends: ${shlibs:Depends}, libc6, libstdc++5
+Replaces: xorg-driver-fglrx (<= 2:8.543-0ubuntu2)
+Description: AMD Unified Video Decoder library
+ This package provides the support for the AMD unified video
+ decoder library.  This can be used for accelerated XvMC output.
+ .
+ Unfortunately, this package requires an unsupported library,
+ so it is not installed by default.

@@ -35,6 +35,16 @@ PKG_driver      := xorg-driver-fglrx
 PKG_driver_dev  := xorg-driver-fglrx-dev
 PKG_kernel_src  := fglrx-kernel-source
 PKG_control     := fglrx-amdcccle
+PKG_UVD_library := libamdxvba1
+
+
+# Unfortunately, we won't have libstdc++5 at build time
+# Also, we can't go and use debian/shlibs.local.  It requires
+# that you have the library installed, and that library 
+# just forgot to ship a shlibs file.
+# See (LP: #271794) for more information
+DEB_DH_SHLIBDEPS_ARGS_ALL="-Xlib32"
+DEB_DH_SHLIBDEPS_ARGS_$(PKG_UVD_library)="-XlibAMD"
 
 configure/$(PKG_driver)::
 
@@ -45,6 +55,7 @@ configure/$(PKG_driver)::
 			 $(PKG_driver_dev).install \
 			 $(PKG_kernel_src).install \
 			 $(PKG_control).install \
+			 $(PKG_UVD_library).install \
 			 overrides/$(PKG_kernel_src); do \
 		sed -e "s|#XMODDIR#|$(XMODDIR)|"     \
 			-e "s|#XMODDIR32#|$(XMODDIR32)|" \
@@ -85,8 +96,14 @@ clean::
 		$(PKG_driver_dev).install, \
 		$(PKG_kernel_src).install, \
 		$(PKG_control).install, \
+		$(PKG_UVD_library).install \
 		overrides/$(PKG_kernel_src), \
 		modaliases/fglrx-modules.alias.override}
+
+binary-install/$(PKG_UVD_library)::
+ifeq ($(DEB_BUILD_ARCH),amd64)
+	dh_install -p$(PKG_UVD_library) "arch/x86/usr/X11R6/lib/libAMD*.so*"           "usr/lib32"
+endif
 
 binary-install/$(PKG_driver)::
 ifeq ($(DEB_BUILD_ARCH),amd64)
@@ -94,6 +111,7 @@ ifeq ($(DEB_BUILD_ARCH),amd64)
 	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/*.so*"           "usr/lib32"
 	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/modules/dri"     "$(DRIDIR32)"
 	dh_installdirs -p$(PKG_driver) "usr/lib32/fglrx"
+
 endif
 
 	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude ATI_LICENSE.TXT
