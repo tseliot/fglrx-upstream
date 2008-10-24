@@ -197,6 +197,8 @@ pushd $tmpdir/fglrx
   install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
 %endif
   install -m 755 libdri.so              $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
+  test -f libglx.so && \
+    install -m 755 libglx.so            $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
 popd
 pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   # add kernel patches here
@@ -280,6 +282,9 @@ if [ -f $RPM_BUILD_ROOT/%{MODULES_DIR}/glesx.so ]; then
 fi
 if [ -f $RPM_BUILD_ROOT/%{MODULES_DIR}/amdxmm.so ]; then
   echo "%{MODULES_DIR}/amdxmm.so" >> files.fglrx
+fi
+if [ -f $RPM_BUILD_ROOT/%{MODULES_DIR}/updates/extensions/libglx.so ]; then
+  echo "%{MODULES_DIR}/updates/extensions/libglx.so" >> files.fglrx
 fi
 %ifarch x86_64
 if [ -f $RPM_BUILD_ROOT%{DRI_DRIVERS32_DIR}/fglrx_dri.so ]; then

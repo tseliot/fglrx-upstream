@@ -9,15 +9,6 @@
  const unsigned long __ke_SMP_State = 1;
  const char BUILD_KERNEL_HAS_SMP_SET;
  #else
-@@ -2174,7 +2174,7 @@ void ATI_API_CALL KCL_flush_tlb_onepage(
- {
- /*Some kernel developer removed the export of symbol "flush_tlb_page" on 2.6.25 x86_64 SMP kernel.
-   Define a simple version here.*/
--#if defined(__x86_64__) && defined(__SMP__) && (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)) 
-+#if defined(__x86_64__) && CONFIG_SMP && (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)) 
-     on_each_cpu(KCL_flush_tlb_one, &va, 1, 1);
- #else
-     flush_tlb_page(vma, va);
 @@ -2520,7 +2520,7 @@ int ATI_API_CALL KCL_AtomicTestAndToggle
  
  /*****************************************************************************/
