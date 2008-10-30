@@ -187,6 +187,8 @@ pushd $tmpdir/fglrx
     install -m 755 atiode                $RPM_BUILD_ROOT/usr/bin
   test -f amdxdg-su && \
     install -m 755 amdxdg-su             $RPM_BUILD_ROOT/usr/bin
+  test -f amdupdaterandrconfig && \
+    install -m 755 amdupdaterandrconfig  $RPM_BUILD_ROOT/usr/bin
   mkdir -p $RPM_BUILD_ROOT/usr/share/applications
   test -f amdccclesu.kdelnk && \
     install -m 644 amdccclesu.kdelnk     $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
@@ -195,6 +197,8 @@ pushd $tmpdir/fglrx
   install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
 %endif
   install -m 755 libdri.so              $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
+  test -f libglx.so && \
+    install -m 755 libglx.so            $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
 popd
 pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   # add kernel patches here
@@ -255,6 +259,9 @@ fi
 if [ -f $RPM_BUILD_ROOT/usr/bin/amdxdg-su ]; then
   echo "/usr/bin/amdxdg-su" >> files.fglrx
 fi
+if [ -f $RPM_BUILD_ROOT/usr/bin/amdupdaterandrconfig ]; then
+  echo "/usr/bin/amdupdaterandrconfig" >> files.fglrx
+fi
 if [ -f  $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop ]; then
   echo  "/usr/share/applications/amdccclesu.desktop" >> files.fglrx
 fi
@@ -275,6 +282,9 @@ if [ -f $RPM_BUILD_ROOT/%{MODULES_DIR}/glesx.so ]; then
 fi
 if [ -f $RPM_BUILD_ROOT/%{MODULES_DIR}/amdxmm.so ]; then
   echo "%{MODULES_DIR}/amdxmm.so" >> files.fglrx
+fi
+if [ -f $RPM_BUILD_ROOT/%{MODULES_DIR}/updates/extensions/libglx.so ]; then
+  echo "%{MODULES_DIR}/updates/extensions/libglx.so" >> files.fglrx
 fi
 %ifarch x86_64
 if [ -f $RPM_BUILD_ROOT%{DRI_DRIVERS32_DIR}/fglrx_dri.so ]; then

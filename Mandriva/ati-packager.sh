@@ -6,9 +6,6 @@
 # Usage
 #   See README.distro document
 
-# prevent problems due to locales when grepping for 'wrote:'
-export LC_ALL=C
-
 # List of supported distributions.
 SuppDistro="2006 2007 2008 2009"
 
@@ -24,6 +21,33 @@ getSupportedPackages()
     for d in ${SuppDistro}; do
 	    echo $d
     done
+}
+
+buildPrep()
+{
+    distro=$2
+    dryrun=$3
+    if [ ! -f /etc/mandriva-release ]; then
+        echo "You can build Mandriva packages only on a Mandriva Linux system."
+        exit ${ATI_INSTALLER_ERR_PREP}
+    fi
+    [ -x /usr/bin/rpmbuild ] && exit 0
+
+    if [ -n "$dryrun" ]; then
+        echo "You need the rpm-build package to build packages."
+        exit ${ATI_INSTALLER_ERR_PREP}
+    fi
+
+    if [ -n "$DISPLAY" ]; then
+        gurpmi --auto rpm-build
+    else
+        su -c "urpmi --auto rpm-build"
+    fi
+
+    [ -x /usr/bin/rpmbuild ] && exit 0
+
+    echo "Package rpm-build is needed but installation failed."
+    exit ${ATI_INSTALLER_ERR_PREP}
 }
 
 #Function: buildPackage()
@@ -58,7 +82,7 @@ buildPackage()
     cp ${AbsDistroDir}/fglrx.spec ${TmpPkgSpec}
 
     #Build the package
-    rpm -bb --with ati \
+    LC_ALL=C rpm -bb --with ati \
 	--define "_topdir ${RpmRoot}" \
 	--define "_tmppath ${RpmRoot}/tmp" \
 	--define "_builddir ${RpmRoot}/BUILD" \
@@ -101,6 +125,62 @@ buildPackage()
     exit ${EXIT_CODE}
 }
 
+installPackage()
+{
+    package=$1
+    distrover=$(cat /etc/version | cut -d. -f1)
+    if [ "${package}" != "${distrover}" ]; then
+        echo "Mandriva Linux ${distrover} can't use ${package} packages."
+        exit 1
+    fi
+    packagenames="$(rpm -q --specfile --with ati \
+        --qf '%{name}-%{version}-%{release}.%{arch}.rpm\n' \
+	--define "version $(./ati-packager-helper.sh --version)" \
+	--define "rel $(./ati-packager-helper.sh --release)" \
+	--define "distsuffix amd.mdv" \
+	--define "mdkversion ${package}00" \
+	--define "mandriva_release ${package}" \
+	$(dirname $0)/fglrx.spec | tail -n+2 | grep -v -e ^fglrx-debug -e ^fglrx-__restore__)"
+    if [ -z "${packagenames}" ]; then
+        echo "Unable to determine package names."
+        exit 1
+    fi
+    pushd ..
+    if [ -n "$DISPLAY" ]; then
+        gurpmi --auto $packagenames
+    else
+        su -c "urpmi --auto $packagenames"
+    fi
+    ret=$?
+    popd
+    if [ $ret -ne 0 ]; then
+        echo "Unable to install packages."
+        exit 1
+    fi
+    echo "Installation successful."
+    exit 0
+}
+
+isValidDistro()
+{
+    for supported_list in `getSupportedPackages`
+    do
+        if [ "${supported_list}" = "$1" ]
+        then
+            return 0 
+        fi
+    done
+    return 1
+}
+
+checkDistro()
+{
+    if ! isValidDistro $1; then
+        echo "Unsupported distribution:" $1
+        exit 1
+    fi
+}
+
 #Starting point of this script, process the {action} argument
 
 #Requested action
@@ -108,34 +188,22 @@ action=$1
 
 case "${action}" in
 --get-supported)
-    getSupportedPackages   
+    getSupportedPackages
     ;;
 --buildpkg)
     #First determine if we are explicitly calling a release build
     package=$2
     support_flag=false
-    for supported_list in `getSupportedPackages`
-    do
-        if [ "${supported_list}" = "${package}" ]
-        then
-            support_flag=true
-            break
-        fi
-    done
-    #If we haven't explicitly called, or failed to type something coherent
+    isValidDistro ${package} && support_flag=true
+
     #automatically detect
     if [ "${support_flag}" != "true" ]
     then
         package=$(cat /etc/version | cut -d. -f1)
-        for supported_list in `getSupportedPackages`
-        do
-            if [ "${supported_list}" = "${package}" ]
-            then
-                support_flag=true
-                echo "Automatically detected" ${package}
-                break
-            fi
-        done
+        if isValidDistro ${package}; then
+            support_flag=true
+            echo "Automatically detected" ${package}
+        fi
     fi
     if [ "${support_flag}" = "true" ]
     then
@@ -145,6 +213,36 @@ case "${action}" in
         exit 1
     fi
     exit 0
+    ;;
+--buildprep)
+    package=$2
+    if [ -n "$3" -a "$3" != "--dryrun" ]; then
+        echo $3: unsupported option passed by ati-installer.sh
+        exit 1
+    fi
+    checkDistro $package
+    buildPrep $2 $3
+    ;;
+--installpkg)
+    package=$2
+    checkDistro $package
+    installPackage $package
+    ;;
+--installprep)
+    package=$2
+    checkDistro $package
+    # All this is handled in --installpkg already.
+    exit 0
+    ;;
+--identify)
+    package=$2
+    if [ -f /etc/mandriva-release -a "${package}" = "$(cat /etc/version | cut -d. -f1)" ]; then
+        exit 0
+    fi
+    exit ${ATI_INSTALLER_ERR_VERS}
+    ;;
+--getAPIVersion)
+    exit 2
     ;;
 *|--*)
     echo ${action}: unsupported option passed by ati-installer.sh
