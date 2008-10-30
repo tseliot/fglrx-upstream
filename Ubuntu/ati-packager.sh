@@ -210,7 +210,8 @@ buildPackage()
         gutsy|7.10)  X_DIR=x710; X_NAME=gutsy;;
         hardy|8.04)  X_DIR=x710; X_NAME=hardy;;
         intrepid|8.10) X_DIR=x740; X_NAME=intrepid;;
-        source) X_DIR=x740; X_NAME=intrepid;;
+	jaunty|9.04)   X_DIR=x740; X_NAME=jaunty;;
+        source) X_DIR=x740; X_NAME=jaunty;;
         *)
         #Automatically detect
         echo "Error: invalid package name passed to --buildpkg" ; exit 1 ;;
