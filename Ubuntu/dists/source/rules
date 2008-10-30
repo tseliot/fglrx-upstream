@@ -17,17 +17,25 @@ ifeq ($(DISTRO),intrepid)
 endif
 
 #Directory naming schemes
-DRIDIR := usr/lib
+DRIDIR   := usr/lib
 DRIDIR32 := usr/lib32
-XMODDIR := $(DRIDIR)/xorg/modules
+XMODDIR  := $(DRIDIR)/xorg/modules
+LIBDIR   := lib
+ARCH     := x86
+XARCH    := x740
+
+ifeq ($(DISTRO),hardy)
+	XARCH   := x710
+endif
+
+ifeq ($(DISTRO),gutsy)
+	XARCH   := x710
+endif
+
 ifeq ($(DEB_BUILD_ARCH),amd64)
-	LIBDIR=lib64
-	ARCH=x86_64
-	XARCH=x740_64a
-else
-	LIBDIR=lib
-	ARCH=x86
-	XARCH=x740
+	LIBDIR  := lib64
+	ARCH    := x86_64
+	XARCH   := $(XARCH)_64a
 endif
 
 # Package names
