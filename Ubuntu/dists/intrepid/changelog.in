@@ -1,3 +1,23 @@
+fglrx-installer (2:8.543-0ubuntu4) intrepid; urgency=low
+
+  [ Mario Limonciello ]
+  * debian/rules:
+    - Don't copy the libAMDXvBA.so* into multiple packages
+      on AMD64 (LP: #287159)
+  * debian/control:
+    - xorg-driver-fglrx: Drop libamdxvba1 to suggests so that fglrx can be put
+      onto DVDs.
+  * Replace authatieventsd.sh with our own variation that works with KDM.
+    (LP: #38915)
+
+  [ Matthias Klose ]
+  * debian/control:
+    - xorg-driver-fglrx: Drop dependency on ia32-libs [amd64], add dependencies
+      on lib32gcc1 [amd64], libc6-i386 [amd64].
+    - libamdxvba1: Add dependency on ia32-libs [amd64].
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Wed, 22 Oct 2008 11:55:59 -0500
+
 fglrx-installer (2:8.543-0ubuntu3) intrepid; urgency=low
 
   * debian/control:
