@@ -170,7 +170,7 @@ installPackages()
         exit 1
     fi
     cd ${AbsInstallerParentDir}
-    packages=$(cat $file | grep extra | awk '{print $5}' | grep -v dev | tr "\n" " ")
+    packages=$(cat $file | grep extra | awk '{print $5}' | grep -v dev | grep -v lib | tr "\n" " ")
     $ROOT "sh -c 'dpkg -i ${packages}'"
     echo ${packages}
     RET=$?
