@@ -4,9 +4,18 @@ LIBIP_PREFIX	?= ..
 
 obj-m           += fglrx.o
 fglrx-libs      += libfglrx_ip.a.GCC$(GCC_VER_MAJ)
-fglrx-c-objs    += firegl_public.o
+fglrx-c-objs    += firegl_public.o      \
+                   kcl_agp.o            \
+                   kcl_io.o             \
+                   kcl_pci.o            
 fglrx-objs      += $(fglrx-c-objs) $(fglrx-libs)
-fglrx-hdrs      += firegl_public.h fglrxko_pci_ids.h
+fglrx-hdrs      += firegl_public.h      \
+                   fglrxko_pci_ids.h    \
+                   kcl_agp.h            \
+                   kcl_config.h         \
+                   kcl_io.h             \
+                   kcl_pci.h            \
+                   kcl_type.h           
 drm-hdrs        += drm.h drmP.h drm_os_linux.h drm_proc.h drm_compat.h
 
 ifeq ($(PAGE_ATTR_FIX),)
