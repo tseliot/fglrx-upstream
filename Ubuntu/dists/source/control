@@ -28,17 +28,6 @@ Replaces: fglrx-driver, xfree86-driver-fglrx
 Description: Video driver for the ATI graphics accelerators
  Video driver for the ATI Radeon and FireGL graphics accelerators.
  .
- This version of the ATI driver officially supports:
-  * RADEON X1300, X1600, X1800, X1900
-  * RADEON 8500, 9000, 9100, 9200, 9500, 9550, 9600, 9700, 9800
-  * RADEON X800, X700, X600, X550, X300 series (AGP and PCI Express)
-  * MOBILITY RADEON 9000, 9200, 9600, 9800, X700
-  * MOBILITY RADEON 9000/9100 IGP Series
-  * FireGL 8700, 8800, E1, E2, X1, X2, X3, Z1, T2
-  * MOBILITY FireGL 9100, T2
-  * RADEON XPRESS 200
- .
- .
  This package provides 2D display drivers
  and hardware accelerated OpenGL.
 
