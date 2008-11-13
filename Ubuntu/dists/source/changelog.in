@@ -1,3 +1,16 @@
+fglrx-installer (2:8.552-0ubuntu1) jaunty; urgency=low
+
+  * New upstream release.
+  * debian/control:
+    - Don't list the graphics cards supported, this is a moving target
+      that is difficult to keep up with. (LP: #292436)
+  * Move replacements for kernel source into debian/dkms
+  * Add patch for RT support to debian/dkms (LP: #286961)
+  * debian/dkms.conf.in:
+    - Use RT patch.
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Thu, 13 Nov 2008 10:30:20 -0600
+
 fglrx-installer (2:8.543-0ubuntu4) intrepid; urgency=low
 
   [ Mario Limonciello ]
