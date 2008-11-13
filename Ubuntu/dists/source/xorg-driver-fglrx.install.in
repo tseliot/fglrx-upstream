@@ -23,3 +23,6 @@ arch/#ARCH#/usr/X11R6/#LIBDIR#/modules/dri     #DRIDIR#
 #XARCH#/usr/X11R6/#LIBDIR#/modules/drivers     #XMODDIR#
 #XARCH#/usr/X11R6/#LIBDIR#/modules/linux       #XMODDIR#
 #XARCH#/usr/X11R6/#LIBDIR#/modules/extensions  #XMODDIR#
+
+#CAL stuff
+arch/#ARCH#/usr/#LIBDIR#/*                     usr/lib
