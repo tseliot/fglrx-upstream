@@ -6,7 +6,6 @@ lib/modules/fglrx/build_mod/*.c                 usr/src/fglrx-#CVERSION#
 lib/modules/fglrx/build_mod/*.h                 usr/src/fglrx-#CVERSION#
 #lib/modules/fglrx/build_mod/*.sh                usr/src/fglrx-#CVERSION#
 #lib/modules/fglrx/build_mod/2.6.x/Makefile      usr/src/fglrx-#CVERSION#
-debian/replacements/Makefile			usr/src/fglrx-#CVERSION#
-debian/replacements/make.sh			usr/src/fglrx-#CVERSION#
+debian/dkms/*                                   usr/src/fglrx-#CVERSION#
 arch/#ARCH#/lib/modules/fglrx/build_mod/lib*    usr/src/fglrx-#CVERSION#
 debian/dkms.conf                                usr/src/fglrx-#CVERSION#
