@@ -539,6 +539,10 @@ echo "%{_prefix}/lib/%{drivername}" >>	%{buildroot}%{ld_so_conf_dir}/%{ld_so_con
 touch					%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL.conf
 %endif
 
+# XvMCConfig
+install -d -m755 %{buildroot}%{_sysconfdir}/X11
+echo "libAMDXvBA.so.1" > %{buildroot}%{_sysconfdir}/X11/XvMCConfig-%{drivername}
+
 %if %{mdkversion} >= 200800
 %pre -n %{driverpkgname}
 # Handle alternatives-era /etc/ati directory
@@ -559,6 +563,7 @@ fi
 %if %{mdkversion} >= 200700
 %{_sbindir}/update-alternatives \
 	--install %{_sysconfdir}/ld.so.conf.d/GL.conf gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file} %{priority} \
+	--slave %{_sysconfdir}/X11/XvMCConfig xvmcconfig %{_sysconfdir}/X11/XvMCConfig-%{drivername} \
 %if %{mdkversion} >= 200900
 	--slave %{_libdir}/xorg/modules/extensions/libdri.so libdri.so %{ati_extdir}/libdri.so \
 %endif
@@ -678,6 +683,8 @@ rm -rf %{buildroot}
 %else
 %config(noreplace) %{_sysconfdir}/ld.so.conf.d/ati.conf
 %endif
+
+%{_sysconfdir}/X11/XvMCConfig-%{drivername}
 
 %dir %{_sysconfdir}/ati
 %{_sysconfdir}/ati/control
