@@ -121,6 +121,11 @@ pushd $tmpdir/fglrx
       rm $file
     fi
   done
+  for file in libamdcaldd.so libamdcalrt.so libamdcalcl.so; do
+    mv usr/lib/$file .
+    install -m 755 $file                   $RPM_BUILD_ROOT/usr/lib
+    rm $file
+  done
 %endif
   for i in `find . -type f`; do mv --backup $i .; done
   # make sure we don't overwrite something
@@ -196,6 +201,7 @@ pushd $tmpdir/fglrx
 %ifarch %ix86
   install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
 %endif
+  install -m 755 libamdcaldd.so libamdcalrt.so libamdcalcl.so $RPM_BUILD_ROOT/usr/%{_lib}
   install -m 755 libdri.so              $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
   test -f libglx.so && \
     install -m 755 libglx.so            $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
@@ -392,6 +398,9 @@ exit 0
 /usr/%{_lib}/libAMDXvBA.so.1.0
 /usr/%{_lib}/libXvBAW.so.1.0
 %endif
+/usr/%{_lib}/libamdcaldd.so
+/usr/%{_lib}/libamdcalrt.so
+/usr/%{_lib}/libamdcalcl.so
 /usr/X11R6/%{_lib}/libGL.so
 /usr/X11R6/%{_lib}/libGL.so.1
 /usr/X11R6/%{_lib}/libGL.so.1.2

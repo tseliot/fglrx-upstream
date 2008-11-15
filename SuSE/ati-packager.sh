@@ -73,6 +73,7 @@ buildPackage()
     cp -R ${InstallerRootDir}/${X_DIR}/* ${TmpDrvFilesDir}
     if [ "${ARCH}" = "x86_64" ]; then
         cp -R ${InstallerRootDir}/arch/x86/usr/X11R6/lib ${TmpDrvFilesDir}/usr/X11R6
+        cp -R ${InstallerRootDir}/arch/x86/usr/lib ${TmpDrvFilesDir}/usr/lib
     fi
     mkdir ${TmpDrvFilesDir}/suse
     cp ${AbsDistroDir}/* ${TmpDrvFilesDir}/suse
