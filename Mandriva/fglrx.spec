@@ -455,11 +455,13 @@ install -m644 common/usr/share/icons/ccc_small.xpm %{buildroot}%{_iconsdir}/%{dr
 # install libraries
 install -d -m755					%{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libGL.so.1.2	%{buildroot}%{_libdir}/%{drivername}
+install -m755 %{archdir}/usr/%{_lib}/*.so*		%{buildroot}%{_libdir}/%{drivername}
 /sbin/ldconfig -n					%{buildroot}%{_libdir}/%{drivername}
 ln -s libGL.so.1					%{buildroot}%{_libdir}/%{drivername}/libGL.so
 %ifarch x86_64
 install -d -m755					%{buildroot}%{_prefix}/lib/%{drivername}
 install -m755 arch/x86/usr/X11R6/lib/libGL.so.1.2	%{buildroot}%{_prefix}/lib/%{drivername}
+install -m755 %{archdir}/usr/lib/*.so*			%{buildroot}%{_prefix}/lib/%{drivername}
 /sbin/ldconfig -n					%{buildroot}%{_prefix}/lib/%{drivername}
 ln -s libGL.so.1					%{buildroot}%{_prefix}/lib/%{drivername}/libGL.so
 %endif
@@ -729,10 +731,16 @@ rm -rf %{buildroot}
 %dir %{_libdir}/%{drivername}
 %{_libdir}/%{drivername}/libGL.so.1
 %{_libdir}/%{drivername}/libGL.so.1.*
+%{_libdir}/%{drivername}/libamdcalcl.so
+%{_libdir}/%{drivername}/libamdcaldd.so
+%{_libdir}/%{drivername}/libamdcalrt.so
 %ifarch x86_64
 %dir %{_prefix}/lib/%{drivername}
 %{_prefix}/lib/%{drivername}/libGL.so.1
 %{_prefix}/lib/%{drivername}/libGL.so.1.*
+%{_prefix}/lib/%{drivername}/libamdcalcl.so
+%{_prefix}/lib/%{drivername}/libamdcaldd.so
+%{_prefix}/lib/%{drivername}/libamdcalrt.so
 %endif
 
 %{_libdir}/%{drivername}/libfglrx_gamma.so.1*
