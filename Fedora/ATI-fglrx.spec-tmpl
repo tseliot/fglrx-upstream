@@ -275,6 +275,8 @@ fi
 %{_sbindir}/atieventsd
 %{_sbindir}/amdnotifyui
 %{_sbindir}/atigetsysteminfo
+%{_bindir}/amdupdaterandrconfig
+%{_bindir}/amdxdg-su
 %{_bindir}/amdxdg-su
 %{_bindir}/aticonfig
 %{_bindir}/atiodcli
@@ -288,6 +290,7 @@ fi
 @X11_MODULE_DIR@/esut.a
 @X11_MODULE_DIR@/glesx.so
 @X11_MODULE_DIR@/amdxmm.so
+%{_libdir}/fglrx/*.cap
 %{_libdir}/fglrx/*.so*
 %{_libdir}/fglrx/*.cap
 %{_mandir}/man[1-9]/atieventsd.*
@@ -324,6 +327,9 @@ fi
 
 
 %changelog
+* Sat Nov 15 2008 Michael Larabel <Michael AT phoronix DOT com> 8.56.1-1
+- Update packaging scripts so they build properly with latest driver. Patch contributed by stevew.
+
 * Fri Sep 19 2008 Michael Larabel <Michael AT phoronix DOT com> 8.53.2-1
 - Update packaging scripts so they build properly with latest driver. Patch contributed by stevew.
 
