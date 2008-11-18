@@ -195,8 +195,8 @@ pushd $tmpdir/fglrx
   test -f amdupdaterandrconfig && \
     install -m 755 amdupdaterandrconfig  $RPM_BUILD_ROOT/usr/bin
   mkdir -p $RPM_BUILD_ROOT/usr/share/applications
-  test -f amdccclesu.kdelnk && \
-    install -m 644 amdccclesu.kdelnk     $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
+  install -m 644 amdcccle.desktop        $RPM_BUILD_ROOT/usr/share/applications
+  install -m 644 amdccclesu.desktop      $RPM_BUILD_ROOT/usr/share/applications
   install -m 755 libatiadlxx.so          $RPM_BUILD_ROOT/usr/%{_lib}
 %ifarch %ix86
   install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}

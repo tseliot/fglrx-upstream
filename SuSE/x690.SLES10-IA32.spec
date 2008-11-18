@@ -195,8 +195,8 @@ pushd $tmpdir/fglrx
   test -f amdupdaterandrconfig && \
     install -m 755 amdupdaterandrconfig  $RPM_BUILD_ROOT/usr/bin
   mkdir -p $RPM_BUILD_ROOT/usr/share/applications
-  test -f amdccclesu.kdelnk && \
-    install -m 644 amdccclesu.kdelnk     $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
+  install -m 644 amdcccle.desktop        $RPM_BUILD_ROOT/usr/share/applications
+  install -m 644 amdccclesu.desktop      $RPM_BUILD_ROOT/usr/share/applications
   install -m 755 libatiadlxx.so          $RPM_BUILD_ROOT/usr/%{_lib}
 %ifarch %ix86
   install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
@@ -215,8 +215,6 @@ pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
 popd
 install -m 755 $RPM_SOURCE_DIR/fglrx-kernel-build.sh \
   $RPM_BUILD_ROOT/usr/bin
-install -m 644 $RPM_SOURCE_DIR/fglrx.desktop \
-  $RPM_BUILD_ROOT/usr/share/applications
 cp $RPM_SOURCE_DIR/fglrx.png $RPM_BUILD_ROOT/usr/share/pixmaps
 %if %suse_version > 1020
 mkdir -p $RPM_BUILD_ROOT/usr/%{_lib}/pm-utils/power.d/
@@ -405,7 +403,6 @@ exit 0
 /usr/X11R6/%{_lib}/libGL.so.1
 /usr/X11R6/%{_lib}/libGL.so.1.2
 /usr/sbin/amdnotifyui
-/usr/share/applications/fglrx.desktop
 /usr/share/pixmaps/fglrx.png
 /usr/share/doc/packages/fglrx
 /usr/bin/fgl_glxgears
