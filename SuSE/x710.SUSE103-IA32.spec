@@ -269,6 +269,9 @@ fi
 if [ -f  $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop ]; then
   echo  "/usr/share/applications/amdccclesu.desktop" >> files.fglrx
 fi
+if [ -f  $RPM_BUILD_ROOT/usr/share/applications/amdcccle.desktop ]; then
+  echo  "/usr/share/applications/amdcccle.desktop" >> files.fglrx
+fi
 if [ -f $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_tvout.a ]; then
   echo "/usr/X11R6/%{_lib}/libfglrx_tvout.a" >> files.fglrx
 fi
