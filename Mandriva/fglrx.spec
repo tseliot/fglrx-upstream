@@ -102,7 +102,6 @@ Source2:	atieventsd.init
 # (for manual use)
 Source10:	generate-fglrx-spec-from-svn.sh
 %endif
-Patch0:		fglrx-uname_r.patch
 %if !%{atibuild}
 Patch1:		ati-8.19.10-fglrx_gamma-extutil-include.patch
 Patch2:		ati-8.19.10-fgl_glxgears-includes.patch
@@ -257,7 +256,6 @@ cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_
 %endif
 
 cd common # ensure patch does not touch outside
-%patch0 -p2
 %patch3 -p2
 cd -
 
@@ -354,7 +352,7 @@ PACKAGE_NAME="%{drivername}"
 PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="fglrx"
 DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
-MAKE[0]="KERNEL_PATH=\${kernel_source_dir} uname_r=\${kernelver} sh make.sh"
+MAKE[0]="KERNEL_PATH=\${kernel_source_dir} sh make.sh --uname_r=\${kernelver}"
 CLEAN="rm -rf 2.6.x/.tmp_versions; make -C2.6.x clean"
 AUTOINSTALL="yes"
 EOF
