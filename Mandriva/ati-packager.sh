@@ -7,7 +7,7 @@
 #   See README.distro document
 
 # List of supported distributions.
-SuppDistro="2006 2007 2008 2009"
+SuppDistro="2006.0 2007.0 2007.1 2008.0 2008.1 2009.0 2009.1"
 
 #Function: getSupportedPackages()
 #Purpose: lists distribution supported packages
@@ -94,7 +94,7 @@ buildPackage()
 	--define "distsuffix amd.mdv" \
 	--define "vendor $(./ati-packager-helper.sh --vendor)" \
 	--define "packager $(./ati-packager-helper.sh --vendor)" \
-	--define "mdkversion ${DistroName}00" \
+	--define "mdkversion $(echo ${DistroName} | tr . 0)" \
 	--define "mandriva_release ${DistroName}" \
 	${TmpPkgSpec} > ${TmpPkgBuildOut} 2>&1
 
@@ -138,7 +138,7 @@ installPackage()
 	--define "version $(./ati-packager-helper.sh --version)" \
 	--define "rel $(./ati-packager-helper.sh --release)" \
 	--define "distsuffix amd.mdv" \
-	--define "mdkversion ${package}00" \
+	--define "mdkversion $(echo ${package} | tr . 0)" \
 	--define "mandriva_release ${package}" \
 	$(dirname $0)/fglrx.spec | tail -n+2 | grep -v -e ^fglrx-debug -e ^fglrx-__restore__)"
     if [ -z "${packagenames}" ]; then
@@ -236,7 +236,7 @@ case "${action}" in
     ;;
 --identify)
     package=$2
-    if [ -f /etc/mandriva-release -a "${package}" = "$(cat /etc/version | cut -d. -f1)" ]; then
+    if [ -f /etc/mandriva-release -a "${package}" = "$(cat /etc/version | cut -d. -f1,2)" ]; then
         exit 0
     fi
     exit ${ATI_INSTALLER_ERR_VERS}
