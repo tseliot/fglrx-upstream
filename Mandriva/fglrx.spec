@@ -467,7 +467,7 @@ ln -s libGL.so.1					%{buildroot}%{_libdir}/%{drivername}/libGL.so
 %ifarch x86_64
 install -d -m755					%{buildroot}%{_prefix}/lib/%{drivername}
 install -m755 arch/x86/usr/X11R6/lib/libGL.so.1.2	%{buildroot}%{_prefix}/lib/%{drivername}
-install -m755 %{archdir}/usr/lib/*.so*			%{buildroot}%{_prefix}/lib/%{drivername}
+install -m755 arch/x86/usr/lib/*.so*			%{buildroot}%{_prefix}/lib/%{drivername}
 /sbin/ldconfig -n					%{buildroot}%{_prefix}/lib/%{drivername}
 ln -s libGL.so.1					%{buildroot}%{_prefix}/lib/%{drivername}/libGL.so
 %endif
