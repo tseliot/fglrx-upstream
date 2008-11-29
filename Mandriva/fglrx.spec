@@ -12,12 +12,12 @@
 # NOTE: These version definitions are overridden by ati-packager.sh when
 # building with the --buildpkg method of the installer.
 # version in installer filename:
-%define oversion	8-9
+%define oversion	8-11
 # advertized version:
-%define mversion	8.9
+%define mversion	8.11
 # driver version from ati-packager-helper.sh:
-%define version		8.532
-%define rel		1
+%define version		8.552
+%define rel		2
 %else
 %define oversion	%{version}
 %define mversion	%{version}
@@ -28,7 +28,7 @@
 
 %define driverpkgname	x11-driver-video-fglrx
 %define drivername	fglrx
-%define xorg_version	710
+%define xorg_version	740
 %define xorg_libdir	%{_libdir}/xorg
 %define xorg_dridir	%{_libdir}/dri
 %define xorg_dridir32	%{_prefix}/lib/dri
@@ -43,6 +43,10 @@
 # touch it.
 %define ati_dridir      /usr/X11R6/%{_lib}/modules/dri
 %define ati_dridir32    /usr/X11R6/lib/modules/dri
+
+%if %{mdkversion} <= 200900
+%define	xorg_version	710
+%endif
 
 %if %{mdkversion} <= 200710
 %define driverpkgname	ati
@@ -160,6 +164,10 @@ Requires:	kmod(fglrx)
 %if %{mdkversion} >= 200900
 # libdri.so
 Conflicts:	x11-server-common < 1.4.2-5
+%endif
+%if %{mdkversion} >= 200910
+# ABI change
+Requires:	x11-server-common >= 1.5
 %endif
 Provides:	atieventsd = %{version}-%{release}
 Obsoletes:	atieventsd < %{version}-%{release}
@@ -816,6 +824,25 @@ rm -rf %{buildroot}
 %changelog
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
+
+* Fri Nov 28 2008 Anssi Hannula <anssi@mandriva.org> 8.552-2mdv2008.0
++ Revision: 307479
+- use X.org server 1.5 compatible driver variant on cooker
+
+* Sat Nov 15 2008 Anssi Hannula <anssi@mandriva.org> 8.552-1mdv2009.1
++ Revision: 303545
+- new version 8.552 aka 8.11
+- drop 2.6.27 support patch, applied upstream
+
+* Sun Nov 02 2008 Anssi Hannula <anssi@mandriva.org> 8.542-2mdv2009.1
++ Revision: 299202
+- provide XvMCConfig file so that MPEG/2 acceleration (UVD2) is enabled
+  automatically on programs using libXvMCW
+
+* Sun Oct 19 2008 Anssi Hannula <anssi@mandriva.org> 8.542-1mdv2009.1
++ Revision: 295257
+- new version 8.542 aka 8.10
+- rediff uname_r patch
 
 * Sun Oct 12 2008 Anssi Hannula <anssi@mandriva.org> 8.532-1mdv2009.1
 + Revision: 292944
