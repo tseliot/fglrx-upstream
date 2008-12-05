@@ -27,9 +27,35 @@ function _make_x
     
     mv ${ROOT_DIR}/arch/${ARCH}/usr/* usr;
 
+    # Se l'architettura è a 64 bit, allora sposto, se necessario,
+    # anche la directory "${ROOT_DIR}/arch/x86/usr/lib" con le librerie
+    # a 32 bit.
+    # Ci sono due filosofie sulla posizione delle librerie a 32 bit in
+    # una distribuzione Slackware-based:
+    # 1) Le librerie a 64 bit vanno sotto /usr/lib64, mentre quelle a 32 bit
+    #    vanno sotto /usr/lib (Slamd64)
+    # 2) Le librerie a 64 bit vanno sotto /usr/lib ed esiste un link
+    #    /usr/lib64 che punta a /usr/lib, mentre le librerie a 32 bit vanno sotto
+    #    /usr/lib32 (Bluewhite64)
+    if [ ${ARCH} = "x86_64" ]; then
+	if [ ! -h /usr/lib64 ]; then # Se /usr/lib64 non è un link, allora Slamd64
+	    if [ -d /usr/lib ]; then # Se sono presenti già librerie a 32 bit
+		mv ${ROOT_DIR}/arch/x86/usr/lib usr; # Sposto le librerie sotto usr/lib
+		LIB_DIR=usr/lib; # Usata nel passaggio 1.1
+	    fi
+	else # /usr/lib64 è un link simbolico, quindi Bluewhite64
+	    if [ -d /usr/lib32 ]; then # Se sono presenti già librerie a 32 bit
+		mkdir usr/lib32;
+		mv ${ROOT_DIR}/arch/x86/usr/lib/* usr/lib32; # Sposto le librerie sotto usr/lib
+		LIB_DIR=usr/lib32; # Usata nel passaggio 1.1
+	    fi
+	fi
+    fi
+
+    # Aggiungo directory nell'elenco delle directory con le librerie $LIB_DIR
     case ${ARCH} in
 	x86_64)
-   	    for lib_dir in usr/X11R6/lib64 usr/X11R6/lib; do
+   	    for lib_dir in usr/lib64 usr/X11R6/lib64 usr/X11R6/lib; do
 		if [ -d ${lib_dir}/ ]; then
 		    LIB_DIR="${LIB_DIR} ${lib_dir}";
 		fi;
@@ -37,16 +63,18 @@ function _make_x
 	    LIB_DIR=${LIB_DIR# }; # Tolgo l'eventuale spazio iniziale
 	    ;;
 	x86)
-	    LIB_DIR=usr/X11R6/lib;
+	    LIB_DIR=usr/lib usr/X11R6/lib;
 	    ;;
     esac
     
+    # 1.1)
     # Make some symbolik link
     for dir in ${LIB_DIR};
     do
 	( cd $dir;
 	    for file in *.so.1.?;
 	    do
+		[ $file = '*.so.1.?' ] && break; # Se vero, allora non esistono file '*.so.1.?'
 		ln -s $file ${file%.*};
 		ln -s $file ${file%%.*}.so;
 	    done
@@ -105,11 +133,15 @@ function _make_x
 
     # 6)
     # If use xorg >= 7, remove obsolete directory X11R6
+    # I moduli per il server X vanno ora sotto /usr/lib(64)/xorg/modules e non più
+    # sotto /usr/X11R6/lib(64)/modules
     if (( $XORG_7 )); then
-	for dir in ${LIB_DIR}; # Move X modules in usr/$LIB_DIR/xorg/modules
+	for dir in ${LIB_DIR}; # Move X usr/$LIB_DIR/modules in usr/$LIB_DIR/xorg/modules
 	do
-	    mkdir ${dir}/xorg;
-	    mv ${dir}/modules ${dir}/xorg;
+	    if [ -d ${dir}/modules ]; then # Controllo che la directory sia una di quelle che contiene i moduli
+		mkdir ${dir}/xorg;
+		mv ${dir}/modules ${dir}/xorg;
+	    fi
 	done
 	cp -rp usr/X11R6/* usr/;
 	rm -rf usr/X11R6;

@@ -20,3 +20,8 @@ deve essere o blank o --dryrun
 Installazione/Upgrade dei pacchetti
 si deve killare il server X
 Ricarico il modulo
+Trovata la patch:
+non posso applicare la patch: programma patch mancante
+la applico
+Trovata la ati_to_gpl.patch, controllo l'md5sum
+L'md5sum è fallito, non sembra essere la ati_to_gpl.patch originale

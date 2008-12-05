@@ -26,7 +26,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
     
-    BUILD_VER=1.3.4;
+    BUILD_VER=1.3.6;
     
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD;
@@ -135,7 +135,7 @@ function _check_external_command
 	if (( $USE_WHICH )); then
 	    which ${DEPS[$i]} &> /dev/null;
 	else
-	    grep bin/${DEPS[$i]} ${DIR_PACKAGE}/* &> /dev/null;
+	    grep "bin/${DEPS[$i]}\$" ${DIR_PACKAGE}/* &> /dev/null;
 	fi
 
 	if [ $? != 0 ]; then

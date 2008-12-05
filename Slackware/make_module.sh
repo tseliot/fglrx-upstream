@@ -33,11 +33,9 @@ function _make_module
 
     cd common/${MODULE_DIR};
 
-    # Se ci sono, applico le patch (backward compatibility)
-    if [ -f ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh ]; then
-	source ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh;
-	_module_patch;
-    fi
+    # Se ci sono, applico le patch
+    source ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh;
+    _module_patch;
     
     # Make modules with ati's script
     if ! sh make.sh; then

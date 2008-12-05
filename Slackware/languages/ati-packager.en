@@ -20,3 +20,8 @@ must be either blank or --dryrun
 Install/Upgrade package/s
 must be kill server X
 Refresh module
+Found patch:
+I can't apply the patch: program patch not found
+applied
+Found the ati_to_gpl.patch, checking md5sum
+md5sum failed, it not seem the original ati_to_gpl.patch
