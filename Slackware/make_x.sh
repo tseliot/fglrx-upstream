@@ -126,7 +126,7 @@ function _make_x
     # pacchetto. Inoltre lo script di installazione del pacchetto provvederà a rinominarli o a cancellarli se
     # necessario.
     ( cd etc/ati;
-	for file in atiogl.xml; do
+	for file in amdpcsdb; do
 	    [ -f $file ] && mv $file ${file}.new;
 	done
     )
