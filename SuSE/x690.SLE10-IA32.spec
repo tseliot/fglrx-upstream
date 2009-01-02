@@ -2,7 +2,7 @@
 # spec file header                                                          #
 #############################################################################
 
-Name: fglrx_7_1_0_SUSE102
+Name: fglrx_6_9_0_SLE10
 Summary: %ATI_DRIVER_SUMMARY
 Version: %ATI_DRIVER_VERSION
 Release: %ATI_DRIVER_RELEASE
@@ -121,7 +121,7 @@ pushd $tmpdir/fglrx
       rm $file
     fi
   done
-  for file in libamdcaldd.so libamdcalrt.so libamdcalcl.so; do
+  for file in libaticaldd.so libaticalrt.so libaticalcl.so; do
     mv usr/lib/$file .
     install -m 755 $file                   $RPM_BUILD_ROOT/usr/lib
     rm $file
@@ -201,7 +201,7 @@ pushd $tmpdir/fglrx
 %ifarch %ix86
   install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
 %endif
-  install -m 755 libamdcaldd.so libamdcalrt.so libamdcalcl.so $RPM_BUILD_ROOT/usr/%{_lib}
+  install -m 755 libaticaldd.so libaticalrt.so libaticalcl.so $RPM_BUILD_ROOT/usr/%{_lib}
   install -m 755 libdri.so              $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
   test -f libglx.so && \
     install -m 755 libglx.so            $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
@@ -399,9 +399,9 @@ exit 0
 /usr/%{_lib}/libAMDXvBA.so.1.0
 /usr/%{_lib}/libXvBAW.so.1.0
 %endif
-/usr/%{_lib}/libamdcaldd.so
-/usr/%{_lib}/libamdcalrt.so
-/usr/%{_lib}/libamdcalcl.so
+/usr/%{_lib}/libaticaldd.so
+/usr/%{_lib}/libaticalrt.so
+/usr/%{_lib}/libaticalcl.so
 /usr/X11R6/%{_lib}/libGL.so
 /usr/X11R6/%{_lib}/libGL.so.1
 /usr/X11R6/%{_lib}/libGL.so.1.2

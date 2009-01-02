@@ -1,11 +1,10 @@
 # Makefile
 
-specfiles101=x690.SLES10-IA32.spec x690.SLED10-IA32.spec x690_64a.SLES10-AMD64.spec x690_64a.SLED10-AMD64.spec
-specfiles102=x710.SUSE102-IA32.spec x710_64a.SUSE102-AMD64.spec
+specfiles101=x690.SLE10-IA32.spec x690_64a.SLE10-AMD64.spec
 specfiles103=x710.SUSE103-IA32.spec x710_64a.SUSE103-AMD64.spec
 specfiles110=x710.SUSE110-IA32.spec x710_64a.SUSE110-AMD64.spec
-specfiles111=x740.SUSE111-IA32.spec x740_64a.SUSE111-AMD64.spec
-specfiles=$(specfiles101) $(specfiles102) $(specfiles103) $(specfiles110) $(specfiles111)
+specfiles111=x740.SUSE111-IA32.spec x740_64a.SUSE111-AMD64.spec x740.SLE11-IA32.spec x740_64a.SLE11-AMD64.spec
+specfiles=$(specfiles101) $(specfiles103) $(specfiles110) $(specfiles111)
 
 tarball=suse.tar.bz2
 
