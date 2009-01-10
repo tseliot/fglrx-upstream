@@ -746,16 +746,16 @@ rm -rf %{buildroot}
 %dir %{_libdir}/%{drivername}
 %{_libdir}/%{drivername}/libGL.so.1
 %{_libdir}/%{drivername}/libGL.so.1.*
-%{_libdir}/%{drivername}/libamdcalcl.so
-%{_libdir}/%{drivername}/libamdcaldd.so
-%{_libdir}/%{drivername}/libamdcalrt.so
+%{_libdir}/%{drivername}/libaticalcl.so
+%{_libdir}/%{drivername}/libaticaldd.so
+%{_libdir}/%{drivername}/libaticalrt.so
 %ifarch x86_64
 %dir %{_prefix}/lib/%{drivername}
 %{_prefix}/lib/%{drivername}/libGL.so.1
 %{_prefix}/lib/%{drivername}/libGL.so.1.*
-%{_prefix}/lib/%{drivername}/libamdcalcl.so
-%{_prefix}/lib/%{drivername}/libamdcaldd.so
-%{_prefix}/lib/%{drivername}/libamdcalrt.so
+%{_prefix}/lib/%{drivername}/libaticalcl.so
+%{_prefix}/lib/%{drivername}/libaticaldd.so
+%{_prefix}/lib/%{drivername}/libaticalrt.so
 %endif
 
 %{_libdir}/%{drivername}/libfglrx_gamma.so.1*
