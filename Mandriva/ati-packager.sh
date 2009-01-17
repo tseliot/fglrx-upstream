@@ -82,7 +82,7 @@ buildPackage()
     cp ${AbsDistroDir}/fglrx.spec ${TmpPkgSpec}
 
     #Build the package
-    LC_ALL=C rpm -bb --with ati \
+    LC_ALL=C rpmbuild -bb --with ati \
 	--define "_topdir ${RpmRoot}" \
 	--define "_tmppath ${RpmRoot}/tmp" \
 	--define "_builddir ${RpmRoot}/BUILD" \
