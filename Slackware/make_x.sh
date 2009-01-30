@@ -161,7 +161,6 @@ function _make_x
     # Sposto, se esistono, tutti i file .desktop della directory
     # usr/share/gnome in usr/share/applications e poi cancello
     # la directory
-    # DIPENDENTE DALLA RELEASE DELLA DISTRO....FORSE
     if [ -d usr/share/gnome ]; then
 	mkdir -p usr/share/applications
 	find usr/share/gnome -name '*desktop' -exec mv '{}' usr/share/applications \;
