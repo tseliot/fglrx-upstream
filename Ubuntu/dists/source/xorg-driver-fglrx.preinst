@@ -19,6 +19,23 @@ if [ `dpkg --print-installation-architecture` = "amd64" ]; then
 	HAS_LIB32="yes"
 fi
 
+# Snippet from  http://www.dpkg.org/dpkg/ConffileHandling
+mv_conffile() {
+    CONFFILE="$1"
+
+    if [ -e "$CONFFILE" ]; then
+        md5sum="`md5sum \"$CONFFILE\" | sed -e \"s/ .*//\"`"
+        old_md5sum="`sed -n -e \"/^Conffiles:/,/^[^ ]/{\\\\' $CONFFILE'{s/.* //;p}}\" /var/lib/dpkg/status`"
+        if [ "$md5sum" != "$old_md5sum" ]; then
+            echo "Conffile $CONFFILE has been modified by you."
+            echo "AMD graphics driver requires $CONFFILE to be updated when driver is updated."
+            echo "Saving as $CONFFILE.dpkg-bak ..."
+            mv -f "$CONFFILE" "$CONFFILE".dpkg-bak
+        fi
+    fi
+}
+
+
 fix_diversions()
 {
     # Remove very old style diversions
@@ -76,6 +93,18 @@ case "$1" in
 		fi
 		dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib32/fglrx/libGL.so.1.2.xlibmesa /usr/lib32/libGL.so.1.2 > /dev/null
 	fi
+
+	### Remove user changes to "conffiles""                     ###
+	### These files are stored in /etc but shouldn't be treated ###
+	### as conf files because updated drivers may stop working  ###
+	### if they are modified.                                   ###
+	mv_conffile "/etc/ati/amdpcsdb.default"
+	mv_conffile "/etc/ati/atiogl.xml"
+	mv_conffile "/etc/ati/authatieventsd.sh"
+	mv_conffile "/etc/ati/control"
+	mv_conffile "/etc/ati/logo_mask.xbm.example"
+	mv_conffile "/etc/ati/signature"
+	mv_conffile "/etc/ati/logo.xbm.example"
     ;;
 
     abort-upgrade)
