@@ -1,3 +1,19 @@
+fglrx-installer (2:8.573-0ubuntu2) jaunty; urgency=low
+
+  * debian/control:
+    - Add libxinerama1 to build depends.
+  * debian/xorg-driver-fglrx.preinst:
+    - Move user modifications out of the way for files that are stored in
+      /etc/ati when upgrading package.  Unfortunately, although these files
+      are stored in /etc, AMD has indicated that they should not be treated
+      as conf files. (LP: 307643)
+  * debian/fglrx-kernel-source.prerm:
+    - Add in a check for old versions of fglrx that might have DKMS directories
+      sitting around.  If any are found, they are removed so as to prevent possible
+      conflicts. (LP: #303148)
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Mon, 02 Feb 2009 14:31:34 -0600
+
 fglrx-installer (2:8.552-0ubuntu1) jaunty; urgency=low
 
   * New upstream release.
@@ -65,9 +81,9 @@ fglrx-installer (2:8.543-0ubuntu1) intrepid; urgency=low
 
 fglrx-installer (2:8.532-0ubuntu5) intrepid; urgency=low
 
-  * control: xorg-driver-fglrx Provides: xserver-xorg-video-2. The 
-    driver doesn't work with the current xserver, so no reason to 
-    pretend that it would. This prevents breaking upgrades from hardy 
+  * control: xorg-driver-fglrx Provides: xserver-xorg-video-2. The
+    driver doesn't work with the current xserver, so no reason to
+    pretend that it would. This prevents breaking upgrades from hardy
     where the driver would be updated and on reboot X would fail.
 
  -- Timo Aaltonen <tepsipakki@ubuntu.com>  Thu, 25 Sep 2008 11:46:28 +0300
@@ -112,7 +128,7 @@ fglrx-installer (2:8.532-0ubuntu1) intrepid; urgency=low
 
 fglrx-installer (2:8.522-0ubuntu4) intrepid; urgency=low
 
-  * Rebuild against the new xserver-xorg-dev. 
+  * Rebuild against the new xserver-xorg-dev.
 
  -- Bryce Harrington <bryce@bryceharrington.org>  Fri, 12 Sep 2008 00:54:13 +0000
 
@@ -172,7 +188,7 @@ fglrx-installer (2:8.501-0ubuntu2) intrepid; urgency=low
     - Don't start atieventsd on package install as it steals X permissions
       until the next reboot.
     - Add support to apply patches to the development release.  This is
-      determined by querying distro target in the changelog.  
+      determined by querying distro target in the changelog.
       -- Don't use packages not intended for your distro! --
   * debian/README.Debian:
     - Add a small blurb explaining kernel patches.
