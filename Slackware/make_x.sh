@@ -143,14 +143,8 @@ function _make_x
 		mv ${dir}/modules ${dir}/xorg;
 	    fi
 	done
-	cp -rp usr/X11R6/* usr/;
+	cp -a usr/X11R6/* usr/;
 	rm -rf usr/X11R6;
-	
-	echo >> install/doinst.sh;
-	for dir in ${LIB_DIR}; do
-	    echo "[ ! -d /${dir}/modules ] && ln -s /usr/`basename $dir`/xorg/modules /${dir}/" >> install/doinst.sh;
-	done
-	echo >> install/doinst.sh;
     fi
     
     # 7)
@@ -164,6 +158,16 @@ function _make_x
     fi
 
     # 8)
+    # Sposto, se esistono, tutti i file .desktop della directory
+    # usr/share/gnome in usr/share/applications e poi cancello
+    # la directory
+    if [ -d usr/share/gnome ]; then
+	mkdir -p usr/share/applications
+	find usr/share/gnome -name '*desktop' -exec mv '{}' usr/share/applications \;
+	rm -rf usr/share/gnome;
+    fi
+
+    # 9)
     # MAKE PACKAGE
     local X_PACK_NAME=${X_PACK_PARTIAL_NAME/fglrx-/fglrx-${X_VERSION}-}.tgz;
     

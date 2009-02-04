@@ -12,12 +12,12 @@
 # NOTE: These version definitions are overridden by ati-packager.sh when
 # building with the --buildpkg method of the installer.
 # version in installer filename:
-%define oversion	8-11
+%define oversion	8-12
 # advertized version:
-%define mversion	8.11
+%define mversion	8.12
 # driver version from ati-packager-helper.sh:
-%define version		8.552
-%define rel		2
+%define version		8.561
+%define rel		1
 %else
 %define oversion	%{version}
 %define mversion	%{version}
@@ -43,6 +43,12 @@
 # touch it.
 %define ati_dridir      /usr/X11R6/%{_lib}/modules/dri
 %define ati_dridir32    /usr/X11R6/lib/modules/dri
+
+%if %{mdkversion} <= 200900
+%define libglx_path %{_libdir}/xorg/modules/extensions/standard
+%else
+%define libglx_path %{ati_extdir}
+%endif
 
 %if %{mdkversion} <= 200900
 %define	xorg_version	710
@@ -461,13 +467,13 @@ install -m644 common/usr/share/icons/ccc_small.xpm %{buildroot}%{_iconsdir}/%{dr
 # install libraries
 install -d -m755					%{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/libGL.so.1.2	%{buildroot}%{_libdir}/%{drivername}
-install -m755 %{archdir}/usr/%{_lib}/*.so*		%{buildroot}%{_libdir}/%{drivername}
+install -m755 %{archdir}/usr/%{_lib}/*			%{buildroot}%{_libdir}/%{drivername}
 /sbin/ldconfig -n					%{buildroot}%{_libdir}/%{drivername}
 ln -s libGL.so.1					%{buildroot}%{_libdir}/%{drivername}/libGL.so
 %ifarch x86_64
 install -d -m755					%{buildroot}%{_prefix}/lib/%{drivername}
 install -m755 arch/x86/usr/X11R6/lib/libGL.so.1.2	%{buildroot}%{_prefix}/lib/%{drivername}
-install -m755 arch/x86/usr/lib/*.so*			%{buildroot}%{_prefix}/lib/%{drivername}
+install -m755 arch/x86/usr/lib/*			%{buildroot}%{_prefix}/lib/%{drivername}
 /sbin/ldconfig -n					%{buildroot}%{_prefix}/lib/%{drivername}
 ln -s libGL.so.1					%{buildroot}%{_prefix}/lib/%{drivername}/libGL.so
 %endif
@@ -576,7 +582,7 @@ fi
 	--slave %{_libdir}/xorg/modules/extensions/libdri.so libdri.so %{ati_extdir}/libdri.so \
 %endif
 %if %{mdkversion} >= 200800
-	--slave %{_libdir}/xorg/modules/extensions/libglx.so libglx %{_libdir}/xorg/modules/extensions/standard/libglx.so
+	--slave %{_libdir}/xorg/modules/extensions/libglx.so libglx %{libglx_path}/libglx.so
 if [ "$(readlink -e %{_sysconfdir}/ld.so.conf.d/GL.conf)" = "%{_sysconfdir}/ld.so.conf.d/GL/ati-hd2000.conf" ]; then
 	# Switch from the obsolete hd2000 branch:
 	%{_sbindir}/update-alternatives --set gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file}
@@ -725,6 +731,9 @@ rm -rf %{buildroot}
 
 %dir %{ati_extdir}
 %{ati_extdir}/libdri.so
+%if %{mdkversion} >= 200910
+%{ati_extdir}/libglx.so
+%endif
 %if %{mdkversion} >= 200900
 %ghost %{xorg_libdir}/modules/extensions/libdri.so
 %endif
@@ -737,16 +746,16 @@ rm -rf %{buildroot}
 %dir %{_libdir}/%{drivername}
 %{_libdir}/%{drivername}/libGL.so.1
 %{_libdir}/%{drivername}/libGL.so.1.*
-%{_libdir}/%{drivername}/libamdcalcl.so
-%{_libdir}/%{drivername}/libamdcaldd.so
-%{_libdir}/%{drivername}/libamdcalrt.so
+%{_libdir}/%{drivername}/libaticalcl.so
+%{_libdir}/%{drivername}/libaticaldd.so
+%{_libdir}/%{drivername}/libaticalrt.so
 %ifarch x86_64
 %dir %{_prefix}/lib/%{drivername}
 %{_prefix}/lib/%{drivername}/libGL.so.1
 %{_prefix}/lib/%{drivername}/libGL.so.1.*
-%{_prefix}/lib/%{drivername}/libamdcalcl.so
-%{_prefix}/lib/%{drivername}/libamdcaldd.so
-%{_prefix}/lib/%{drivername}/libamdcalrt.so
+%{_prefix}/lib/%{drivername}/libaticalcl.so
+%{_prefix}/lib/%{drivername}/libaticaldd.so
+%{_prefix}/lib/%{drivername}/libaticalrt.so
 %endif
 
 %{_libdir}/%{drivername}/libfglrx_gamma.so.1*
@@ -823,9 +832,17 @@ rm -rf %{buildroot}
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
 
-* Fri Nov 28 2008 Anssi Hannula <anssi@mandriva.org> 8.552-2mdv2008.0
-+ Revision: 307479
-- use X.org server 1.5 compatible driver variant on cooker
+* Sat Dec 20 2008 Anssi Hannula <anssi@mandriva.org> 8.561-1mdv2009.1
++ Revision: 316488
+- new version 8.561 aka 8.12
+- drop uname_r patch, use the new upstream solution
+
+* Sat Nov 29 2008 Colin Guthrie <cguthrie@mandriva.org> 8.552-2mdv2009.1
++ Revision: 308110
+- Hopefully fix xserver 1.5 libglx.so inclusion
+
+  + Anssi Hannula <anssi@mandriva.org>
+    - use X.org server 1.5 compatible driver variant on cooker
 
 * Sat Nov 15 2008 Anssi Hannula <anssi@mandriva.org> 8.552-1mdv2009.1
 + Revision: 303545
