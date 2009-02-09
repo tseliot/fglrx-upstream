@@ -121,7 +121,7 @@ pushd $tmpdir/fglrx
       rm $file
     fi
   done
-  for file in libamdcaldd.so libamdcalrt.so libamdcalcl.so; do
+  for file in libaticaldd.so libaticalrt.so libaticalcl.so; do
     mv usr/lib/$file .
     install -m 755 $file                   $RPM_BUILD_ROOT/usr/lib
     rm $file
@@ -201,7 +201,7 @@ pushd $tmpdir/fglrx
 %ifarch %ix86
   install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
 %endif
-  install -m 755 libamdcaldd.so libamdcalrt.so libamdcalcl.so $RPM_BUILD_ROOT/usr/%{_lib}
+  install -m 755 libaticaldd.so libaticalrt.so libaticalcl.so $RPM_BUILD_ROOT/usr/%{_lib}
   install -m 755 libdri.so              $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
   test -f libglx.so && \
     install -m 755 libglx.so            $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
@@ -212,7 +212,7 @@ pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   patch -p0 -s < $RPM_SOURCE_DIR/ati-CONFIG_SMP.diff
 %endif
 %if %suse_version > 1100
-  patch -p0 -s < $RPM_SOURCE_DIR/ati-2.6.27-build-fix-1.diff
+  patch -p1 -s < $RPM_SOURCE_DIR/ati-2.6.27-build-fix-1.diff
 %endif
   rm -f *.orig
 popd
@@ -223,9 +223,11 @@ cp $RPM_SOURCE_DIR/fglrx.png $RPM_BUILD_ROOT/usr/share/pixmaps
 mkdir -p $RPM_BUILD_ROOT/usr/%{_lib}/pm-utils/power.d/
 install -m 755 $RPM_SOURCE_DIR/ati-powermode.sh \
   $RPM_BUILD_ROOT/usr/%{_lib}/pm-utils/power.d
+%if %suse_version < 1110
 mkdir -p $RPM_BUILD_ROOT/usr/%{_lib}/powersave/scripts/
 install -m 755 $RPM_SOURCE_DIR/toggle-lvds.sh \
   $RPM_BUILD_ROOT/usr/%{_lib}/powersave/scripts/
+%endif
 %else
 mkdir -p $RPM_BUILD_ROOT/usr/%{_lib}/powersave/scripts/
 install -m 755 $RPM_SOURCE_DIR/{ati-powermode.sh,toggle-lvds.sh} \
@@ -311,11 +313,13 @@ find $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx -type f | xargs chmod 644
 if [ -x etc/init.d/atieventsd ]; then
   # Create symbolic run level links for atieventsd start script:
   %{fillup_and_insserv -y atieventsd}
+fi
+%if %suse_version < 1110
   if [ -r /etc/powersave/events ]; then
     grep -q "EVENT_DAEMON_SCHEME_CHANGE=.*ati-powermode.sh" /etc/powersave/events || \
      sed -e 's/\(EVENT_DAEMON_SCHEME_CHANGE="\)\(.*\)/\1ati-powermode.sh \2/g' -i /etc/powersave/events
   fi
-fi
+%endif
 if [ -f etc/X11/xorg.conf ]; then
   test -f etc/X11/xorg.conf.fglrx-post || \
     cp etc/X11/xorg.conf etc/X11/xorg.conf.fglrx-post
@@ -402,9 +406,9 @@ exit 0
 /usr/%{_lib}/libAMDXvBA.so.1.0
 /usr/%{_lib}/libXvBAW.so.1.0
 %endif
-/usr/%{_lib}/libamdcaldd.so
-/usr/%{_lib}/libamdcalrt.so
-/usr/%{_lib}/libamdcalcl.so
+/usr/%{_lib}/libaticaldd.so
+/usr/%{_lib}/libaticalrt.so
+/usr/%{_lib}/libaticalcl.so
 /usr/X11R6/%{_lib}/libGL.so
 /usr/X11R6/%{_lib}/libGL.so.1
 /usr/X11R6/%{_lib}/libGL.so.1.2
@@ -433,5 +437,7 @@ exit 0
 %else
 /usr/%{_lib}/powersave/scripts/ati-powermode.sh
 %endif
+%if %suse_version < 1110
 # Thinkpad Hotkey script
 /usr/%{_lib}/powersave/scripts/toggle-lvds.sh
+%endif
