@@ -11,7 +11,7 @@
 ### BEGIN INIT INFO
 # Provides:       atieventsd
 # Required-Start: acpid xdm
-# Required-Stop:
+# Required-Stop:  acpid xdm
 # Default-Start:  3 5
 # Default-Stop:
 # Description:    ATI Events Daemon

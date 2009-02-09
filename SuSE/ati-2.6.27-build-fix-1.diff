@@ -1,0 +1,11 @@
+--- build_mod.orig/firegl_public.h	2008-08-18 13:45:42.000000000 +0200
++++ firegl_public.h	2008-09-01 17:31:50.467661000 +0200
+@@ -63,7 +63,7 @@
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26)
+ #define PAGING_FAULT_SIGBUS_INT (unsigned long)NOPAGE_SIGBUS
+ #else /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26) */
+-#define PAGING_FAULT_SIGBUS_INT VM_FAULT_SIGBUS
++#define PAGING_FAULT_SIGBUS_INT (void*)(unsigned long)VM_FAULT_SIGBUS
+ #endif
+ 
+ #define PGD_OFFSET(mm, pgd_p, pte_linear)	\
