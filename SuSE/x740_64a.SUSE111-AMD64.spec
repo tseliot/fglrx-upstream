@@ -209,7 +209,10 @@ popd
 pushd $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
   # add kernel patches here
 %if %suse_version > 1030
-  patch -p0 -s < $RPM_SOURCE_DIR/ati-2.6.25-build-fix.diff
+  patch -p0 -s < $RPM_SOURCE_DIR/ati-CONFIG_SMP.diff
+%endif
+%if %suse_version > 1100
+  patch -p1 -s < $RPM_SOURCE_DIR/ati-2.6.27-build-fix-1.diff
 %endif
   rm -f *.orig
 popd
