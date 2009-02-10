@@ -2,7 +2,10 @@ LIBGL_DRIVERS_PATH=/#DRIDIR#/dri
 if [ `uname -m` = 'x86_64' ]; then
   if [ -d /#DRIDIR32#/dri ]; then
     LIBGL_DRIVERS_PATH=${LIBGL_DRIVERS_PATH}:/#DRIDIR32#/dri
-    LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/lib32
+    if [ ! -z $LD_LIBRARY_PATH ]; then
+	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:
+    fi
+    LD_LIBRARY_PATH=${LD_LIBRARY_PATH}/usr/lib32
     export LD_LIBRARY_PATH
   fi
 fi
