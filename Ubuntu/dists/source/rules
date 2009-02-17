@@ -124,4 +124,4 @@ ifeq ($(DEB_BUILD_ARCH),amd64)
 endif
 
 	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude ATI_LICENSE.TXT
-	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start
+	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start --update-rcd-params="defaults 31"

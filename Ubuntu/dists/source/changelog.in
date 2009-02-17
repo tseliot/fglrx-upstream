@@ -1,3 +1,13 @@
+fglrx-installer (2:8.573-0ubuntu4) jaunty; urgency=low
+
+  * debian/xorg-driver-fglrx.postinst:
+    - Transition start of atieventsd with priority 31.  It needs to start after
+      GDM and oem-config to ensure there aren't any lockups. (LP: #330188)
+  * debian/rules:
+    - Start atieventsd at 31. 
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Mon, 16 Feb 2009 16:52:25 -0600
+
 fglrx-installer (2:8.573-0ubuntu3) jaunty; urgency=low
 
   * debian/10fglrx.in:
