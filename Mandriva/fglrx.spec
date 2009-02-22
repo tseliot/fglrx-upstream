@@ -12,12 +12,12 @@
 # NOTE: These version definitions are overridden by ati-packager.sh when
 # building with the --buildpkg method of the installer.
 # version in installer filename:
-%define oversion	8-12
+%define oversion	%mversion
 # advertized version:
-%define mversion	8.12
+%define mversion	9.2
 # driver version from ati-packager-helper.sh:
-%define version		8.561
-%define rel		1
+%define version		8.582
+%define rel		2
 %else
 %define oversion	%{version}
 %define mversion	%{version}
@@ -114,6 +114,7 @@ Patch2:		ati-8.19.10-fgl_glxgears-includes.patch
 Patch4:		fglrx_gamma-fix-underlinking.patch
 %endif
 Patch3:		fglrx-authfile-locations.patch
+Patch5:		fglrx-2.6.29-fixes.patch
 License:	Proprietary
 URL:		http://ati.amd.com/support/driver.html
 Group:		System/Kernel and hardware
@@ -131,6 +132,7 @@ BuildRequires:	libxinerama-devel
 BuildRequires:	libxrender-devel
 BuildRequires:	libxft-devel
 BuildRequires:	libxaw-devel
+BuildRequires:	libxp-devel
 BuildRequires:	imake
 BuildRequires:	x11-util-cf-files
 # Used by atieventsd:
@@ -265,6 +267,8 @@ cd common # ensure patch does not touch outside
 %patch3 -p2
 cd -
 
+%patch5 -p1
+
 cat > README.install.urpmi <<EOF
 This driver is for ATI Radeon 9500 and newer cards.
 Reconfiguring is not necessary when upgrading from a previous Mandriva ATI
@@ -311,7 +315,7 @@ installation in the file 'README.install.urpmi' in this directory.
 EOF
 
 %if %{mdkversion} <= 200810
-cat > README.8.532.update.urpmi <<EOF
+cat > README.8.532.upgrade.urpmi <<EOF
 IMPORTANT NOTE:
 Additional manual upgrade steps are needed in order to fully enable all
 features of this version of the proprietary ATI driver on this release
@@ -831,6 +835,27 @@ rm -rf %{buildroot}
 %changelog
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
+
+* Sun Feb 22 2009 Anssi Hannula <anssi@mandriva.org> 8.582-2mdv2008.0
++ Revision: 343854
+- fix build on 2008.1 and earlier
+
+* Sun Feb 22 2009 Anssi Hannula <anssi@mandriva.org> 8.582-2mdv2009.1
++ Revision: 343808
+- hack around an error in 2.6.29-fixes.patch that caused build failure
+  on earlier kernels
+
+* Sat Feb 21 2009 Anssi Hannula <anssi@mandriva.org> 8.582-1mdv2009.1
++ Revision: 343732
+- br libxp-devel
+- new version 8.582 aka 9.2
+
+  + Luiz Fernando Capitulino <lcapitulino@mandriva.com>
+    - Quick-and-dirty fix to make fglrx compile on 2.6.29-rc
+
+* Mon Feb 02 2009 Anssi Hannula <anssi@mandriva.org> 8.573-1mdv2009.1
++ Revision: 336504
+- new version 8.573 aka 9.1
 
 * Sat Dec 20 2008 Anssi Hannula <anssi@mandriva.org> 8.561-1mdv2009.1
 + Revision: 316488
