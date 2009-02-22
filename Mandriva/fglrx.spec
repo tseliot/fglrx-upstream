@@ -21,6 +21,8 @@
 %else
 %define oversion	%{version}
 %define mversion	%{version}
+# Best-effort if ATI has made late changes (in atibuild mode)
+%define _default_patch_fuzz 2
 %endif
 
 %define priority	1000
@@ -109,6 +111,7 @@ Source2:	atieventsd.init
 Source10:	generate-fglrx-spec-from-svn.sh
 %endif
 %if !%{atibuild}
+# Patches that only affect tools (not build in atibuild mode)
 Patch1:		ati-8.19.10-fglrx_gamma-extutil-include.patch
 Patch2:		ati-8.19.10-fgl_glxgears-includes.patch
 Patch4:		fglrx_gamma-fix-underlinking.patch
@@ -837,7 +840,9 @@ rm -rf %{buildroot}
 - automatic package build by the ATI installer
 
 * Sun Feb 22 2009 Anssi Hannula <anssi@mandriva.org> 8.582-2mdv2008.0
-+ Revision: 343854
++ Revision: 343868
+- use patch fuzz 2 in ati installer mode
+- additional comments in .spec
 - fix build on 2008.1 and earlier
 
 * Sun Feb 22 2009 Anssi Hannula <anssi@mandriva.org> 8.582-2mdv2009.1
