@@ -289,7 +289,7 @@ fi
 @X11_MODULE_DIR@/esut.a
 @X11_MODULE_DIR@/glesx.so
 @X11_MODULE_DIR@/amdxmm.so
-%{_libdir}/libamd*.so
+%{_libdir}/libati*.so
 %{_libdir}/fglrx/*.cap
 %{_libdir}/fglrx/*.so*
 %{_mandir}/man[1-9]/atieventsd.*
@@ -326,6 +326,9 @@ fi
 
 
 %changelog
+* Tue Mar 03 2009 Michael Larabel <Michael AT phoronix DOT com> 8.59.1-1
+- Change libamd*.so to libati*.so
+
 * Fri Dec 26 2008 Michael Larabel <Michael AT phoronix DOT com> 8.57.1-1
 - Add Fedora 10 support and fixes support for Fedora 9 on X.Org 7.4
 
