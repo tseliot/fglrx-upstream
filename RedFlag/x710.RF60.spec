@@ -13,7 +13,7 @@ Release:        %ATI_DRIVER_RELEASE
 Summary:        %ATI_DRIVER_SUMMARY
 
 Group:          User Interface/X Hardware Support
-License:        Other License(s), see package
+License:        MIT 
 URL:            %ATI_DRIVER_URL
 
 Requires(post):   /sbin/ldconfig /sbin/chkconfig
