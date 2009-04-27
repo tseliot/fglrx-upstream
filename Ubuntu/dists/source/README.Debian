@@ -51,13 +51,15 @@ fglrx-installer:
 2.  Do a --buildpkg Ubuntu/source, which will build a diff.gz,
     orig.tar.gz and an unsigned dsc.  For example:
 
-    $ bash ./ati-driver-installer-8.543.2-x86.x86_64.run --buildpkg Ubuntu/source
+    $ bash ./ati-driver-installer-*.run --buildpkg Ubuntu/source
 
-    This will prompt for your password for sudo privs.  It will
+    This might prompt for your password for sudo privs.  It may
     install things to your system it needs for constructing the
-    source packages, such as cdbs, libstdc++, etc.
+    source packages, such as cdbs, libstdc++, etc.  (As of 8.600
+    it seems to no longer do this for source pkgs.)
 
-3.  dpkg-source -x that dsc to unpack it into a directory
+3.  dpkg-source -x that dsc to unpack it into a directory, then
+    cd into the resultant directory.
 
 4.  dch -e to update the new changelog entry.
     Make sure to mark out any bugs that get closed with it.
