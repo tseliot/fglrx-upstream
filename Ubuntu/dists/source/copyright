@@ -1,7 +1,7 @@
 This package was debianized by Mario Limonciello <superm1@ubuntu.com> on
 Tue, 27 May 2008 10:22:21 -0600.
 
-The latest Linux graphics driver was downloaded (at this time 8.5) from the
+The latest Linux graphics driver was downloaded from the 
 AMD website (www.amd.com), and then this package was generated using:
 
 	sh $VERSION.run --buildpkg Ubuntu/source
@@ -197,21 +197,27 @@ writing and signed by a duly authorized representative of ATI.
 Packaging scripts:
   Copyright (C) 2002-2005 Flavio Stanchina
   Copyright (C) 2005-2006 Aric Cyr
-  Copyright (C) 2007-2008 Mario Limonciello
+  Copyright (C) 2007-2009 Mario Limonciello
 
- This Package is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public
- License as published by the Free Software Foundation; either
- version 3 of the License, or (at your option) any later version.
+The packaging scripts are copyrighted under the MIT license.
 
- This package is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- General Public License for more details.
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
 
- You should have received a copy of the GNU General Public
- License along with this package; if not, write to the Free Software
- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
-On Debian & Ubuntu systems, a complete copy of the GPL can be found under
-/usr/share/common-licenses/GPL
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
