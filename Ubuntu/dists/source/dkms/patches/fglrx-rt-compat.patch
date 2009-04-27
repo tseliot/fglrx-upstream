@@ -19,7 +19,7 @@
 +#if !defined(CONFIG_PREEMPT_RT)
     rcu_read_unlock();
 +#else
-+   preempt_disable();
++   preempt_enable();
 +#endif
  #else   
     read_unlock(&tasklist_lock);
