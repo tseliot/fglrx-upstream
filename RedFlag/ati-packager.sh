@@ -95,7 +95,7 @@ s!%ATI_DRIVER_BUILD_ROOT!${TmpDrvFilesDir}!
 END_SED_SCRIPT
 
     #Build the package
-    rpmbuild -bb --root ${TmpDrvFilesDir} --dbpath /var/lib/rpm \
+    rpmbuild -bb --buildroot ${TmpDrvFilesDir} --dbpath /var/lib/rpm \
              --target ${ARCH} ${TmpPkgSpec} > ${TmpPkgBuildOut} 2>&1
 #             --rcfile ${AbsDistroDir}/ati.rpmrc \
 

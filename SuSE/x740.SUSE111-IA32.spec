@@ -83,15 +83,14 @@ pushd $tmpdir/fglrx
   fi
   ls etc/* && install -m 644 etc/* $RPM_BUILD_ROOT/etc/ati
   rm -rf etc/
-%if %suse_version > 1000
-  if [ -f amdcccle ]; then
-    ldd amdcccle | grep -q libexpat.so.0 || \
+  if [ -f usr/X11R6/bin/amdcccle ]; then
+    if ! ldd usr/X11R6/bin/amdcccle | grep -q libexpat.so.0; then
       cp -r usr/share/ati $RPM_BUILD_ROOT/usr/share
+      install -m 644 usr/share/icons/* $RPM_BUILD_ROOT/usr/share/pixmaps
+    fi
   fi
-%else
-  cp -r usr/share/ati $RPM_BUILD_ROOT/usr/share
-%endif
   rm -rf usr/share/ati
+  rm -rf usr/share/icons
 %ifarch x86_64
   test -f usr/X11R6/lib/modules/dri/fglrx_dri.so && \
   ( mv usr/X11R6/lib/modules/dri/fglrx_dri.so .
@@ -143,14 +142,10 @@ pushd $tmpdir/fglrx
   install -m 644 fglrx_sample_source.tgz $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx
   install -m 755 fglrx_xgamma            $RPM_BUILD_ROOT/usr/bin
   install -m 755 fglrxinfo               $RPM_BUILD_ROOT/usr/bin
-%if %suse_version > 1000
   if [ -f amdcccle ]; then
     ldd amdcccle | grep -q libexpat.so.0 || \
       install -m 755 amdcccle  $RPM_BUILD_ROOT/usr/bin
   fi
-%else
-  install -m 755 amdcccle      $RPM_BUILD_ROOT/usr/bin
-%endif
   install -m 644 glxATI.h                $RPM_BUILD_ROOT/usr/include/GL
   install -m 755 libGL.so.1.2            $RPM_BUILD_ROOT/usr/X11R6/%{_lib}
   ln -snf libGL.so.1.2                   $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so.1
@@ -252,13 +247,12 @@ if [ -f $RPM_BUILD_ROOT/usr/share/man/man8/atieventsd.8.gz ]; then
   echo "/usr/share/man/man8/atieventsd.8.gz" >> files.fglrx
 fi
 fi
-%if %suse_version > 1000
 if [ -f $RPM_BUILD_ROOT/usr/bin/amdcccle ]; then
   echo "/usr/bin/amdcccle" >> files.fglrx
+  echo "/usr/share/ati/amdcccle/" >> files.fglrx
+  echo "/usr/share/pixmaps/ccc_large.xpm" >> files.fglrx
+  echo "/usr/share/pixmaps/ccc_small.xpm" >> files.fglrx
 fi
-%else
-echo "/usr/bin/amdcccle" >> files.fglrx
-%endif
 if [ -f $RPM_BUILD_ROOT/usr/bin/atiodcli ]; then
   echo "/usr/bin/atiodcli" >> files.fglrx
 fi
