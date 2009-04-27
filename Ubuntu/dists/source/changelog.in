@@ -1,3 +1,20 @@
+fglrx-installer (2:8.600-0ubuntu2) jaunty; urgency=low
+
+  * Update fglrx-rt-compat.patch.  Thanks Alessio Igor Bogani (LP: #328856)
+  * Update location of fglrx-rt-compat.patch from debian/dkms/patches/patches
+    to debian/dkms/patches
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Tue, 31 Mar 2009 12:12:37 -0500
+
+fglrx-installer (2:8.600-0ubuntu1) jaunty; urgency=low
+
+  * New upstream release.  (Closes LP: #313027, #314600)
+    - Fixes LP: #253988, #179042, #241176, #284408, #287229, #296497,
+      #288620, #289628
+  * README.Debian: Update the update procedure a bit
+
+ -- Bryce Harrington <bryce@ubuntu.com>  Tue, 17 Mar 2009 15:40:42 -0700
+
 fglrx-installer (2:8.573-0ubuntu4) jaunty; urgency=low
 
   * debian/xorg-driver-fglrx.postinst:
