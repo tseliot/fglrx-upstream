@@ -288,27 +288,33 @@ fi
 %{_includedir}/GL/*ATI.h
 %{_x11includedir}/X11/extensions/fglrx*.h
 #added source
-/usr/share/doc/%{name}-%{version}/examples/etc/acpi/ati-powermode.sh
-/usr/share/doc/%{name}-%{version}/examples/source/fglrx_sample_source.tgz
+#/usr/share/doc/%{name}-%{version}/examples/etc/acpi/ati-powermode.sh
+#/usr/share/doc/%{name}-%{version}/examples/source/fglrx_sample_source.tgz
 /usr/share/hwdata/videoaliases/*
 /usr/X11R6/bin/amdupdaterandrconfig
 /usr/lib/xorg/libatical*
 /usr/lib/xorg/libatiadlxx.so
 /usr/share/applications/amdccclesu_kde3.desktop
 /lib/modules/extra-kmod-%{_kmodver}/fglrx.ko
-   /opt/kde3/share/applnk/amdcccle_kde3.desktop
-   /opt/kde3/share/applnk/amdccclesu_kde3.desktop
-   /usr/lib/xorg/libAMDXvBA.cap
-   /usr/sbin/amdnotifyui
-   /usr/sbin/atigetsysteminfo.sh
-   /usr/share/applnk/amdcccle.kdelnk
-   /usr/share/applnk/amdccclesu.kdelnk
-   /usr/share/gnome/apps/amdcccle.desktop
-   /usr/share/gnome/apps/amdccclesu.desktop
+/opt/kde3/share/applnk/amdcccle_kde3.desktop
+/opt/kde3/share/applnk/amdccclesu_kde3.desktop
+/usr/lib/xorg/libAMDXvBA.cap
+/usr/sbin/amdnotifyui
+/usr/sbin/atigetsysteminfo.sh
+/usr/share/applnk/amdcccle.kdelnk
+/usr/share/applnk/amdccclesu.kdelnk
+/usr/share/gnome/apps/amdcccle.desktop
+/usr/share/gnome/apps/amdccclesu.desktop
+/usr/share/doc/amdcccle/ccc_copyrights.txt
+
 %exclude /fglrx.spec
 %exclude /fglrx-pkgbuild.log
 
 %changelog
+
+* Thu May 21 2009 Huang Wenlong <huangwenlong@redflag-linux.com> 8.62-2
+-fix setup twice files add a file in file list ccc_copyrights.txt
+
 
 * Thu Feb 19 2009 Huang Wenlong <huangwenlong@redflag-linux.com> 8.573-1
 -edit spec file make rpm package with *.run
