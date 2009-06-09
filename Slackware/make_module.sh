@@ -35,10 +35,9 @@ function _make_module_pkg
 
     # Modifico il nome del pacchetto aggiungendo alla fine, la versione del kernel
     MODULE_PACK_NAME=${MODULE_PACK_NAME}_kernel_${MODULE_KERNEL_VERSION//-/_}.tgz;
-    makepkg -l y -c n ${MODULE_PACK_NAME};
-    
-    mv ${MODULE_PACK_NAME} ${DEST_DIR};
 
+    makepkg -l y -c n ${DEST_DIR}/${MODULE_PACK_NAME};
+    
     [ "x${TMP_FILE}" != "x" ] && echo ${MODULE_PACK_NAME} >> ${TMP_FILE};
 
     cd ${ROOT_DIR};

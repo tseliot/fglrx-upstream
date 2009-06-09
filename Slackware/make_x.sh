@@ -204,8 +204,8 @@ function _make_x
     find . | xargs file | sed -n "/ELF.*executable/b PRINT;/ELF.*shared object/b PRINT;d;:PRINT s/\(.*\):.*/\1/;p;"\
 	| xargs strip --strip-unneeded 2> /dev/null
     
-    makepkg -l y -c n ${X_PACK_NAME};
-    mv ${X_PACK_NAME} ${DEST_DIR};
+    makepkg -l y -c n ${DEST_DIR}/${X_PACK_NAME};
+
     [ "x${TMP_FILE}" != "x" ] && echo ${X_PACK_NAME} >> ${TMP_FILE};
 
     cd ${ROOT_DIR};
