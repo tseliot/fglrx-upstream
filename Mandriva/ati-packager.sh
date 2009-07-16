@@ -5,6 +5,10 @@
 #
 # Usage
 #   See README.distro document
+#
+# License
+#   This file is available with the same license as Mandriva fglrx.spec,
+#   see that file for detailed license information.
 
 # List of supported distributions.
 supported_distros="2006.0 2007.0 2007.1 2008.0 2008.1 2009.0 2009.1"
