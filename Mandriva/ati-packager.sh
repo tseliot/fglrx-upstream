@@ -48,9 +48,13 @@ buildPackage()
     distro=$1
     buildCheck 1 || exit 1
     installer_root="$PWD"
-    temp_root="$(mktemp -d --tmpdir fglrx.XXXXXX)"
+    temp_root="$(mktemp -d --tmpdir ati.XXXXXX)"
 
     mkdir -p $temp_root/{RPMS,BUILD,tmp}
+
+    version=$(./ati-packager-helper.sh --version)
+    # insert 0 to the end of version if helper_version is two-decimal
+    [ $(echo $version | cut -f2 -d.) -lt 100 ] && version=${version}0
 
     LC_ALL=C rpmbuild -bb --with ati \
 	--define "_topdir ${temp_root}" \
@@ -58,7 +62,8 @@ buildPackage()
 	--define "_rpmdir ${temp_root}/RPMS" \
 	--define "_tmppath ${temp_root}/tmp" \
 	--define "_sourcedir ${installer_root}/packages/Mandriva" \
-	--define "version $(./ati-packager-helper.sh --version)" \
+	--define "iversion $(./ati-packager-helper.sh --version)" \
+	--define "version $version" \
 	--define "rel $(./ati-packager-helper.sh --release)" \
 	--define "ati_dir ${installer_root}" \
 	--define "distsuffix amd.mdv" \
@@ -145,8 +150,9 @@ case "${action}" in
     echo $supported_distros | xargs -n1
     ;;
 --buildpkg)
-    checkDistro $1
-    buildPackage $2
+    package=$2
+    checkDistro $package
+    buildPackage $package
     ;;
 --buildprep)
     package=$2

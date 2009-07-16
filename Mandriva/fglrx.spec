@@ -1,4 +1,34 @@
 
+##############################################################################
+# This .spec file is dual licensed. It can be distributed either with the    #
+# terms of GPL version 2 or newer, or with the MIT license included below.   #
+# Removing either GPL or MIT license when distributing this file is allowed. #
+##############################################################################
+# - start of MIT license -
+# Copyright (c) 2007-2009 Anssi Hannula, Luiz Fernando Capitulino, Colin Guthrie, Thomas Backlund
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+# - end of MIT license -
+
 %define name		fglrx
 
 # %atibuild is used to enable the ATI installer --buildpkg mode.
@@ -12,15 +42,13 @@
 # NOTE: These version definitions are overridden by ati-packager.sh when
 # building with the --buildpkg method of the installer.
 # version in installer filename:
-%define oversion	%mversion
-# advertized version:
-%define mversion	9.2
+%define oversion	9-6
 # driver version from ati-packager-helper.sh:
-%define version		8.582
-%define rel		2
+%define iversion	8.62
+# rpm version (0 added in order to not go backwards)
+%define version		%{iversion}0
+%define rel		1
 %else
-%define oversion	%{version}
-%define mversion	%{version}
 # Best-effort if ATI has made late changes (in atibuild mode)
 %define _default_patch_fuzz 2
 %endif
@@ -37,23 +65,12 @@
 %define xorg_includedir	%{_includedir}
 %define ld_so_conf_dir	%{_sysconfdir}/ld.so.conf.d/GL
 %define ld_so_conf_file	ati.conf
+%define ati_extdir	%{_libdir}/%{drivername}/xorg
+%define xorg_extra_modules	%{_libdir}/xorg/extra-modules
+
+%if %{mdkversion} <= 200900
+%define xorg_version	710
 %define ati_extdir	%{xorg_libdir}/modules/extensions/%{drivername}
-
-# The hardcoded ATI dri directories where we create compat symlinks.
-# The LIBGL_DRIVERS_(PATH|DIR) env vars could be used some day.
-# Debian does a binary replace in libGL.so, but we prefer not to
-# touch it.
-%define ati_dridir      /usr/X11R6/%{_lib}/modules/dri
-%define ati_dridir32    /usr/X11R6/lib/modules/dri
-
-%if %{mdkversion} <= 200900
-%define libglx_path %{_libdir}/xorg/modules/extensions/standard
-%else
-%define libglx_path %{ati_extdir}
-%endif
-
-%if %{mdkversion} <= 200900
-%define	xorg_version	710
 %endif
 
 %if %{mdkversion} <= 200710
@@ -111,14 +128,14 @@ Source2:	atieventsd.init
 Source10:	generate-fglrx-spec-from-svn.sh
 %endif
 %if !%{atibuild}
-# Patches that only affect tools (not build in atibuild mode)
+# Patches that only affect tools (not built in atibuild mode)
 Patch1:		ati-8.19.10-fglrx_gamma-extutil-include.patch
 Patch2:		ati-8.19.10-fgl_glxgears-includes.patch
 Patch4:		fglrx_gamma-fix-underlinking.patch
 %endif
 Patch3:		fglrx-authfile-locations.patch
-Patch5:		fglrx-2.6.29-fixes.patch
-License:	Proprietary
+Patch7:		fglrx-rt-compat.patch
+License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
 Group:		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
@@ -127,17 +144,11 @@ BuildRoot:	%{_tmppath}/%{name}-root
 %if %{mdkversion} <= 200600
 BuildRequires:	MesaGLU-devel
 %else
-# TODO: Check which ones are not needed as control panel is not built anymore:
-BuildRequires:	mesaglu-devel
 BuildRequires:	mesagl-devel
 BuildRequires:	libxmu-devel
-BuildRequires:	libxinerama-devel
-BuildRequires:	libxrender-devel
-BuildRequires:	libxft-devel
 BuildRequires:	libxaw-devel
 BuildRequires:	libxp-devel
 BuildRequires:	imake
-BuildRequires:	x11-util-cf-files
 # Used by atieventsd:
 Suggests:	acpid
 %endif
@@ -146,8 +157,8 @@ BuildRequires:	ImageMagick
 
 %description
 Source package of the ATI proprietary driver. Binary packages are
-named x11-driver-video-fglrx on Mandriva Linux 2008, and ati on 2007
-and earlier.
+named x11-driver-video-fglrx on Mandriva Linux 2008 and later, and ati on
+2007 and earlier.
 
 %package -n %{driverpkgname}
 Summary:	ATI proprietary X.org driver and libraries
@@ -176,8 +187,8 @@ Requires:	kmod(fglrx)
 Conflicts:	x11-server-common < 1.4.2-5
 %endif
 %if %{mdkversion} >= 200910
-# ABI change
-Requires:	x11-server-common >= 1.5
+# many intermediate changes in alternatives scheme
+Conflicts:	x11-server-common < 1.6.0-11
 %endif
 Provides:	atieventsd = %{version}-%{release}
 Obsoletes:	atieventsd < %{version}-%{release}
@@ -211,7 +222,7 @@ Obsoletes:	fglrx-hd2000-control-center < 8.42.3-5
 
 %description -n %{drivername}-control-center
 AMD Catalyst Control Center Linux Edition, a graphical configuration
-utility for the ATI proprietary X.org driver
+utility for the ATI proprietary X.org driver.
 
 %package -n dkms-%{drivername}
 Summary:	ATI proprietary kernel module
@@ -250,7 +261,7 @@ The main driver package name is %{driverpkgname}.
 %setup -T -c
 %if %{atibuild}
 ln -s %{ati_dir}/%{xverdir} %{ati_dir}/arch .
-# patch0 affects common, so we cannot symlink it:
+# patches affects common, so we cannot symlink it:
 cp -a %{ati_dir}/common .
 %else
 sh %{SOURCE0} --extract .
@@ -263,17 +274,15 @@ cd fglrx_tools # ensure patch does not touch outside
 %patch4 -p1
 cd -
 cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_gamma/fglrx_gamma.h
-[ "%version" = "$(./ati-packager-helper.sh --version)" ]
+[ "%iversion" = "$(./ati-packager-helper.sh --version)" ]
 %endif
 
-cd common # ensure patch does not touch outside
-%patch3 -p2
-cd -
-
-%patch5 -p1
+%patch3 -p1
+# add better support for realtime preempt
+%patch7 -p1
 
 cat > README.install.urpmi <<EOF
-This driver is for ATI Radeon 9500 and newer cards.
+This driver is for ATI Radeon HD 2000 and newer cards.
 Reconfiguring is not necessary when upgrading from a previous Mandriva ATI
 driver package.
 
@@ -315,6 +324,20 @@ installation in the file 'README.install.urpmi' in this directory.
 - Run "update-alternatives --set gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file}" as root.
 - Run "ldconfig" as root.
 %endif
+EOF
+
+cat > README.8.600.upgrade.urpmi <<EOF
+REMOVED GRAPHICS DRIVER SUPPORT NOTIFICATION:
+Versions 8.600 and later of ATI Proprietary Graphics driver (fglrx) only
+support Radeon HD 2000 (r600) or newer cards.
+
+If you have an older Radeon card or are unsure, please reconfigure your
+driver:
+1. Run XFdrake as root or select Graphical server configuration in
+   Mandriva Control Center.
+2. Go to the Graphics Card list.
+3. Select your card (it is usually already autoselected).
+4. Answer any questions asked and then quit.
 EOF
 
 %if %{mdkversion} <= 200810
@@ -373,29 +396,22 @@ EOF
 # headers
 install -d -m755		%{buildroot}%{_includedir}
 cp -a common/usr/include/*	%{buildroot}%{_includedir}
+chmod 0644 %{buildroot}%{_includedir}/*/*.h
 
 install -d -m755 %{buildroot}%{xorg_includedir}/X11/extensions
 install -m644 common/usr/X11R6/include/X11/extensions/*.h  %{buildroot}%{xorg_includedir}/X11/extensions
 
 # install binaries
 install -d -m755					%{buildroot}%{_sbindir}
-install -m755 %{archdir}/usr/sbin/atieventsd		%{buildroot}%{_sbindir}
-install -m755 %{archdir}/usr/sbin/amdnotifyui		%{buildroot}%{_sbindir}
+install -m755 %{archdir}/usr/sbin/*			%{buildroot}%{_sbindir}
 install -m755 common/usr/sbin/*				%{buildroot}%{_sbindir}
 install -d -m755					%{buildroot}%{_bindir}
-install -m755 %{archdir}/usr/X11R6/bin/aticonfig	%{buildroot}%{_bindir}
-install -m755 %{archdir}/usr/X11R6/bin/atiodcli		%{buildroot}%{_bindir}
-install -m755 %{archdir}/usr/X11R6/bin/atiode		%{buildroot}%{_bindir}
-install -m755 %{archdir}/usr/X11R6/bin/fglrxinfo	%{buildroot}%{_bindir}
-install -m755 %{archdir}/usr/X11R6/bin/amdcccle		%{buildroot}%{_bindir}
+install -m755 %{archdir}/usr/X11R6/bin/*		%{buildroot}%{_bindir}
 install -m755 common/usr/X11R6/bin/*			%{buildroot}%{_bindir}
 %if !%{atibuild}
 # install self-built binaries
 install -m755 fglrx_tools/fgl_glxgears/fgl_glxgears	%{buildroot}%{_bindir}
 install -m755 fglrx_tools/programs/fglrx_gamma/fglrx_xgamma %{buildroot}%{_bindir}
-%else
-install -m755 %{archdir}/usr/X11R6/bin/fgl_glxgears	%{buildroot}%{_bindir}
-install -m755 %{archdir}/usr/X11R6/bin/fglrx_xgamma %{buildroot}%{_bindir}
 %endif
 
 # atieventsd initscript
@@ -405,6 +421,13 @@ install -m755 %{SOURCE2} %{buildroot}%{_initrddir}/atieventsd
 # amdcccle data files
 install -d -m755 %{buildroot}%{_datadir}/ati/amdcccle
 install -m644 common/usr/share/ati/amdcccle/*.qm %{buildroot}%{_datadir}/ati/amdcccle
+rm -f amdcccle.langs
+for file in common/usr/share/ati/amdcccle/*.qm; do
+	file=$(basename $file)
+	lang=${file#amdcccle_}
+	lang=${lang%%.qm}
+	echo "%%lang($lang) %{_datadir}/ati/amdcccle/$file" >> amdcccle.langs
+done
 
 # amdcccle super-user mode (via consolehelper)
 ln -s %{_bindir}/amdcccle %{buildroot}%{_sbindir}/amdccclesu
@@ -473,57 +496,44 @@ install -m644 common/usr/share/icons/ccc_small.xpm %{buildroot}%{_iconsdir}/%{dr
 
 # install libraries
 install -d -m755					%{buildroot}%{_libdir}/%{drivername}
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libGL.so.1.2	%{buildroot}%{_libdir}/%{drivername}
+install -m755 %{archdir}/usr/X11R6/%{_lib}/*.*		%{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/%{_lib}/*			%{buildroot}%{_libdir}/%{drivername}
 /sbin/ldconfig -n					%{buildroot}%{_libdir}/%{drivername}
-ln -s libGL.so.1					%{buildroot}%{_libdir}/%{drivername}/libGL.so
+# create devel symlinks
+for file in %{buildroot}%{_libdir}/%{drivername}/*.so.*.*; do
+	ln -s $(basename $file) ${file%%.so*}.so;
+done
 %ifarch x86_64
 install -d -m755					%{buildroot}%{_prefix}/lib/%{drivername}
-install -m755 arch/x86/usr/X11R6/lib/libGL.so.1.2	%{buildroot}%{_prefix}/lib/%{drivername}
+install -m755 arch/x86/usr/X11R6/lib/libGL*		%{buildroot}%{_prefix}/lib/%{drivername}
 install -m755 arch/x86/usr/lib/*			%{buildroot}%{_prefix}/lib/%{drivername}
 /sbin/ldconfig -n					%{buildroot}%{_prefix}/lib/%{drivername}
-ln -s libGL.so.1					%{buildroot}%{_prefix}/lib/%{drivername}/libGL.so
+# create devel symlinks
+for file in %{buildroot}%{_prefix}/lib/%{drivername}/*.so.*.*; do
+	ln -s $(basename $file) ${file%%.so*}.so;
+done
 %endif
+
 %if !%{atibuild}
 install -m755 fglrx_tools/lib/fglrx_gamma/libfglrx_gamma.so.1.0 %{buildroot}%{_libdir}/%{drivername}
-%else
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_gamma.so.1.0 %{buildroot}%{_libdir}/%{drivername}
-%endif
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_pp.so.1.0 %{buildroot}%{_libdir}/%{drivername}
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_dm.so.1.0 %{buildroot}%{_libdir}/%{drivername}
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_tvout.so.1.0 %{buildroot}%{_libdir}/%{drivername}
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libatiadlxx.so %{buildroot}%{_libdir}/%{drivername}
-# XvMC fork?
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libAMDXvBA.cap %{buildroot}%{_libdir}/%{drivername}
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libAMDXvBA.so.1.0 %{buildroot}%{_libdir}/%{drivername}
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libXvBAW.so.1.0 %{buildroot}%{_libdir}/%{drivername}
-/sbin/ldconfig -n					%{buildroot}%{_libdir}/%{drivername}
-ln -s libfglrx_gamma.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_gamma.so
-ln -s libfglrx_pp.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_pp.so
-ln -s libfglrx_dm.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_dm.so
-ln -s libfglrx_tvout.so.1.0				%{buildroot}%{_libdir}/%{drivername}/libfglrx_tvout.so
-ln -s libAMDXvBA.so.1.0					%{buildroot}%{_libdir}/%{drivername}/libAMDXvBA.so
-ln -s libXvBAW.so.1.0					%{buildroot}%{_libdir}/%{drivername}/libXvBAW.so
-%if !%{atibuild}
 install -m644 fglrx_tools/lib/fglrx_gamma/libfglrx_gamma.a %{buildroot}%{_libdir}/%{drivername}
-%else
-install -m755 %{archdir}/usr/X11R6/%{_lib}/libfglrx_gamma.a %{buildroot}%{_libdir}/%{drivername}
 %endif
-install -m644 %{archdir}/usr/X11R6/%{_lib}/libfglrx_pp.a %{buildroot}%{_libdir}/%{drivername}
-install -m644 %{archdir}/usr/X11R6/%{_lib}/libfglrx_dm.a %{buildroot}%{_libdir}/%{drivername}
-install -m644 %{archdir}/usr/X11R6/%{_lib}/libfglrx_tvout.a %{buildroot}%{_libdir}/%{drivername}
 
 # install X.org files
-install -d -m755					%{buildroot}%{xorg_libdir}/modules/drivers
+install -d -m755						%{buildroot}%{xorg_libdir}/modules/drivers
 install -m755 %{xverdir}/usr/X11R6/%{_lib}/modules/drivers/*.so* %{buildroot}%{xorg_libdir}/modules/drivers
-install -d -m755					%{buildroot}%{xorg_libdir}/modules/linux
-install -m755 %{xverdir}/usr/X11R6/%{_lib}/modules/linux/*.so* %{buildroot}%{xorg_libdir}/modules/linux
-install -m644 %{xverdir}/usr/X11R6/%{_lib}/modules/*.a	%{buildroot}%{xorg_libdir}/modules
-install -m644 %{xverdir}/usr/X11R6/%{_lib}/modules/*.*o	%{buildroot}%{xorg_libdir}/modules
-install -d -m755					%{buildroot}%{ati_extdir}
+install -d -m755						%{buildroot}%{xorg_libdir}/modules/linux
+install -m755 %{xverdir}/usr/X11R6/%{_lib}/modules/linux/*.so*	%{buildroot}%{xorg_libdir}/modules/linux
+install -m644 %{xverdir}/usr/X11R6/%{_lib}/modules/*.a		%{buildroot}%{xorg_libdir}/modules
+install -m644 %{xverdir}/usr/X11R6/%{_lib}/modules/*.*o		%{buildroot}%{xorg_libdir}/modules
+install -d -m755						%{buildroot}%{ati_extdir}
 install -m755 %{xverdir}/usr/X11R6/%{_lib}/modules/extensions/*.so* %{buildroot}%{ati_extdir}
-%if %{mdkversion} >= 200900
+
+%if %{mdkversion} == 200900
 touch							%{buildroot}%{xorg_libdir}/modules/extensions/libdri.so
+%endif
+%if %{mdkversion} >= 200800 && %{mdkversion} <= 200900
+touch							%{buildroot}%{xorg_libdir}/modules/extensions/libglx.so
 %endif
 
 # etc files
@@ -537,17 +547,6 @@ install -m755 %{archdir}/usr/X11R6/%{_lib}/modules/dri/*	%{buildroot}%{xorg_drid
 %ifarch x86_64
 install -d -m755						%{buildroot}%{xorg_dridir32}
 install -m755 arch/x86/usr/X11R6/lib/modules/dri/*		%{buildroot}%{xorg_dridir32}
-%endif
-
-# 2006.0 and older have identical xorg_dridir and ati_dridir
-# 2007.0 and newer need a symlink
-%if %{mdkversion} >= 200700
-install -d -m755			%{buildroot}%{ati_dridir}
-ln -s %{xorg_dridir}/fglrx_dri.so	%{buildroot}%{ati_dridir}
-%ifarch x86_64
-install -d -m755			%{buildroot}%{ati_dridir32}
-ln -s %{xorg_dridir32}/fglrx_dri.so	%{buildroot}%{ati_dridir32}
-%endif
 %endif
 
 # ld.so.conf
@@ -585,11 +584,18 @@ fi
 %{_sbindir}/update-alternatives \
 	--install %{_sysconfdir}/ld.so.conf.d/GL.conf gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file} %{priority} \
 	--slave %{_sysconfdir}/X11/XvMCConfig xvmcconfig %{_sysconfdir}/X11/XvMCConfig-%{drivername} \
+%if %{mdkversion} >= 200910
+	--slave %{xorg_extra_modules} xorg_extra_modules %{ati_extdir} \
+%else
 %if %{mdkversion} >= 200900
 	--slave %{_libdir}/xorg/modules/extensions/libdri.so libdri.so %{ati_extdir}/libdri.so \
 %endif
 %if %{mdkversion} >= 200800
-	--slave %{_libdir}/xorg/modules/extensions/libglx.so libglx %{libglx_path}/libglx.so
+	--slave %{_libdir}/xorg/modules/extensions/libglx.so libglx %{ati_extdir}/libglx.so
+%endif
+%endif
+
+%if %{mdkversion} >= 200800
 if [ "$(readlink -e %{_sysconfdir}/ld.so.conf.d/GL.conf)" = "%{_sysconfdir}/ld.so.conf.d/GL/ati-hd2000.conf" ]; then
 	# Switch from the obsolete hd2000 branch:
 	%{_sbindir}/update-alternatives --set gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file}
@@ -692,6 +698,7 @@ rm -rf %{buildroot}
 %files -n %{driverpkgname}
 %defattr(-,root,root)
 %doc README.install.urpmi README.manual-setup
+%doc README.8.600.upgrade.urpmi
 %doc common/usr/share/doc/fglrx/*
 %if %{mdkversion} <= 200810
 %doc README.8.532.upgrade.urpmi
@@ -738,11 +745,12 @@ rm -rf %{buildroot}
 
 %dir %{ati_extdir}
 %{ati_extdir}/libdri.so
-%if %{mdkversion} >= 200910
 %{ati_extdir}/libglx.so
-%endif
-%if %{mdkversion} >= 200900
+%if %{mdkversion} == 200900
 %ghost %{xorg_libdir}/modules/extensions/libdri.so
+%endif
+%if %{mdkversion} >= 200800 && %{mdkversion} <= 200900
+%ghost %{xorg_libdir}/modules/extensions/libglx.so
 %endif
 
 %{xorg_dridir}/fglrx_dri.so
@@ -779,23 +787,14 @@ rm -rf %{buildroot}
 %endif
 %{_mandir}/man8/atieventsd.8*
 
-%dir /usr/X11R6/%{_lib}
-%dir /usr/X11R6/%{_lib}/modules
-%dir /usr/X11R6/%{_lib}/modules/dri
-/usr/X11R6/%{_lib}/modules/dri/fglrx_dri.so
-%ifarch x86_64
-%dir /usr/X11R6/lib
-%dir /usr/X11R6/lib/modules
-%dir /usr/X11R6/lib/modules/dri
-/usr/X11R6/lib/modules/dri/fglrx_dri.so
-%endif
-
-%files -n %{drivername}-control-center
+%files -n %{drivername}-control-center -f amdcccle.langs
 %defattr(-,root,root)
+%doc common/usr/share/doc/amdcccle/*
 %{_bindir}/amdcccle
 %{_bindir}/amdccclesu
 %{_sbindir}/amdccclesu
-%{_datadir}/ati
+%dir %{_datadir}/ati
+%dir %{_datadir}/ati/amdcccle
 %if %{atibuild}
 %{_iconsdir}/%{drivername}-amdcccle.xpm
 %{_liconsdir}/%{drivername}-amdcccle.xpm
@@ -826,6 +825,9 @@ rm -rf %{buildroot}
 %{xorg_includedir}/X11/extensions/fglrx_gamma.h
 %dir %{_includedir}/GL
 %{_includedir}/GL/*ATI.h
+%dir %{_includedir}/ATI
+%dir %{_includedir}/ATI/GL
+%{_includedir}/ATI/GL/*.h
 %{_libdir}/%{drivername}/libGL.so
 %ifarch x86_64
 %{_prefix}/lib/%{drivername}/libGL.so
@@ -839,11 +841,68 @@ rm -rf %{buildroot}
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
 
-* Sun Feb 22 2009 Anssi Hannula <anssi@mandriva.org> 8.582-2mdv2008.0
-+ Revision: 343868
-- use patch fuzz 2 in ati installer mode
-- additional comments in .spec
-- fix build on 2008.1 and earlier
+* Thu Jul 16 2009 Anssi Hannula <anssi@mandriva.org> 8.620-1mdv2008.0
++ Revision: 396574
+- allow redistributing .spec file with MIT license as per AMD request
+  (Colin Guthrie, Luiz Fernando Capitulino, and Thomas Backlund agreed)
+- clean spec
+- fix license tag
+- fix missing dot from description
+- remove executable permission from headers
+- tag language files of fglrx-control-center
+- use more wildcards in %%install
+- move everything except extensions out from /usr/lib/fglrx/xorg
+- fix extraneous ghost files on 2009.1+
+- fix backportability
+- add copyright doc to fglrx-control-center
+- drop compatibility symlinks from /usr/X11R6, it seems the code finally
+  supports /usr/lib/dri
+- clean up old buildrequires
+
+* Wed Jul 01 2009 Thomas Backlund <tmb@mandriva.org> 8.620-1mdv2010.0
++ Revision: 391139
+- add patch7 to better support realtime preempt (Gentoo)
+- update patch6 based on Gentoo fixes, and fix it to apply cleanly (2.6.30 buildfix)
+- fix patch5 to apply cleanly (2.6.29 buildfix)
+- update to Catalyst 9.6 (8.620)
+
+* Tue Jun 30 2009 Thomas Backlund <tmb@mandriva.org> 8.600-3mdv2010.0
++ Revision: 390981
+- rediff patch5 to apply cleanly
+- fix build with 2.6.30 series kernels
+
+* Mon Apr 13 2009 Anssi Hannula <anssi@mandriva.org> 8.600-2mdv2009.1
++ Revision: 366537
+- adapt for dropped alternatives on /usr/bin/Xorg
+
+* Wed Apr 01 2009 Anssi Hannula <anssi@mandriva.org> 8.600-1mdv2009.1
++ Revision: 363380
+- add notification of dropped support, shown during upgrade of the package
+- new version (8.600)
+  o this is the special version AMD provided for Ubuntu Jaunty which
+  includes X.org server 1.6 support (the license allows repackaging)
+  o this version only supports r600 and newer chipsets (HD2000 onwards)
+
+* Sat Mar 21 2009 Anssi Hannula <anssi@mandriva.org> 8.582-6mdv2009.1
++ Revision: 359879
+- remove unneeded hack
+
+* Thu Mar 19 2009 Ander Conselvan de Oliveira <ander@mandriva.com> 8.582-5mdv2009.1
++ Revision: 357792
+- ensure the alternatives links are created if its current state is manual
+
+* Mon Mar 16 2009 Ander Conselvan de Oliveira <ander@mandriva.com> 8.582-4mdv2009.1
++ Revision: 356061
+- Use alternative X server Xorg 1.5
+
+* Mon Feb 23 2009 Thomas Backlund <tmb@mandriva.org> 8.582-3mdv2009.1
++ Revision: 344323
+- fix location of acpica headers so it will build with 2.6.29 series kernels
+
+  + Anssi Hannula <anssi@mandriva.org>
+    - use patch fuzz 2 in ati installer mode
+    - additional comments in .spec
+    - fix build on 2008.1 and earlier
 
 * Sun Feb 22 2009 Anssi Hannula <anssi@mandriva.org> 8.582-2mdv2009.1
 + Revision: 343808
