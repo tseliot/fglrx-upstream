@@ -1,0 +1,96 @@
+--- fglrx/common/lib/modules/fglrx/build_mod/kcl_acpi.c	2009-07-02 23:15:16.000000000 +0300
++++ fglrx/common/lib/modules/fglrx/build_mod/kcl_acpi.c	2009-07-27 21:25:40.579843965 +0300
+@@ -18,6 +18,12 @@
+ #include <linux/autoconf.h>
+ #include <linux/acpi.h>
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,28)
++#include <../drivers/acpi/acpica/acconfig.h>
++#include <../drivers/acpi/acpica/aclocal.h>
++#include <../drivers/acpi/acpica/acobject.h>
++#endif
++
+ #include "kcl_config.h"
+ #include "kcl_type.h"
+ #include "kcl_acpi.h"
+@@ -408,7 +414,6 @@
+  */
+ KCL_ACPI_CallbackHandle ATI_API_CALL KCL_ACPI_GetNotifyHandler(KCL_ACPI_DevHandle handle)
+ {
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,29)
+     struct acpi_namespace_node *node = NULL;
+ 
+     node = (struct acpi_namespace_node *)handle;
+@@ -425,11 +430,6 @@
+         }
+     }
+     else
+-#else
+-    /* No alternative on 2.6.29 and later for now. The internal ACPI data
+-     * structures are no longer included in the kernel headers. */
+-    #warning "ACPI notification wrapping won't work."
+-#endif
+     {
+         return NULL;
+     }
+@@ -441,7 +441,6 @@
+  */
+ KCL_ACPI_ContextHandle ATI_API_CALL KCL_ACPI_GetNotifyContext(KCL_ACPI_DevHandle handle)
+ {
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,29)
+     struct acpi_namespace_node *node = NULL;
+ 
+     node = (struct acpi_namespace_node *)handle;
+@@ -458,11 +457,6 @@
+         }
+     }
+     else
+-#else
+-    /* No alternative on 2.6.29 and later for now. The internal ACPI data
+-     * structures are no longer included in the kernel headers. */
+-    #warning "ACPI notification wrapping won't work."
+-#endif
+     {
+         return NULL;
+     }
+@@ -475,7 +469,6 @@
+  */
+ void ATI_API_CALL KCL_ACPI_UpdateNotifyHandler(KCL_ACPI_DevHandle handle, KCL_ACPI_CallbackHandle handler)
+ {
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,29)
+     struct acpi_namespace_node *node = NULL;
+ 
+     node = (struct acpi_namespace_node *)handle;
+@@ -484,11 +477,7 @@
+     {
+         node->object->common_notify.device_notify->notify.handler = (acpi_notify_handler)handler;
+     }
+-#else
+-    /* No alternative on 2.6.29 and later for now. The internal ACPI data
+-     * structures are no longer included in the kernel headers. */
+-    #warning "ACPI notification wrapping won't work."
+-#endif
++
+     return;
+ }
+ 
+@@ -499,7 +488,6 @@
+  */
+ void ATI_API_CALL KCL_ACPI_UpdateNotifyContext(KCL_ACPI_DevHandle handle, KCL_ACPI_ContextHandle context)
+ {
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,29)
+     struct acpi_namespace_node *node = NULL;
+ 
+     node = (struct acpi_namespace_node *)handle;
+@@ -508,11 +496,6 @@
+     {
+         node->object->common_notify.device_notify->notify.context = context;
+     }
+-#else
+-    /* No alternative on 2.6.29 and later for now. The internal ACPI data
+-     * structures are no longer included in the kernel headers. */
+-    #warning "ACPI notification wrapping won't work."
+-#endif
+     return;
+ }
+ 

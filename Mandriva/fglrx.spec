@@ -134,6 +134,7 @@ Patch2:		ati-8.19.10-fgl_glxgears-includes.patch
 Patch4:		fglrx_gamma-fix-underlinking.patch
 %endif
 Patch3:		fglrx-authfile-locations.patch
+Patch5:		fglrx-reenable-acpi-2.6.29.patch
 Patch7:		fglrx-rt-compat.patch
 License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
@@ -278,6 +279,8 @@ cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_
 %endif
 
 %patch3 -p1
+# restore 2.6.29 acpi support (MDV kernels have the necessary headers)
+%patch5 -p1
 # add better support for realtime preempt
 %patch7 -p1
 
