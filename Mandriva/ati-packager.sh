@@ -73,7 +73,7 @@ buildPackage()
 	--define "distsuffix amd.mdv" \
 	--define "vendor $(./ati-packager-helper.sh --vendor)" \
 	--define "packager $(./ati-packager-helper.sh --vendor)" \
-	--define "mdkversion $(echo ${distro} | tr . 0)" \
+	--define "mdkversion $(echo ${distro}0 | tr -d .)" \
 	--define "mandriva_release ${distro}" \
 	${installer_root}/packages/Mandriva/fglrx.spec &> $temp_root/output.log
 
@@ -106,7 +106,7 @@ installPackage()
 	--define "version $(./ati-packager-helper.sh --version)" \
 	--define "rel $(./ati-packager-helper.sh --release)" \
 	--define "distsuffix amd.mdv" \
-	--define "mdkversion $(echo ${package} | tr . 0)" \
+	--define "mdkversion $(echo ${package}0 | tr -d .)" \
 	--define "mandriva_release ${package}" \
 	$(dirname $0)/fglrx.spec | tail -n+2 | grep -v -e ^fglrx-debug -e ^fglrx-__restore__)"
     if [ -z "${packagenames}" ]; then
