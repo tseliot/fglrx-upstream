@@ -1,3 +1,66 @@
+fglrx-installer (2:8.620-0ubuntu3) karmic; urgency=low
+
+  * debian/dkms/patches/missing-flush_tlb.patch (LP: #394176)
+    - Borrow this patch from debian to fix missing symbol.
+  * debian/dkms.conf.in:
+    - Apply patches on 2.6.30 and 2.6.31.
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Thu, 02 Jul 2009 12:05:20 -0500
+
+fglrx-installer (2:8.620-0ubuntu2) karmic; urgency=low
+
+  * Issues resolved since 9.4 (No package changes; Mario just beat me to the upload):
+    + With desktop effects enabled, transparent desktop no longer causes desktop icons and
+      application windows to disappear
+    + Video playback no longer exhibits corruption when desktop effects are enabled and
+      Composite is not explicitly disabled
+    + [Ubuntu 8.10] System now functions properly when starting X on surround view
+      systems
+    + Resizing DVD playback window on Mplayer no longer causes blank video
+    + System instability no longer occurring when switching to full screen DVD playback
+      with Totem Player
+    + Terminal window no longer displays error message when launching Catalyst Control
+      Center in MultiView
+    + [Ubuntu 9.04] Xserver now starts properly with ATI Radeon HD 4870 GPU
+      configurations
+    + [Ubuntu 9.04] When xrandr --prop is evoked, Xserver failure no longer occurs under
+      various system configurations
+    + The engine clock and memory clock values are now reported properly by ATI CAL
+    + Catalyst Control Center, the primary display is now identified when using the
+      Identify Displays button
+    + Error message no longer occurs while setting the TV geometry
+    + Game corruption does not happen in full screen when 2 monitors are connected and
+      RandR 1.2 is enabled
+    + TV screen corruption is no longer visible while starting the X-server on some ASICs
+    + Executing the following command : aticonfig --initial -f does not cause the following
+      message "No supported adapters detected" on some display adapters
+    + Detecting second display using amdccle "Detect Display" button no longer results in
+      error and will require a relaunch to detect both displays properly
+      (LP: #348400)
+    + Mplayer does not fail to render video when resizing DVD playback window
+    + Fixed: Some system may become unresponsive after starting and killing X-server
+      (LP: #355821)
+    + System no longer fail to respond when executing multiple server
+      generations
+    + Memory leak on RV630 (LP: #368271)
+    + dpms switches off backlight on laptop screen properly (LP: #363059)
+    + Display Preferences no longer causes 100% CPU usage and failure (LP: #366757)
+
+ -- Bryce Harrington <bryce@ubuntu.com>  Fri, 26 Jun 2009 22:07:19 -0700
+
+fglrx-installer (2:8.620-0ubuntu1) karmic; urgency=low
+
+  * New upstream release (9-6)
+  * Add a series of patches to get this compiling on 2.6.30. (LP: #387773)
+    - Note: these are NOT in the upstream package, so be cognizant when
+      upgrading to a new version of the package in Ubuntu.
+    - config_x86_32-gentoo.patch: From Gentoo bug tracker
+    - fglrx-2.6.29-debian.patch: From Debian SVN
+    - fglrx-2.6.30-irqreturn_t.patch: From Gentoo bug tracker
+    - fglrx-missing-pci_enable_msi.patch: From Gentoo bug tracker
+
+ -- Mario Limonciello <mario_limonciello@dell.com>  Wed, 24 Jun 2009 12:26:42 -0500
+
 fglrx-installer (2:8.600-0ubuntu2) jaunty; urgency=low
 
   * Update fglrx-rt-compat.patch.  Thanks Alessio Igor Bogani (LP: #328856)
