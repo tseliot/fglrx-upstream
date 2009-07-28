@@ -162,7 +162,7 @@ installPackages()
     fi
     #Detect target architecture if not set
     if [ -z "$ARCH" ]; then
-        ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
+        ARCH=`dpkg --print-architecture`
     fi
     file="fglrx-installer_${PADDED_DRV_RELEASE}-0ubuntu${REVISION}_${ARCH}.changes"
     if [ ! -f "${AbsInstallerParentDir}/$file" ]; then
@@ -220,7 +220,7 @@ buildPackage()
 
     #Detect target architecture if not set
     if [ -z "$ARCH" ]; then
-        ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
+        ARCH=`dpkg --print-architecture`
     fi
     if [ "$ARCH" = "x86_x64" ]; then
         ARCH="amd64"

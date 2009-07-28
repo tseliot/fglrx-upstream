@@ -15,7 +15,7 @@ set -e
 
 PKGNAME=xorg-driver-fglrx
 
-if [ `dpkg --print-installation-architecture` = "amd64" ]; then
+if [ `dpkg --print-architecture` = "amd64" ]; then
 	HAS_LIB32="yes"
 fi
 
