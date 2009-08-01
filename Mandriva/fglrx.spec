@@ -134,6 +134,7 @@ Patch2:		ati-8.19.10-fgl_glxgears-includes.patch
 Patch4:		fglrx_gamma-fix-underlinking.patch
 %endif
 Patch3:		fglrx-authfile-locations.patch
+Patch5:		fglrx-make_sh-custom-kernel-dir.patch
 Patch7:		fglrx-rt-compat.patch
 License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
@@ -278,6 +279,7 @@ cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_
 %endif
 
 %patch3 -p1
+%patch5 -p1
 # add better support for realtime preempt
 %patch7 -p1
 
@@ -388,7 +390,7 @@ PACKAGE_NAME="%{drivername}"
 PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="fglrx"
 DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
-MAKE[0]="KERNEL_PATH=\${kernel_source_dir} sh make.sh --uname_r=\${kernelver}"
+MAKE[0]="sh make.sh --uname_r=\${kernelver} --kernel-dir=\${kernel_source_dir}"
 CLEAN="rm -rf 2.6.x/.tmp_versions; make -C2.6.x clean"
 AUTOINSTALL="yes"
 EOF

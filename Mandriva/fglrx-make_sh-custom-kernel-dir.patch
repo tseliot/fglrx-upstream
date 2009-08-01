@@ -1,0 +1,70 @@
+Index: ati-8.65_RCPrime5/common/lib/modules/fglrx/build_mod/make.sh
+===================================================================
+--- ati-8.65_RCPrime5/common/lib/modules/fglrx/build_mod/make.sh
++++ ati-8.65_RCPrime5/common/lib/modules/fglrx/build_mod/make.sh	2009-08-01 14:44:29.810385767 +0300
+@@ -71,6 +71,8 @@
+ # ==============================================================
+ # parse options
+ 
++kernel_dir=
++
+ while [ $# -gt 0 ]; do
+     case $1 in
+         --nohints)
+@@ -122,6 +124,15 @@
+             fi
+             shift
+             ;;
++        --kernel-dir*)
++            if echo $1 | grep '=' >/dev/null ; then
++                kernel_dir=`echo $1 | sed 's/^.*=//'`
++            else
++                kernel_dir="$2"
++                shift
++            fi
++            shift
++            ;;
+     esac
+ done
+ 
+@@ -150,6 +161,9 @@
+ # ==============================================================
+ # assing default location of linux kernel headers
+ 
++if [ -n "$kernel_dir" ]; then
++  linuxincludes="$kernel_dir/include"
++else
+ linuxincludes=/usr/src/linux/include
+ 
+ # in /lib/modules/<kernel-version> there is a symlink for latest kernel
+@@ -158,6 +172,7 @@
+     # just comment this line out if you already set an alternative location
+     linuxincludes=/lib/modules/${uname_r}/build/include
+ fi
++fi
+ 
+ # ==============================================================
+ # print some statistics, helpful for analyzing any build failures
+@@ -414,6 +429,7 @@
+     LIBIP_PREFIX=$(echo "$LIBIP_PREFIX" | sed -e 's|^\([^/]\)|../\1|') \
+     MODFLAGS="-DMODULE -DATI -DFGL -DPAGE_ATTR_FIX=$PAGE_ATTR_FIX $def_smp $def_modversions" \
+     KVER=${uname_r} \
++    KDIR=${kernel_dir} \
+     PAGE_ATTR_FIX=$PAGE_ATTR_FIX \
+     > tlog 2>&1 
+ 
+Index: ati-8.65_RCPrime5/common/lib/modules/fglrx/build_mod/2.6.x/Makefile
+===================================================================
+--- ati-8.65_RCPrime5/common/lib/modules/fglrx/build_mod/2.6.x/Makefile
++++ ati-8.65_RCPrime5/common/lib/modules/fglrx/build_mod/2.6.x/Makefile	2009-08-01 14:45:30.585134809 +0300
+@@ -75,7 +75,9 @@
+ 	KVER        = $(shell uname -r)
+ endif
+ 
+-KDIR            = /lib/modules/$(KVER)/build
++ifeq ($(KDIR),)
++	KDIR        = /lib/modules/$(KVER)/build
++endif
+ PWD             = $(shell pwd)
+ 
+ fglrx-cfiles    = ${fglrx-c-objs:.o=.c}
