@@ -135,6 +135,9 @@ Patch4:		fglrx_gamma-fix-underlinking.patch
 %endif
 Patch3:		fglrx-authfile-locations.patch
 Patch5:		fglrx-make_sh-custom-kernel-dir.patch
+# do not probe /proc for kernel info as we may be building for a
+# different kernel
+Patch6:		fglrx-make_sh-no-proc-probe.patch
 Patch7:		fglrx-rt-compat.patch
 License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
@@ -280,6 +283,7 @@ cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_
 
 %patch3 -p1
 %patch5 -p1
+%patch6 -p1
 # add better support for realtime preempt
 %patch7 -p1
 
@@ -390,7 +394,7 @@ PACKAGE_NAME="%{drivername}"
 PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="fglrx"
 DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
-MAKE[0]="sh make.sh --uname_r=\${kernelver} --kernel-dir=\${kernel_source_dir}"
+MAKE[0]="sh make.sh --uname_r=\${kernelver} --uname_a=none --kernel-dir=\${kernel_source_dir} --no-proc-probe"
 CLEAN="rm -rf 2.6.x/.tmp_versions; make -C2.6.x clean"
 AUTOINSTALL="yes"
 EOF

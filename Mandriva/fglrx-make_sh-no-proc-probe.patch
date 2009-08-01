@@ -1,0 +1,55 @@
+Index: ati-8.65_RCPrime5/common/lib/modules/fglrx/build_mod/make.sh
+===================================================================
+--- ati-8.65_RCPrime5/common/lib/modules/fglrx/build_mod/make.sh
++++ ati-8.65_RCPrime5/common/lib/modules/fglrx/build_mod/make.sh	2009-08-01 15:16:52.756386005 +0300
+@@ -72,6 +72,7 @@
+ # parse options
+ 
+ kernel_dir=
++no_proc_probe=
+ 
+ while [ $# -gt 0 ]; do
+     case $1 in
+@@ -133,6 +134,10 @@
+             fi
+             shift
+             ;;
++        --no-proc-probe)
++            no_proc_probe=1
++            shift
++            ;;
+     esac
+ done
+ 
+@@ -291,6 +296,7 @@
+ # use triggerlevel of 10 occurences 
+ # (UP kernels might have 0-1, SMP kernels might have 32-45 or much more)
+ 
++if [ "${uname_r}" = `uname -r` ] && [ -z "$no_proc_probe" ]; then
+ src_file=/proc/ksyms
+ 
+ if [ -e $src_file ]; then
+@@ -308,6 +314,7 @@
+     echo "file $src_file says: SMP=$SMP"                             >> $logfile
+   fi
+ fi
++fi
+ 
+ # 3
+ # linux/autoconf.h may contain this: #define CONFIG_SMP 1
+@@ -341,6 +348,7 @@
+ 
+ PAGE_ATTR_FIX=0
+ 
++if [ "${uname_r}" = `uname -r` ] && [ -z "$no_proc_probe" ]; then
+ src_file=/proc/ksyms
+ 
+ if [ -e $src_file ]; then
+@@ -358,6 +366,7 @@
+     echo "file $src_file says: PAGE_ATTR_FIX=$PAGE_ATTR_FIX"         >> $logfile
+   fi
+ fi
++fi
+ 
+ # ==============================================================
+ # resolve if we are running a MODVERSIONS enabled kernel
