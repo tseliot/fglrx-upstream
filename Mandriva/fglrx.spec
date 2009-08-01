@@ -774,7 +774,6 @@ rm -rf %{buildroot}
 %endif
 
 %{_libdir}/%{drivername}/libfglrx_gamma.so.1*
-%{_libdir}/%{drivername}/libfglrx_pp.so.1*
 %{_libdir}/%{drivername}/libfglrx_dm.so.1*
 %{_libdir}/%{drivername}/libfglrx_tvout.so.1*
 %{_libdir}/%{drivername}/libatiadlxx.so
@@ -812,11 +811,9 @@ rm -rf %{buildroot}
 %files -n %{drivername}-devel
 %defattr(-,root,root)
 %{_libdir}/%{drivername}/libfglrx_gamma.a
-%{_libdir}/%{drivername}/libfglrx_pp.a
 %{_libdir}/%{drivername}/libfglrx_dm.a
 %{_libdir}/%{drivername}/libfglrx_tvout.a
 %{_libdir}/%{drivername}/libfglrx_gamma.so
-%{_libdir}/%{drivername}/libfglrx_pp.so
 %{_libdir}/%{drivername}/libfglrx_dm.so
 %{_libdir}/%{drivername}/libfglrx_tvout.so
 %{_libdir}/%{drivername}/libAMDXvBA.so
