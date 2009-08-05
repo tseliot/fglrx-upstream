@@ -155,9 +155,6 @@ pushd $tmpdir/fglrx
   ln -snf libfglrx_gamma.so.1.0          $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_gamma.so.1
   install -m 444 libfglrxdrm.*           $RPM_BUILD_ROOT%{MODULES_DIR}/linux
   install -m 755 aticonfig               $RPM_BUILD_ROOT/usr/bin
-  install -m 644 libfglrx_pp.a           $RPM_BUILD_ROOT/usr/X11R6/%{_lib}
-  install -m 755 libfglrx_pp.so*         $RPM_BUILD_ROOT/usr/X11R6/%{_lib}
-  ln -snf libfglrx_pp.so.1.0             $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_pp.so.1
   install -m 644 glATI.h                 $RPM_BUILD_ROOT/usr/include/GL
   test -f atigetsysteminfo.sh && \
   install -m 755 atigetsysteminfo.sh     $RPM_BUILD_ROOT/usr/sbin
@@ -417,8 +414,6 @@ exit 0
 %{X11_INCLUDE_DIR}/extensions/fglrx_gamma.h
 /usr/X11R6/%{_lib}/libfglrx_gamma.a
 /usr/X11R6/%{_lib}/libfglrx_gamma.so*
-/usr/X11R6/%{_lib}/libfglrx_pp.a
-/usr/X11R6/%{_lib}/libfglrx_pp.so*
 %verify(not mtime) %{MODULES_DIR}/drivers/fglrx_drv.*
 %{MODULES_DIR}/linux/libfglrxdrm.*
 %{MODULES_DIR}/updates/extensions/libdri.so
