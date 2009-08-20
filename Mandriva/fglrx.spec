@@ -69,7 +69,7 @@
 %define xorg_extra_modules	%{_libdir}/xorg/extra-modules
 
 %if %{mdkversion} <= 200900
-%define xorg_version	710
+%define xorg_version	690
 %define ati_extdir	%{xorg_libdir}/modules/extensions/%{drivername}
 %endif
 
@@ -79,7 +79,6 @@
 %endif
 
 %if %{mdkversion} <= 200600
-%define xorg_version	690
 %define xorg_libdir	%{_prefix}/X11R6/%{_lib}
 %define xorg_dridir	%{xorg_libdir}/modules/dri
 %define xorg_dridir32	%{_prefix}/X11R6/lib/modules/dri
