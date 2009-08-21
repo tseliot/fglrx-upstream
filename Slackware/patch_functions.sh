@@ -22,7 +22,7 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 # Applica le patch ai file prima di creare il modulo del kernel
-# Si dà la possibilità all'utente di patchare i file, se esiste 
+# Si dà la possibilità all'utente di patchare i file, se esiste
 # un file chiamato /etc/ati/patch/patch-${ATI_DRIVER_VER}-${KNL_VER}
 # allora la funzione esegue:
 #     patch < /etc/ati/patch/patch-${ATI_DRIVER_VER}-${KNL_VER}
@@ -30,7 +30,7 @@ function _module_patch
 {
     local KNL_VER=$(uname -r)
     local DIR_PATCH=/etc/ati/patch
-    
+
     # Vecchia patch per il file make.sh fornito dalla ATI
     sed -i '/if.*\[.*$MODVERSIONS = 0 \]/{s/\($MODVERSIONS\)/"\1"/}' make.sh
 
@@ -49,7 +49,7 @@ function _module_patch
 		break;
 	    fi
 	done
-	
+
 	# Applico la ati_to_gpl.patch, se la trovo e se l'md5sum corrisponde
 	if [ -f ${DIR_PATCH}/ati_to_gpl.patch ]; then
 	    _print_with_color '1;33' "${MESSAGE[25]}"

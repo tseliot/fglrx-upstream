@@ -27,7 +27,7 @@ NOTA 0: quello che di seguito viene identificato come [package] è nella forma di
 | --buildpkg [package] [--dryrun]            | Qui si sviluppano vari casi:                                            |
 |                                            | 1) I parametri opzionali non vengono passati:                           |
 |                                            |    Vengono eseguiti tutti gli ati-packager.sh invocati con l'opzione    |
-|                                            |    --identify "pacchetto", una volta per ogni "pacchetto" che           | 
+|                                            |    --identify "pacchetto", una volta per ogni "pacchetto" che           |
 |                                            |    l'ati-package.sh supporta, e, se e solo se, uno solo di loro         |
 |                                            |    ritorna 0, allora l'ati-installre riesegue lo specifico              |
 |                                            |    ati-packager.sh che ha  ritornato 0 invocandolo con l'opzione        |
@@ -55,7 +55,7 @@ NOTA 0: quello che di seguito viene identificato come [package] è nella forma di
 |                                            | questo ritorna 0, allora lo invoca un ultima volta con l'opzione        |
 |                                            | --install.                                                              |
 |--------------------------------------------|-------------------------------------------------------------------------|
-NOTA 1: il parametro --dryrun in pratica dice all'ati-packager.sh di stampare a video l'elenco dei controlli che 
+NOTA 1: il parametro --dryrun in pratica dice all'ati-packager.sh di stampare a video l'elenco dei controlli che
 esegue per verificare se tutto va bene.
 
 2. COSA FANNO LE VARIE OPZIONI GESTITE DALL'ati-packager.sh

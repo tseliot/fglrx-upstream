@@ -29,14 +29,14 @@ function _set_builder_language
 {
     local EXT=$(echo $LANG | cut -d '_' -f1);
     local FILE='/packages/Slackware/languages/ati-packager.en';
-    
+
     if [ -e "${PWD}"/packages/Slackware/languages/ati-packager.${EXT} ]; then
 	local FILE="/packages/Slackware/languages/ati-packager.${EXT}";
     fi
-    
+
     local IFS=$(echo -e '\n\t');
     MESSAGE=($(cat "${PWD}"$FILE));
-    
+
     return 0;
 }
 
@@ -45,30 +45,30 @@ function _set_builder_language
 function _init_env
 {
     [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
-    
+
     BUILD_VER=1.3.9;
-    
+
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD;
     echo "$ROOT_DIR" | grep -q ' ' && echo ${MESSAGE[7]} && exit 1;
-    
+
     # Comandi interni alla bash da cui il builder dipende
     BUILTIN_DEPS=([ cd echo exit local return set source);
 
     # Comandi esterni da cui il builder dipende nella fase di creazione dei pacchetti
-    BUILD_DEPS=(chmod cp cut file find grep gzip id ln makepkg mkdir modinfo mv rm sed sh 
+    BUILD_DEPS=(chmod cp cut file find grep gzip id ln makepkg mkdir modinfo mv rm sed sh
 	strip tar tr xargs);
-	
+
     # Comandi esterni da cui il builder dipende nella fase di installazione dei pacchetti
     INSTALL_DEPS=(basename dirname depmod installpkg lsmod md5sum modprobe ps upgradepkg);
-    
+
     # Mi assicuro che tutti i comandi interni alla bash necessari, siano abilitati
     enable ${BUILTIN_DEPS[@]};
-    
+
     # Architettura, può essere 'x86' o 'x86_64'
     ARCH=$(arch);
     [[ $ARCH != x86_64 ]] && ARCH='x86';
-    
+
     # major e minor number del kernel attuale
     KNL_VER=$(uname -r | cut -d '.' -f -2)
 
@@ -76,10 +76,10 @@ function _init_env
     # Si ricorda che quando l'ati-installer.sh esegue questo script, la root directory
     # non è quella in cui si trova questo script.
     SCRIPT_DIR=packages/Slackware;
-    
+
     ATI_DRIVER_VER=$(./ati-packager-helper.sh --version);
     ATI_DRIVER_REL=$(./ati-packager-helper.sh --release);
-    
+
     # Nome del modulo del kernel
     MODULE_NAME=fglrx.ko.gz
 
@@ -89,13 +89,13 @@ function _init_env
 
     # Nome del pacchetto del modulo del kernel
     MODULE_PACK_NAME=fglrx-module-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}
-    
+
     # Directory in cui verranno messi i file per la creazione del pacchetto per il server X
     X_PKG_DIR=${SCRIPT_DIR}/x_pkg;
 
     # Nome parziale (verrà poi integrato) del pacchetto per il server X
     X_PACK_PARTIAL_NAME=fglrx-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL};
-    
+
     # Directory in cui verranno spostati i pacchetti creati e altri file
     DEST_DIR=${PWD%/*};
 
@@ -134,7 +134,7 @@ function _check_external_command
 	_print_with_color '1;31' "${MESSAGE[4]} grep";
 	return 1;
     fi
-    
+
     case $1 in
 	build)
 	    local DEPS=(${BUILD_DEPS[@]});
@@ -151,7 +151,7 @@ function _check_external_command
 	    (( $USE_TPUT )) && tput hpa 35;
 	    echo -n '[ ';
 	fi
-	
+
 	if (( $USE_WHICH )); then
 	    which ${DEPS[$i]} &> /dev/null;
 	else
@@ -165,11 +165,11 @@ function _check_external_command
 	elif (( $DRYRUN )); then
 	    _print_with_color '1;32_n' 'OK';
 	fi
-	
+
 	(( $DRYRUN )) && echo ' ]';
 	let i++;
     done
-    
+
     if [ $DEPS_OK != 0 ];
     then
 	return 1;
@@ -179,7 +179,7 @@ function _check_external_command
 }
 
 # Stampa a video i parametri $[2-*]
-# $1 è nella forma COLORE[_n], dove 
+# $1 è nella forma COLORE[_n], dove
 # COLORE può essere uno dei seguenti valori (quelli nella forma ?;??):
 #
 # Nero           0;30     Grigio Scuro  1;30
@@ -210,7 +210,7 @@ function _buildpkg
 {
     [ ! -e ${SCRIPT_DIR}/make_module.sh ] && _print_with_color '1;31' "${MESSAGE[11]}\n" && return 1;
     [ ! -e ${SCRIPT_DIR}/make_x.sh ] && _print_with_color '1;31' "${MESSAGE[12]}\n" && return 1;
-    
+
     local DRYRUN=0;
     [ "x$2" != 'x' ] && DRYRUN=1;
 
@@ -244,7 +244,7 @@ function _buildpkg
            return 1;
 	   ;;
     esac
-    
+
     return 0;
 }
 
@@ -286,8 +286,8 @@ function _installpkg
 
   return 0;
 }
-    
-# Directory che contiene l'elenco dei pacchetti installati nelle distribuzioni 
+
+# Directory che contiene l'elenco dei pacchetti installati nelle distribuzioni
 # basate su Slackware
 DIR_PACKAGE=/var/log/packages/;
 
@@ -308,10 +308,10 @@ case $1 in
 	[ $2 != 'All' ] && exit ${ATI_INSTALLER_ERR_VERS};
 
 	[ -d ${DIR_PACKAGE} ] && exit 0;
-	
+
 	exit ${ATI_INSTALLER_ERR_VERS};
 	;;
-    
+
     # Questo script onora le API versione 2 dell'ati-installer.sh
     --getAPIVersion)
 	exit 2;
@@ -321,7 +321,7 @@ esac
 _set_builder_language;
 _init_env;
 case $1 in
-    # Controllo che tutto il necessario alla costruzione dei pacchetti 
+    # Controllo che tutto il necessario alla costruzione dei pacchetti
     # sia correttamente installato
     --buildprep)
 	echo -e "\n${MESSAGE[0]} $BUILD_VER"\
@@ -337,7 +337,7 @@ case $1 in
 	    _print_with_color '1;31' "${MESSAGE[16]} $3 ${MESSAGE[18]}";
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
 	fi
-	
+
 	# Controllo che il parametro $2 sia un nome di pacchetto da costruire, valido
 	! _buildpkg $2 '--dryrun' && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
 
@@ -346,7 +346,7 @@ case $1 in
 
 	# Elimino, se esiste, il file temporaneo creato/modificato da --buildpkg
 	rm -f ${TMP_FILE};
-	
+
 	exit $EXIT_STATUS;
 	;;
     # Creo il/i pacchetto/i
@@ -385,16 +385,16 @@ case $1 in
 	    (( $DRYRUN )) && _print_with_color '1;31' "${MESSAGE[15]} >= 2.2";
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
 	fi
-	
+
 	exit $EXIT_STATUS;
 	;;
-    
+
     # Installo i pacchetti creati dall'opzione --buildpkg, il nome dei pacchetti creati
     # si trova nel file ${TMP_FILE}. Alla fine elimino suddetto file.
     --installpkg)
         _installpkg;
         VALUE=$?;
-	
+
 	rm -f ${TMP_FILE};
 	exit $VALUE;
 	;;

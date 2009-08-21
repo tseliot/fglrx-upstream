@@ -25,7 +25,7 @@
 function _make_module_pkg
 {
     cd ${ROOT_DIR}/${MODULE_PKG_DIR};
-    
+
     # Estraggo la versione del kernel dal modulo creato
     local MODULE_KERNEL_VERSION=$(modinfo ./${MODULE_NAME} | grep vermagic| tr -s ' ' ' '| cut -d' ' -f2);
     local MODULE_DEST_DIR=lib/modules/${MODULE_KERNEL_VERSION}/external;
@@ -37,11 +37,11 @@ function _make_module_pkg
     MODULE_PACK_NAME=${MODULE_PACK_NAME}_kernel_${MODULE_KERNEL_VERSION//-/_}.tgz;
 
     makepkg -l y -c n ${DEST_DIR}/${MODULE_PACK_NAME};
-    
+
     [ "x${TMP_FILE}" != "x" ] && echo ${MODULE_PACK_NAME} >> ${TMP_FILE};
 
     cd ${ROOT_DIR};
-   
+
     return 0;
 }
 
@@ -58,7 +58,7 @@ function _make_module
     # Se ci sono, applico le patch
     source ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh;
     _module_patch;
-    
+
     # Make modules with ati's script
     if ! sh make.sh; then
 	echo ${MESSAGE[9]};
@@ -68,6 +68,6 @@ function _make_module
     # Make module package
     cat ../fglrx*.ko | gzip -c >> ${ROOT_DIR}/${MODULE_PKG_DIR}/$MODULE_NAME;
     _make_module_pkg;
-    
+
     return 0;
 }
