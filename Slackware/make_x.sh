@@ -26,28 +26,33 @@ function _make_x
 {
     local CHECK_SCRIPT=./check.sh;
     local XORG_7=0;
-    
+
     # set X_VERSION
     PATH=$PATH:/usr/X11/bin:/usr/X11R6/bin
     source ${CHECK_SCRIPT} --noprint;
-    
+
     case ${X_VERSION} in
 	x670*) # Xorg Server 6.7
 	    USE_X_VERSION=${X_VERSION/x670/x680}; # Use the xorg 6.8 files
 	    ;;
 	x7*) # Xorg Server 7.x
 	    XORG_7=1;
+            # Se non esiste la directory dei file dipendenti da X (passo 3),
+            # prendo i file dalla directory x690
+            if [ ! -d ${ROOT_DIR}/${X_VERSION} ]; then
+		USE_X_VERSION=$(echo $X_VERSION | sed 's/x[[:digit:]]*/x690/');
+	    fi
 	    ;;
     esac
-    
+
     [ -z $USE_X_VERSION ] && USE_X_VERSION=${X_VERSION};
-    
+
     cd ${X_PKG_DIR};
-    
+
     # 1)
     # MOVE ARCH DIPENDENT files
     mkdir usr;
-    
+
     mv ${ROOT_DIR}/arch/${ARCH}/usr/* usr;
 
     # Se l'architettura è a 64 bit, allora sposto, se necessario,
@@ -89,7 +94,7 @@ function _make_x
 	    LIB_DIR=usr/lib usr/X11R6/lib;
 	    ;;
     esac
-    
+
     # 1.1)
     # Make some symbolik link
     for dir in ${LIB_DIR};
@@ -103,18 +108,18 @@ function _make_x
 	    done
 	)
     done
-    
+
     # 2)
     # MOVE ARCH INDIPENDENT files
     cp -rp ${ROOT_DIR}/common/usr/* usr;
     mkdir -p etc/ati
     mv ${ROOT_DIR}/common/etc/ati/{amdpcsdb.default,atiogl.xml,authatieventsd.sh,control,fglrxprofiles.csv,fglrxrc,signature}\
         etc/ati/ 2>/dev/null;
-    
+
     # 3)
     # MOVE USE_X_VERSION DEPENDENT files
     cp -rp ${ROOT_DIR}/${USE_X_VERSION}/usr/* usr;
-    
+
 
     # 4)
     # Aggiusto i permessi
@@ -169,7 +174,7 @@ function _make_x
 	cp -a usr/X11R6/* usr/;
 	rm -rf usr/X11R6;
     fi
-    
+
     # 7)
     # - Sposto, se esiste, la directory usr/share/man in usr.
     # - Comprimo le pagine di manuale, se esistono
@@ -193,7 +198,7 @@ function _make_x
     # 9)
     # MAKE PACKAGE
     local X_PACK_NAME=${X_PACK_PARTIAL_NAME/fglrx-/fglrx-${X_VERSION}-}.tgz;
-    
+
     # Modify the slack-desc
     ( cd install;
 	sed s/fglrx:/fglrx-${X_VERSION}:/ slack-desc > slack-desc.tmp;
@@ -203,12 +208,12 @@ function _make_x
     # Strip binaries and libraries
     find . | xargs file | sed -n "/ELF.*executable/b PRINT;/ELF.*shared object/b PRINT;d;:PRINT s/\(.*\):.*/\1/;p;"\
 	| xargs strip --strip-unneeded 2> /dev/null
-    
+
     makepkg -l y -c n ${DEST_DIR}/${X_PACK_NAME};
 
     [ "x${TMP_FILE}" != "x" ] && echo ${X_PACK_NAME} >> ${TMP_FILE};
 
     cd ${ROOT_DIR};
-    
+
     return 0;
 }
