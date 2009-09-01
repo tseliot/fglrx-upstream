@@ -207,8 +207,8 @@ buildPackage()
 
     #Detect x* dir name corresponding to X_NAME
     case ${X_NAME} in
-        gutsy|7.10)  X_DIR=x710; X_NAME=gutsy;;
-        hardy|8.04)  X_DIR=x710; X_NAME=hardy;;
+        gutsy|7.10)  X_DIR=x690; X_NAME=gutsy;;
+        hardy|8.04)  X_DIR=x690; X_NAME=hardy;;
         intrepid|8.10) X_DIR=x740; X_NAME=intrepid;;
 	jaunty|9.04)   X_DIR=x740; X_NAME=jaunty;;
 	karmic|9.10)   X_DIR=x740; X_NAME=karmic;;

@@ -25,11 +25,11 @@ ARCH     := x86
 XARCH    := x740
 
 ifeq ($(DISTRO),hardy)
-	XARCH   := x710
+	XARCH   := x690
 endif
 
 ifeq ($(DISTRO),gutsy)
-	XARCH   := x710
+	XARCH   := x690
 endif
 
 ifeq ($(DEB_BUILD_ARCH),amd64)
