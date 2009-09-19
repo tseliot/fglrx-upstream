@@ -42,11 +42,13 @@
 # NOTE: These version definitions are overridden by ati-packager.sh when
 # building with the --buildpkg method of the installer.
 # version in installer filename:
-%define oversion	9-6
+%define oversion	9-9
+# Advertised version, for description:
+%define mversion	9.9
 # driver version from ati-packager-helper.sh:
-%define iversion	8.62
-# rpm version (0 added in order to not go backwards)
-%define version		%{iversion}0
+%define iversion	8.65
+# rpm version (add 0 in order to not go backwards if iversion is two-decimal)
+%define version		%{iversion}%([ $(echo %iversion | wc -c) -le 5 ] && echo 0)
 %define rel		1
 %else
 # Best-effort if ATI has made late changes (in atibuild mode)
@@ -129,14 +131,13 @@ Source10:	generate-fglrx-spec-from-svn.sh
 %if !%{atibuild}
 # Patches that only affect tools (not built in atibuild mode)
 Patch1:		ati-8.19.10-fglrx_gamma-extutil-include.patch
-Patch2:		ati-8.19.10-fgl_glxgears-includes.patch
 Patch4:		fglrx_gamma-fix-underlinking.patch
 %endif
 Patch3:		fglrx-authfile-locations.patch
-Patch5:		fglrx-make_sh-custom-kernel-dir.patch
+Patch9:		fglrx-make_sh-custom-kernel-dir.patch
 # do not probe /proc for kernel info as we may be building for a
 # different kernel
-Patch6:		fglrx-make_sh-no-proc-probe.patch
+Patch10:	fglrx-make_sh-no-proc-probe.patch
 License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
 Group:		System/Kernel and hardware
@@ -161,6 +162,9 @@ BuildRequires:	ImageMagick
 Source package of the ATI proprietary driver. Binary packages are
 named x11-driver-video-fglrx on Mandriva Linux 2008 and later, and ati on
 2007 and earlier.
+%if !%{atibuild}
+This package corresponds to ATI Catalyst version %mversion.
+%endif
 
 %package -n %{driverpkgname}
 Summary:	ATI proprietary X.org driver and libraries
@@ -207,6 +211,9 @@ If you do not want to use XFdrake, see README.manual-setup.
 The graphical configuration utility, AMD Catalyst Control Center
 Linux Edition, is contained in the package
 %{drivername}-control-center.
+%if !%{atibuild}
+This package corresponds to ATI Catalyst version %mversion.
+%endif
 
 %package -n %{drivername}-control-center
 Summary:	AMD Catalyst Control Center Linux Edition
@@ -225,6 +232,9 @@ Obsoletes:	fglrx-hd2000-control-center < 8.42.3-5
 %description -n %{drivername}-control-center
 AMD Catalyst Control Center Linux Edition, a graphical configuration
 utility for the ATI proprietary X.org driver.
+%if !%{atibuild}
+This package corresponds to ATI Catalyst version %mversion.
+%endif
 
 %package -n dkms-%{drivername}
 Summary:	ATI proprietary kernel module
@@ -242,6 +252,9 @@ Requires:	%{driverpkgname} = %{version}
 %description -n dkms-%{drivername}
 ATI proprietary kernel module. This is to be used with the
 %{driverpkgname} package.
+%if !%{atibuild}
+This package corresponds to ATI Catalyst version %mversion.
+%endif
 
 %package -n %{drivername}-devel
 Summary:	ATI proprietary development libraries and headers
@@ -272,7 +285,6 @@ mkdir fglrx_tools
 tar -xzf common/usr/src/ati/fglrx_sample_source.tgz -C fglrx_tools
 cd fglrx_tools # ensure patch does not touch outside
 %patch1 -p1
-%patch2 -p1
 %patch4 -p1
 cd -
 cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_gamma/fglrx_gamma.h
@@ -280,8 +292,8 @@ cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_
 %endif
 
 %patch3 -p1
-%patch5 -p1
-%patch6 -p1
+%patch9 -p1
+%patch10 -p1
 
 cat > README.install.urpmi <<EOF
 This driver is for ATI Radeon HD 2000 and newer cards.
@@ -366,7 +378,7 @@ make CC="%__cc %optflags" SHLIBGLOBALSFLAGS="%{?ldflags} -L%{_prefix}/X11R6/%{_l
 cd -
 cd fglrx_tools/fgl_glxgears
 xmkmf
-%make RMAN=/bin/true CC="%__cc %optflags" EXTRA_LDOPTIONS="%{?ldflags}"
+%make RMAN=/bin/true CC="%__cc %optflags -I../../common/usr/include" EXTRA_LDOPTIONS="%{?ldflags}"
 cd -
 cd fglrx_tools/programs/fglrx_gamma
 xmkmf
@@ -840,8 +852,45 @@ rm -rf %{buildroot}
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
 
-* Thu Jul 16 2009 Anssi Hannula <anssi@mandriva.org> 8.620-1mdv2008.0
-+ Revision: 396574
+* Sat Sep 19 2009 Anssi Hannula <anssi@mandriva.org> 8.650-1mdv2008.0
++ Revision: 444746
+- add missing atibuild conditionals into package descriptions
+- new version 9.9 aka 8.65
+- drop fglrx-reenable-acpi-2.6.29.patch, now unneeded
+- replace fgl_glxgears-includes.patch with an include flag
+
+* Wed Aug 19 2009 Anssi Hannula <anssi@mandriva.org> 8.640-1mdv2010.0
++ Revision: 418160
+- new version 8.64 aka 9.8
+- automatically append 0 to two-decimal upstream version numbers
+- drop 2.6.29 and 2.6.30 patches, fixed upstream
+- re-enable ACPI notifications on 2.6.29+ (reenable-acpi-2.6.29.patch;
+  ATI "fixed" the ACPI headers issue by removing the notification support
+  on 2.6.29+; however, our kernel-devel packages contain the necessary
+  headers, so reimplement our previous 2.6.29-fixes.patch on top of
+  current fglrx)
+- fix unexpanded macros in descriptions in atibuild mode
+
+* Wed Aug 05 2009 Anssi Hannula <anssi@mandriva.org> 8.632-2mdv2010.0
++ Revision: 410235
+- do not use /proc for probing kernel info to avoid running kernel
+  affecting the build (make_sh-no-proc-probe.patch and changes to the
+  make command)
+- define target uname_a to "none" to prevent make.sh using "uname -a" to
+  determine whether target kernel is SMP, instead using the target kernel
+  configuration to determine it
+- support custom kernel build directories again
+  (make_sh-custom-kernel-dir.patch) and use that feature with dkms
+- fix failing module load on 2.6.30+ 32-bit SMP kernels due to missing
+  symbol flush_tlb_page (2.6.30-smp.patch, reported by Shlomi Fish)
+
+* Tue Jul 28 2009 Anssi Hannula <anssi@mandriva.org> 8.632-1mdv2010.0
++ Revision: 402383
+- new version 8.632 aka 9.7
+- show advertised version (9.7) in descriptions
+
+* Fri Jul 17 2009 Anssi Hannula <anssi@mandriva.org> 8.620-2mdv2010.0
++ Revision: 396704
 - allow redistributing .spec file with MIT license as per AMD request
   (Colin Guthrie, Luiz Fernando Capitulino, and Thomas Backlund agreed)
 - clean spec
