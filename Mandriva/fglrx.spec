@@ -504,8 +504,7 @@ convert common/usr/share/icons/ccc_large.xpm -resize 16x16 %{buildroot}%{_micons
 convert common/usr/share/icons/ccc_large.xpm -resize 32x32 %{buildroot}%{_iconsdir}/%{drivername}-amdcccle.png
 convert common/usr/share/icons/ccc_large.xpm -resize 48x48 %{buildroot}%{_liconsdir}/%{drivername}-amdcccle.png
 %else
-install -m644 common/usr/share/icons/ccc_large.xpm %{buildroot}%{_liconsdir}/%{drivername}-amdcccle.xpm
-install -m644 common/usr/share/icons/ccc_small.xpm %{buildroot}%{_iconsdir}/%{drivername}-amdcccle.xpm
+install -m644 common/usr/share/icons/ccc_large.xpm %{buildroot}%{_iconsdir}/%{drivername}-amdcccle.xpm
 %endif
 
 # install libraries
@@ -810,7 +809,6 @@ rm -rf %{buildroot}
 %dir %{_datadir}/ati/amdcccle
 %if %{atibuild}
 %{_iconsdir}/%{drivername}-amdcccle.xpm
-%{_liconsdir}/%{drivername}-amdcccle.xpm
 %else
 %{_miconsdir}/%{drivername}-amdcccle.png
 %{_iconsdir}/%{drivername}-amdcccle.png
