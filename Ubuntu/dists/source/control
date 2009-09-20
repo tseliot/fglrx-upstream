@@ -74,7 +74,7 @@ Description: Identifiers supported by the ATI graphics driver
 
 Package: libamdxvba1
 Architecture: amd64 i386
-Depends: ${shlibs:Depends}, libc6, libstdc++5, ia32-libs [amd64]
+Depends: ${shlibs:Depends}, libc6, ia32-libs [amd64]
 Replaces: xorg-driver-fglrx (<= 2:8.543-0ubuntu2)
 Description: AMD Unified Video Decoder library
  This package provides the support for the AMD unified video
