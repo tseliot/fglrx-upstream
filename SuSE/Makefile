@@ -4,7 +4,8 @@ specfiles101=x690.SLE10-IA32.spec x690_64a.SLE10-AMD64.spec
 specfiles103=x690.SUSE103-IA32.spec x690_64a.SUSE103-AMD64.spec
 specfiles110=x690.SUSE110-IA32.spec x690_64a.SUSE110-AMD64.spec
 specfiles111=x740.SUSE111-IA32.spec x740_64a.SUSE111-AMD64.spec x740.SLE11-IA32.spec x740_64a.SLE11-AMD64.spec
-specfiles=$(specfiles101) $(specfiles103) $(specfiles110) $(specfiles111)
+specfiles112=x740.SUSE112-IA32.spec x740_64a.SUSE112-AMD64.spec
+specfiles=$(specfiles101) $(specfiles103) $(specfiles110) $(specfiles111) $(specfiles112)
 
 tarball=suse.tar.bz2
 
