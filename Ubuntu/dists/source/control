@@ -64,6 +64,7 @@ Description: Catalyst Control Center for the ATI graphics accelerators
  This package provides the Catalyst Control Center, Linux Edition
 
 Package: fglrx-modaliases
+Section: admin
 Architecture: amd64 i386
 Description: Identifiers supported by the ATI graphics driver
  In order to identify what hardware is supported by Jockey,
