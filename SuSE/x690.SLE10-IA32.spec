@@ -248,7 +248,6 @@ if [ -f $RPM_BUILD_ROOT/usr/bin/amdcccle ]; then
   echo "/usr/bin/amdcccle" >> files.fglrx
   echo "/usr/share/ati/amdcccle/" >> files.fglrx
   echo "/usr/share/pixmaps/ccc_large.xpm" >> files.fglrx
-  echo "/usr/share/pixmaps/ccc_small.xpm" >> files.fglrx
 fi
 if [ -f $RPM_BUILD_ROOT/usr/bin/atiodcli ]; then
   echo "/usr/bin/atiodcli" >> files.fglrx
