@@ -69,6 +69,7 @@
 %define ld_so_conf_file	ati.conf
 %define ati_extdir	%{_libdir}/%{drivername}/xorg
 %define xorg_extra_modules	%{_libdir}/xorg/extra-modules
+%define bundle_qt	0
 # The entry in Cards+ this driver should be associated with, if there is
 # no entry in ldetect-lst default pcitable:
 # cooker ldetect-lst should be up-to-date
@@ -90,6 +91,7 @@
 %endif
 
 %if %{mdkversion} <= 200810
+%define bundle_qt	1
 # vesa/fglrx
 %define ldetect_cards_name      ATI Radeon HD 3200
 %endif
@@ -134,7 +136,15 @@
 # (if that is really necessary, we may want to split that specific lib out),
 # and this package should not be pulled in when libGL.so.1 is required.
 %define _provides_exceptions \\.so
-%define common_requires_exceptions libfglrx.\\+\\.so
+
+%define qt_requires_exceptions %nil
+%if %{bundle_qt}
+# do not require Qt if it is bundled
+%define qt_requires_exceptions \\|libQtCore\\.so\\|libQtGui\\.so
+%endif
+
+# do not require fglrx stuff, they are all included
+%define common_requires_exceptions libfglrx.\\+\\.so%{qt_requires_exceptions}
 
 %ifarch x86_64
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
@@ -260,6 +270,10 @@ Obsoletes:	ati-ccc < %{version}-%{release}
 Obsoletes:	ati-control-center < %{version}-%{release}
 Provides:	ati-control-center = %{version}-%{release}
 Obsoletes:	fglrx-hd2000-control-center < 8.42.3-5
+%endif
+%if !%{bundle_qt}
+# 2009.0 and 2009.1 have this one in updates only
+Requires:	%{_lib}qtcore4 >= 3:4.5.2
 %endif
 
 %description -n %{drivername}-control-center
@@ -558,6 +572,15 @@ install -m755 arch/x86/usr/lib/*			%{buildroot}%{_prefix}/lib/%{drivername}
 for file in %{buildroot}%{_prefix}/lib/%{drivername}/*.so.*.*; do
 	ln -s $(basename $file) ${file%%.so*}.so;
 done
+%endif
+
+%if %{bundle_qt}
+# install the bundled Qt4 libs on distros with qt4 < 4.4.2
+install -d -m755				%{buildroot}%{_libdir}/%{drivername}-qt4
+install -m755 %{archdir}/usr/share/ati/lib/*	%{buildroot}%{_libdir}/%{drivername}-qt4
+# RPATH of amdcccle points to datadir, we create a symlink there:
+install -d -m755				%{buildroot}/usr/share/ati
+ln -s %{_libdir}/%{drivername}-qt4		%{buildroot}/usr/share/ati/lib
 %endif
 
 %if !%{atibuild}
@@ -868,6 +891,11 @@ rm -rf %{buildroot}
 %{_datadir}/applications/mandriva-fglrx-amdccclesu.desktop
 %if %{mdkversion} <= 200600
 %{_menudir}/%{drivername}-control-center
+%endif
+%if %{bundle_qt}
+%dir %{_libdir}/%{drivername}-qt4
+%{_libdir}/%{drivername}-qt4/libQtCore.so.4
+%{_libdir}/%{drivername}-qt4/libQtGui.so.4
 %endif
 
 %files -n %{drivername}-devel
