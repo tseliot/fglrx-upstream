@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2009 Emanuele Tomasi, Ezio Ghibaudo, Federico Rota
+# Copyright (c) 2009 Emanuele Tomasi, Ezio Ghibaudo
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation

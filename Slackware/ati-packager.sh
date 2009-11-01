@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2009 Emanuele Tomasi, Ezio Ghibaudo, Federico Rota
+# Copyright (c) 2009 Emanuele Tomasi, Ezio Ghibaudo
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -46,7 +46,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
 
-    BUILD_VER=1.3.9;
+    BUILD_VER=1.4.0;
 
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD;
@@ -327,8 +327,7 @@ case $1 in
 	echo -e "\n${MESSAGE[0]} $BUILD_VER"\
 		"\n--------------------------------------------"\
 		"\n${MESSAGE[1]}"\
-		"\n${MESSAGE[2]}"\
-		"\n${MESSAGE[3]}\n";
+		"\n${MESSAGE[2]}\n";
 
 	EXIT_STATUS=0;
 
