@@ -577,10 +577,10 @@ done
 %if %{bundle_qt}
 # install the bundled Qt4 libs on distros with qt4 < 4.4.2
 install -d -m755				%{buildroot}%{_libdir}/%{drivername}-qt4
-install -m755 %{archdir}/usr/share/ati/lib/*	%{buildroot}%{_libdir}/%{drivername}-qt4
+install -m755 %{archdir}/usr/share/ati/%{_lib}/*	%{buildroot}%{_libdir}/%{drivername}-qt4
 # RPATH of amdcccle points to datadir, we create a symlink there:
 install -d -m755				%{buildroot}/usr/share/ati
-ln -s %{_libdir}/%{drivername}-qt4		%{buildroot}/usr/share/ati/lib
+ln -s %{_libdir}/%{drivername}-qt4		%{buildroot}/usr/share/ati/%{_lib}
 %endif
 
 %if !%{atibuild}
@@ -896,6 +896,7 @@ rm -rf %{buildroot}
 %dir %{_libdir}/%{drivername}-qt4
 %{_libdir}/%{drivername}-qt4/libQtCore.so.4
 %{_libdir}/%{drivername}-qt4/libQtGui.so.4
+%{_datadir}/ati/%{_lib}
 %endif
 
 %files -n %{drivername}-devel
