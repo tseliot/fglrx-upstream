@@ -69,15 +69,46 @@
 %define ld_so_conf_file	ati.conf
 %define ati_extdir	%{_libdir}/%{drivername}/xorg
 %define xorg_extra_modules	%{_libdir}/xorg/extra-modules
+# The entry in Cards+ this driver should be associated with, if there is
+# no entry in ldetect-lst default pcitable:
+# cooker ldetect-lst should be up-to-date
+%define ldetect_cards_name      %nil
+
+%if %{mdkversion} <= 201000 || %{atibuild}
+# ATI cards not listed in main ldetect-lst pcitable are not likely
+# to be supported by radeon which is from the same time period.
+# radeonhd has greater chance of working due to it not using ID lists.
+# (main pcitable entries override our entries)
+%define ldetect_cards_name      ATI Radeon HD 2000 and later (radeonhd/fglrx)
+%endif
 
 %if %{mdkversion} <= 200900
 %define xorg_version	690
 %define ati_extdir	%{xorg_libdir}/modules/extensions/%{drivername}
+# radeonhd/fglrx
+%define ldetect_cards_name      ATI Radeon X1300 and later
+%endif
+
+%if %{mdkversion} <= 200810
+# vesa/fglrx
+%define ldetect_cards_name      ATI Radeon HD 3200
+%endif
+
+%if %{mdkversion} <= 200800
+# vesa/fglrx
+%define ldetect_cards_name      ATI Radeon X1300 - X1950
 %endif
 
 %if %{mdkversion} <= 200710
 %define driverpkgname	ati
 %define drivername	ati
+# fbdev/fglrx
+%define ldetect_cards_name      ATI Radeon X1300 and later
+%endif
+
+%if %{mdkversion} <= 200700
+# vesa/fglrx
+%define ldetect_cards_name      ATI Radeon (vesa)
 %endif
 
 %if %{mdkversion} <= 200600
@@ -86,6 +117,8 @@
 %define xorg_dridir32	%{_prefix}/X11R6/lib/modules/dri
 %define xorg_includedir	%{_prefix}/X11R6/include
 %define ld_so_conf_dir	%{_sysconfdir}/ld.so.conf.d
+# fbdev/fglrx
+%define ldetect_cards_name      ATI Radeon (fbdev)
 %endif
 
 %ifarch %ix86
@@ -576,6 +609,13 @@ touch					%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL.conf
 install -d -m755 %{buildroot}%{_sysconfdir}/X11
 echo "libAMDXvBA.so.1" > %{buildroot}%{_sysconfdir}/X11/XvMCConfig-%{drivername}
 
+# install ldetect-lst pcitable files for backports
+%if "%{ldetect_cards_name}" != ""
+install -d -m755 %{buildroot}%{_datadir}/ldetect-lst/pcitable.d
+sed -ne 's|^\s*FGL_ASIC_ID(\(0x....\)).*|\1|gp' common/lib/modules/fglrx/build_mod/fglrxko_pci_ids.h | tr '[:upper:]' '[:lower:]' | sort -u | sed 's,^.*$,0x1002\t\0\t"%{ldetect_cards_name}",' | gzip > %{buildroot}%{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
+[ $(stat -c%s %{buildroot}%{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz) -gt 500 ]
+%endif
+
 %if %{mdkversion} >= 200800
 %pre -n %{driverpkgname}
 # Handle alternatives-era /etc/ati directory
@@ -625,6 +665,9 @@ fi
 # Call /sbin/ldconfig explicitely due to alternatives
 /sbin/ldconfig
 %_post_service atieventsd
+%if "%{ldetect_cards_name}" != ""
+[ -x %{_sbindir}/update-ldetect-lst ] && %{_sbindir}/update-ldetect-lst || :
+%endif
 
 %if %{mdkversion} >= 200800
 %posttrans -n %{driverpkgname}
@@ -666,6 +709,9 @@ fi
 %endif
 # Call /sbin/ldconfig explicitely due to alternatives
 /sbin/ldconfig
+%if "%{ldetect_cards_name}" != ""
+[ -x %{_sbindir}/update-ldetect-lst ] && %{_sbindir}/update-ldetect-lst || :
+%endif
 
 %if %{mdkversion} >= 200800
 %pre -n %{drivername}-control-center
@@ -715,6 +761,10 @@ rm -rf %{buildroot}
 %doc common/usr/share/doc/fglrx/*
 %if %{mdkversion} <= 200810
 %doc README.8.532.upgrade.urpmi
+%endif
+
+%if "%{ldetect_cards_name}" != ""
+%{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
 %endif
 
 %if %{mdkversion} >= 200700
