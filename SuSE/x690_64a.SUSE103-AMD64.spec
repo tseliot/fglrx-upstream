@@ -13,6 +13,7 @@ PreReq: %insserv_prereq %fillup_prereq
 Provides: fglrx km_fglrx
 Obsoletes: fglrx km_fglrx
 ExclusiveArch: %ix86 x86_64
+BuildRoot: %ATI_DRIVER_BUILD_ROOT
 
 %if %suse_version > 1010
 %define MODULES_DIR       /usr/%{_lib}/xorg/modules
@@ -36,7 +37,11 @@ ExclusiveArch: %ix86 x86_64
 %ATI_DRIVER_DESCRIPTION
 
 %install
-export RPM_BUILD_ROOT=%ATI_DRIVER_BUILD_ROOT
+%if %suse_version > 1110
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT
+cp -a %ATI_DRIVER_BUILD_ROOT/* $RPM_BUILD_ROOT
+%endif
 tmpdir=$(mktemp -d /tmp/fglrx.XXXXXX)
 mkdir $tmpdir/fglrx
 mv $RPM_BUILD_ROOT/* $tmpdir/fglrx
@@ -62,6 +67,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin \
          $RPM_BUILD_ROOT/usr/share/pixmaps \
          $RPM_BUILD_ROOT/usr/sbin \
          $RPM_BUILD_ROOT/usr/share/man/man8 \
+         $RPM_BUILD_ROOT/usr/share/ati/%{_lib} \
          $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx \
          $RPM_BUILD_ROOT/etc/ati
 pushd $tmpdir/fglrx
@@ -89,6 +95,7 @@ pushd $tmpdir/fglrx
       install -m 644 usr/share/icons/* $RPM_BUILD_ROOT/usr/share/pixmaps
     fi
   fi
+  install -m 755 usr/share/ati/%{_lib}/libQt* $RPM_BUILD_ROOT/usr/share/ati/%{_lib}
   rm -rf usr/share/ati
   rm -rf usr/share/icons
 %ifarch x86_64
@@ -403,6 +410,7 @@ exit 0
 /usr/X11R6/%{_lib}/libGL.so.1
 /usr/X11R6/%{_lib}/libGL.so.1.2
 /usr/sbin/amdnotifyui
+/usr/share/ati/%{_lib}/libQt*
 /usr/share/pixmaps/fglrx.png
 /usr/share/doc/packages/fglrx
 /usr/bin/fgl_glxgears

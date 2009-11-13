@@ -91,7 +91,7 @@ s!%ATI_DRIVER_BUILD_ROOT!${TmpDrvFilesDir}!
 END_SED_SCRIPT
     
     #Build the package
-    rpmbuild -bb --root ${TmpDrvFilesDir} --target ${ARCH} ${TmpPkgSpec} > ${TmpPkgBuildOut} 2>&1
+    rpmbuild -bb --target ${ARCH} ${TmpPkgSpec} > ${TmpPkgBuildOut} 2>&1
 
     #Retrieve the absolute path to the built package
     if [ $? -eq 0 ]; then

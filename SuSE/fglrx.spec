@@ -13,6 +13,7 @@ PreReq: %insserv_prereq %fillup_prereq
 Provides: fglrx km_fglrx
 Obsoletes: fglrx km_fglrx
 ExclusiveArch: %ix86 x86_64
+BuildRoot: %ATI_DRIVER_BUILD_ROOT
 
 %if %suse_version > 1010
 %define MODULES_DIR       /usr/%{_lib}/xorg/modules
@@ -36,7 +37,11 @@ ExclusiveArch: %ix86 x86_64
 %ATI_DRIVER_DESCRIPTION
 
 %install
-export RPM_BUILD_ROOT=%ATI_DRIVER_BUILD_ROOT
+%if %suse_version > 1110
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT
+cp -a %ATI_DRIVER_BUILD_ROOT/* $RPM_BUILD_ROOT
+%endif
 tmpdir=$(mktemp -d /tmp/fglrx.XXXXXX)
 mkdir $tmpdir/fglrx
 mv $RPM_BUILD_ROOT/* $tmpdir/fglrx
