@@ -647,7 +647,7 @@ fi
 	--slave %{xorg_extra_modules} xorg_extra_modules %{ati_extdir} \
 %else
 %if %{mdkversion} >= 200900
-	--slave %{_libdir}/xorg/modules/extensions/libdri.so libdri.so %{ati_extdir}/libdri.so \
+	--slave %{_libdir}/xorg/modules/extensions/libdri.so libdri.so %{_libdir}/xorg/modules/extensions/standard/libdri.so \
 %endif
 %if %{mdkversion} >= 200800
 	--slave %{_libdir}/xorg/modules/extensions/libglx.so libglx %{ati_extdir}/libglx.so
@@ -813,7 +813,6 @@ rm -rf %{buildroot}
 %{xorg_libdir}/modules/glesx.*o
 
 %dir %{ati_extdir}
-%{ati_extdir}/libdri.so
 %{ati_extdir}/libglx.so
 %if %{mdkversion} == 200900
 %ghost %{xorg_libdir}/modules/extensions/libdri.so
