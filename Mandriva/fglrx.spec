@@ -523,26 +523,9 @@ EOF
 %endif
 
 install -d -m755 %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/mandriva-fglrx-amdcccle.desktop << EOF
-[Desktop Entry]
-Name=ATI Catalyst Control Center
-Comment=ATI graphics adapter settings
-Exec=%{_bindir}/amdcccle
-Icon=%{drivername}-amdcccle
-Terminal=false
-Type=Application
-Categories=Settings;HardwareSettings;X-MandrivaLinux-System-Configuration;
-EOF
-cat > %{buildroot}%{_datadir}/applications/mandriva-fglrx-amdccclesu.desktop << EOF
-[Desktop Entry]
-Name=ATI Catalyst Control Center (super-user)
-Comment=ATI graphics adapter settings - super-user mode
-Exec=%{_bindir}/amdccclesu
-Icon=%{drivername}-amdcccle
-Terminal=false
-Type=Application
-Categories=Settings;HardwareSettings;X-MandrivaLinux-System-Configuration;
-EOF
+install -m644 common/usr/share/applications/* %{buildroot}%{_datadir}/applications
+sed -i 's,^Icon=.*$,Icon=%{drivername}-amdcccle,' %{buildroot}%{_datadir}/applications/*.desktop
+sed -i 's,^Exec=.*$,Exec=%{_bindir}/amdccclesu,' %{buildroot}%{_datadir}/applications/amdccclesu.desktop
 
 # icons
 install -d -m755 %{buildroot}%{_miconsdir} %{buildroot}%{_iconsdir} %{buildroot}%{_liconsdir}
@@ -887,8 +870,8 @@ rm -rf %{buildroot}
 %{_iconsdir}/%{drivername}-amdcccle.png
 %{_liconsdir}/%{drivername}-amdcccle.png
 %endif
-%{_datadir}/applications/mandriva-fglrx-amdcccle.desktop
-%{_datadir}/applications/mandriva-fglrx-amdccclesu.desktop
+%{_datadir}/applications/amdcccle.desktop
+%{_datadir}/applications/amdccclesu.desktop
 %if %{mdkversion} <= 200600
 %{_menudir}/%{drivername}-control-center
 %endif
