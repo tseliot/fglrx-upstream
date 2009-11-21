@@ -11,7 +11,7 @@
 #   see that file for detailed license information.
 
 # List of supported distributions.
-supported_distros="2006.0 2007.0 2007.1 2008.0 2008.1 2009.0 2009.1 2010.0"
+supported_distros="2006.0 2007.0 2007.1 2008.0 2008.1 2009.0 2009.1 2010.0 2010.1"
 
 buildCheck()
 {
