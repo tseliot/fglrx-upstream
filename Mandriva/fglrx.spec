@@ -832,6 +832,7 @@ rm -rf %{buildroot}
 %{_libdir}/%{drivername}/libaticalcl.so
 %{_libdir}/%{drivername}/libaticaldd.so
 %{_libdir}/%{drivername}/libaticalrt.so
+%{_libdir}/%{drivername}/libatiuki.so.1*
 %ifarch x86_64
 %dir %{_prefix}/lib/%{drivername}
 %{_prefix}/lib/%{drivername}/libGL.so.1
@@ -839,6 +840,7 @@ rm -rf %{buildroot}
 %{_prefix}/lib/%{drivername}/libaticalcl.so
 %{_prefix}/lib/%{drivername}/libaticaldd.so
 %{_prefix}/lib/%{drivername}/libaticalrt.so
+%{_prefix}/lib/%{drivername}/libatiuki.so.1*
 %endif
 
 %{_libdir}/%{drivername}/libfglrx_gamma.so.1*
@@ -899,8 +901,10 @@ rm -rf %{buildroot}
 %dir %{_includedir}/ATI/GL
 %{_includedir}/ATI/GL/*.h
 %{_libdir}/%{drivername}/libGL.so
+%{_libdir}/%{drivername}/libatiuki.so
 %ifarch x86_64
 %{_prefix}/lib/%{drivername}/libGL.so
+%{_prefix}/lib/%{drivername}/libatiuki.so
 %endif
 
 %files -n dkms-%{drivername}
