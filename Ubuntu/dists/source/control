@@ -16,6 +16,7 @@ Build-Depends: debhelper (>= 5),
                libdrm2,
                libgl1-mesa-glx,
                libxinerama1,
+               libqtgui4,
                execstack
 Standards-Version: 3.8.0
 Homepage: http://ati.amd.com/support/driver.html
