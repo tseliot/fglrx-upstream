@@ -132,6 +132,9 @@ pushd $tmpdir/fglrx
     install -m 755 $file                   $RPM_BUILD_ROOT/usr/lib
     rm $file
   done
+  mv usr/lib/libatiuki.so.1.0 .
+  install -m 755 libatiuki.so.1.0	   $RPM_BUILD_ROOT/usr/lib
+  rm libatiuki.so.1.0
 %endif
   for i in `find . -type f`; do mv --backup $i .; done
   # make sure we don't overwrite something
@@ -205,7 +208,7 @@ pushd $tmpdir/fglrx
   install -m 755 libAMDXvBA.cap libAMDXvBA.so.1.0 libXvBAW.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
 %endif
   install -m 755 libaticaldd.so libaticalrt.so libaticalcl.so $RPM_BUILD_ROOT/usr/%{_lib}
-  install -m 755 libdri.so              $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
+  install -m 755 libatiuki.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}
   test -f libglx.so && \
     install -m 755 libglx.so            $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
 popd
@@ -402,6 +405,7 @@ exit 0
 /usr/X11R6/lib/libGL.so.1.2
 %endif
 /usr/%{_lib}/libatiadlxx.so
+/usr/%{_lib}/libatiuki.so.1.0
 %ifarch %ix86
 /usr/%{_lib}/libAMDXvBA.cap
 /usr/%{_lib}/libAMDXvBA.so.1.0
@@ -427,7 +431,6 @@ exit 0
 /usr/X11R6/%{_lib}/libfglrx_gamma.so*
 %verify(not mtime) %{MODULES_DIR}/drivers/fglrx_drv.*
 %{MODULES_DIR}/linux/libfglrxdrm.*
-%{MODULES_DIR}/updates/extensions/libdri.so
 # km_fglrx
 %dir /usr/src/kernel-modules
 /usr/src/kernel-modules/fglrx/
