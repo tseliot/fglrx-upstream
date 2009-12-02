@@ -61,6 +61,11 @@ buildDepends()
 {
     release=$1
 
+    #if we don't know what we're working with, assume it's supported by the source target
+    if [ ! -d packages/Ubuntu/dists/$release/control ]; then
+        release="source"
+    fi
+
     if [ ! -x /usr/bin/dpkg-checkbuilddeps ]; then
         if [ "$2" != "--dryrun" ]; then
             if [ ! -z "$SYNAPTIC" ] && [ ! -z "$DISPLAY" ]; then
@@ -118,7 +123,13 @@ EOF
 #Purpose: lists distribution supported packages
 getSupportedPackages()
 {
-    echo `ls packages/Ubuntu/dists`
+    current=`lsb`
+    if [ -n "$current" ]; then
+        echo -n `ls packages/Ubuntu/dists | grep -v $current`
+        echo " $current"
+    else
+        echo `ls packages/Ubuntu/dists`
+    fi
 }
 
 makeChangelog()
@@ -206,17 +217,11 @@ buildPackage()
 
 
     #Detect x* dir name corresponding to X_NAME
+    X_DIR=x740
     case ${X_NAME} in
-        gutsy)  X_DIR=x690; X_NAME=gutsy;;
-        hardy)  X_DIR=x690; X_NAME=hardy;;
-        intrepid) X_DIR=x740; X_NAME=intrepid;;
-	jaunty)   X_DIR=x740; X_NAME=jaunty;;
-	karmic)   X_DIR=x740; X_NAME=karmic;;
-        lucid)   X_DIR=x740; X_NAME=lucid
-        source) X_DIR=x740; X_NAME=lucid;;
-        *)
-        #Automatically detect
-        echo "Error: invalid package name passed to --buildpkg" ; exit 1 ;;
+        gutsy)  X_DIR=x690;;
+        hardy)  X_DIR=x690;;
+        source) X_NAME=`lsb`;;
     esac
 
     #Detect target architecture if not set
@@ -259,8 +264,13 @@ buildPackage()
     cp -f -R ${InstallerRootDir}/common/* ${TmpDrvFilesDir}
 
     # Merge package files from the appropriate directories
+    # If this target doesn't "yet" exist, then copy from the source target
     chmod -R u+w ${AbsDistroDir}
-    cp -f -R -H ${AbsDistroDir}/dists/${X_NAME} ${TmpDrvFilesDir}/debian
+    if [ -d ${AbsDistroDir}/dists/${X_NAME} ]; then
+        cp -f -R -H ${AbsDistroDir}/dists/${X_NAME} ${TmpDrvFilesDir}/debian
+    else
+        cp -f -R -H ${AbsDistroDir}/dists/source ${TmpDrvFilesDir}/debian
+    fi
 
     # generate a temporary changelog with version information
     makeChangelog ${X_NAME}
@@ -309,16 +319,21 @@ buildPackage()
     rm -f ${TmpPkgBuildOut} > /dev/null
 }
 
-identify()
+lsb()
 {
     lsb_launcher=`which lsb_release 2>/dev/null`
     if [ ! -z "$lsb_launcher" ]; then
-        lsb=`lsb_release -s -c`
-        check=$1
-        if [ "${lsb}" = "${check}" ]
-        then
-            exit 0
-        fi
+        echo `lsb_release -s -c`
+    else
+        echo `grep CODENAME /etc/lsb-release | awk -F"=" '{ print $2 }'`
+    fi
+}
+
+identify()
+{
+    if [ `lsb` = "$1" ]
+    then
+        exit 0
     fi
     exit ${ATI_INSTALLER_ERR_VERS}
 
