@@ -121,7 +121,22 @@ ifeq ($(DEB_BUILD_ARCH),amd64)
 	dh_install -p$(PKG_driver) "arch/x86/usr/lib/*"                     "usr/lib32"
 	dh_installdirs -p$(PKG_driver) "usr/lib32/fglrx"
 
+	for i in \
+			debian/$(PKG_driver)/$(DRIDIR32)/dri/fglrx_dri.so \
+			debian/$(PKG_driver)/usr/lib32/libGL.so.* \
+			; do execstack -q $$i; execstack -c $$i; done
+
 endif
 
 	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude ATI_LICENSE.TXT
 	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start --update-rcd-params="defaults 31"
+
+	for i in \
+			debian/$(PKG_driver)/usr/bin/atiode \
+			debian/$(PKG_driver)/usr/sbin/amdnotifyui \
+			debian/$(PKG_driver)/usr/lib/dri/fglrx_dri.so \
+			debian/$(PKG_driver)/usr/lib/libGL.so.* \
+			; do execstack -q $$i; execstack -c $$i; done
+
+binary-install/$(PKG_control)::
+	execstack -c debian/$(PKG_control)/usr/bin/amdcccle
