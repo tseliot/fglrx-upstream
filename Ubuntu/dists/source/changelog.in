@@ -1,3 +1,55 @@
+fglrx-installer (2:8.660-0ubuntu4) karmic; urgency=low
+
+  * Force fglrx-rt-compat.patch applied only on 2.6.28
+  * Added new patch for rt kernel flavour (rt_preempt_31.patch) (LP: #159941)
+
+ -- Alessio Igor Bogani <abogani@ubuntu.com>  Mon, 12 Oct 2009 22:31:02 +0200
+
+fglrx-installer (2:8.660-0ubuntu3) karmic; urgency=low
+
+  [ Alberto Milone]
+  * debian/control:
+    - Change the section of the -modaliases package to "admin" as
+      the package is not "restricted" (LP: #429153).
+
+  [ Kees Cook ]
+  * debian/control:
+    - Add build dependency on execstack.
+  * debian/rules:
+    - Drop executable stack markings from precompiled
+      binaries (LP: #409440).
+
+ -- Alberto Milone <alberto.milone@canonical.com>  Fri, 25 Sep 2009 18:36:42 +0200
+
+fglrx-installer (2:8.660-0ubuntu2) karmic; urgency=low
+
+  * The XVBA libraries have silently removed the dependency on libstdc++5
+    in driver version 8.63. Remove the dependency of the libamdxvba1 package
+    on libstdc++5. LP: #432021.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 19 Sep 2009 17:24:58 +0200
+
+fglrx-installer (2:8.660-0ubuntu1) karmic; urgency=low
+
+  * New upstream release.
+    + Fix freeze on boot with purple and green ubuntu logos
+      (LP: #423711)
+    + Fix boot failure due to DKMS change.  Sometimes X crashes as result.
+      (LP: #417617, #413751)
+    + Make fglrx compile with dkms on 2.6.30 and 2.6.31 for amd64
+      (LP: #410062)
+    + Fix "Desktop effects could not be enabled" on HD 4850 and HD 4870
+      (LP: #417500, #408633)
+    + Provide support for 2.6.31 kernel
+      (LP: #413791)
+    + Use Catalyst Control Center for display configuration
+      (LP: #410512)
+    + Catalyst Control Center shows up in Apps > Accessories, should be in
+      System > Administration > Display
+      (LP: #423670)
+
+ -- Bryce Harrington <bryce@ubuntu.com>  Fri, 04 Sep 2009 15:05:07 -0700
+
 fglrx-installer (2:8.620-0ubuntu3) karmic; urgency=low
 
   * debian/dkms/patches/missing-flush_tlb.patch (LP: #394176)
