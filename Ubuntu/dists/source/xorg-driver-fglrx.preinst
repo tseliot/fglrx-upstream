@@ -71,6 +71,12 @@ fix_diversions()
              /usr/X11R6/lib32/libGL.so.1.2 ; do \
 	dpkg-divert --remove --package $PKGNAME $i > /dev/null; \
      done
+
+    #before 8.699 we had to divert libdri
+    dpkg-divert --remove --rename --package $PKGNAME \
+        --divert /usr/lib/fglrx/libdri.so.xlibmesa   \
+        /usr/lib/xorg/modules/extensions/libdri.so > /dev/null
+
 }
 
 case "$1" in
@@ -84,7 +90,6 @@ case "$1" in
 		mkdir -p /usr/lib/fglrx
 	fi
 	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libGL.so.1.2.xlibmesa /usr/lib/libGL.so.1.2 > /dev/null
-	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libdri.so.xlibmesa /usr/lib/xorg/modules/extensions/libdri.so > /dev/null
 	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libglx.so.xlibmesa /usr/lib/xorg/modules/extensions/libglx.so > /dev/null
 
 	if [ -n "$HAS_LIB32" ]; then
