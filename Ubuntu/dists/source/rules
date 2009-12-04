@@ -126,7 +126,11 @@ ifeq ($(DEB_BUILD_ARCH),amd64)
 			debian/$(PKG_driver)/usr/lib32/libGL.so.* \
 			; do execstack -q $$i; execstack -c $$i; done
 
+	#they don't provide the symlink for us (starting at 8.699)
+	dh_link -p$(PKG_driver) usr/lib32/libatiuki.so.1.0 usr/lib32/libatiuki.so.1
 endif
+	#they don't provide the symlink for us (starting at 8.699)
+	dh_link -p$(PKG_driver) usr/lib/libatiuki.so.1.0 usr/lib/libatiuki.so.1
 
 	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude ATI_LICENSE.TXT
 	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start --update-rcd-params="defaults 31"
