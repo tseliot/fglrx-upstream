@@ -6,6 +6,7 @@ MAKE[0]="cd ${dkms_tree}/fglrx/#CVERSION#/build; sh make.sh --nohints --uname_r=
 DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
 AUTOINSTALL="yes"
 PATCH[0]="rt_preempt_28.patch"
-PATCH_MATCH[0]="2.6.28"
+PATCH_MATCH[0]="^2.6.28\-[0-9]*\-rt$"
 PATCH[1]="rt_preempt_31.patch"
-PATCH_MATCH[1]="2.6.31"
+PATCH_MATCH[1]="^2.6.31\-[0-9]*\-rt$"
+
