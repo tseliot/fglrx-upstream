@@ -62,7 +62,7 @@ buildDepends()
     release=$1
 
     #if we don't know what we're working with, assume it's supported by the source target
-    if [ ! -d packages/Ubuntu/dists/$release/control ]; then
+    if [ ! -d packages/Ubuntu/dists/$release/control ] && [ ! -L packages/Ubuntu/dists/$release/control ]; then
         release="source"
     fi
 
