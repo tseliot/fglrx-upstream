@@ -26,3 +26,6 @@ arch/#ARCH#/usr/X11R6/#LIBDIR#/modules/dri     #DRIDIR#
 
 #CAL stuff
 arch/#ARCH#/usr/#LIBDIR#/*                     usr/lib
+
+#Install QT4 libraries that weren't around for 9.04 and earlier
+arch/#ARCH#/usr/share/ati/#LIBDIR#             usr/share/ati
