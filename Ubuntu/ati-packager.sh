@@ -266,7 +266,7 @@ buildPackage()
     # Merge package files from the appropriate directories
     # If this target doesn't "yet" exist, then copy from the source target
     chmod -R u+w ${AbsDistroDir}
-    if [ -d ${AbsDistroDir}/dists/${X_NAME} ]; then
+    if [ -d ${AbsDistroDir}/dists/${X_NAME} ] || [ -L ${AbsDistroDir}/dists/${X_NAME} ]; then
         cp -f -R -H ${AbsDistroDir}/dists/${X_NAME} ${TmpDrvFilesDir}/debian
     else
         cp -f -R -H ${AbsDistroDir}/dists/source ${TmpDrvFilesDir}/debian
