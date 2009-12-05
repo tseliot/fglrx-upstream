@@ -311,6 +311,8 @@ if [ -f $RPM_BUILD_ROOT%{DRI_DRIVERS_DIR}/fglrx_dri.so ]; then
   echo "%{DRI_DRIVERS_DIR}/fglrx_dri.so" >> files.fglrx
 fi
 find $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx -type f | xargs chmod 644
+mkdir -p $RPM_BUILD_ROOT/etc/modprobe.d
+echo "blacklist radeon" > $RPM_BUILD_ROOT/etc/modprobe.d/fglrx.conf
 
 %post
 %run_ldconfig
@@ -396,6 +398,7 @@ exit 0
 %dir %{DRI_DRIVERS_DIR}
 %endif
 /etc/ati/
+/etc/modprobe.d/fglrx.conf
 /usr/include/GL/glxATI.h
 /usr/include/GL/glATI.h
 %ifarch x86_64
