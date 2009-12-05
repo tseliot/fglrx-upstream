@@ -110,6 +110,10 @@ case "$1" in
 	mv_conffile "/etc/ati/logo_mask.xbm.example"
 	mv_conffile "/etc/ati/signature"
 	mv_conffile "/etc/ati/logo.xbm.example"
+
+        ## Just in case they installed without debs before, finish a proper uninstall routine ##
+        ## This will error out on any failure (which should be cleaned up anyway before installing debs) ##
+        [ -x /usr/share/ati/fglrx-uninstall.sh ] && /usr/share/ati/fglrx-uninstall.sh
     ;;
 
     abort-upgrade)
