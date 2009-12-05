@@ -1,3 +1,1 @@
-#DRI stuff
-arch/#ARCH#/usr/X11R6/#LIBDIR#/libAMD*           usr/lib
-
+../source/libamdxvba1.install.in

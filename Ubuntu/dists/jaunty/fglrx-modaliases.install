@@ -1,1 +1,1 @@
-debian/modaliases/fglrx-modules.alias.override usr/share/jockey/modaliases
+../source/fglrx-modaliases.install
