@@ -322,9 +322,9 @@ buildPackage()
 lsb()
 {
     lsb_launcher=`which lsb_release 2>/dev/null`
-    if [ ! -z "$lsb_launcher" ]; then
+    if [ ! -z "$lsb_launcher" ] && [ `lsb_release -i -s` = "Ubuntu" ]; then
         echo `lsb_release -s -c`
-    else
+    elif [ -f /etc/lsb-release ] && [ `grep ID /etc/lsb-release | awk -F"=" '{ print $2 }'` = "Ubuntu" ]; then
         echo `grep CODENAME /etc/lsb-release | awk -F"=" '{ print $2 }'`
     fi
 }
