@@ -313,6 +313,7 @@ fi
 find $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx -type f | xargs chmod 644
 mkdir -p $RPM_BUILD_ROOT/etc/modprobe.d
 echo "blacklist radeon" > $RPM_BUILD_ROOT/etc/modprobe.d/fglrx.conf
+export NO_BRP_CHECK_RPATH=true
 
 %post
 %run_ldconfig
