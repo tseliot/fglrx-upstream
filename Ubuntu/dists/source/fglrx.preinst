@@ -1,5 +1,5 @@
 #! /bin/sh
-# preinst script for xorg-driver-fglrx
+# preinst script for fglrx
 #
 # see: dh_installdeb(1)
 
@@ -13,7 +13,7 @@ set -e
 #
 # For details see /usr/share/doc/packaging-manual/
 
-PKGNAME=xorg-driver-fglrx
+PKGNAME=fglrx
 
 if [ `dpkg --print-architecture` = "amd64" ]; then
 	HAS_LIB32="yes"

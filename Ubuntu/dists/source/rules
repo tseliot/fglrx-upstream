@@ -10,12 +10,6 @@ CVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut
 DVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d\: -f2)
 DISTRO   := $(shell dpkg-parsechangelog | grep '^Distribution:' | cut -d' ' -f2 | cut -d\: -f2)
 
-#Kernel patches for newer development release kernel
-#In case these break stuff, don't apply to stable
-ifeq ($(DISTRO),intrepid)
-	include /usr/share/cdbs/1/rules/simple-patchsys.mk
-endif
-
 #Directory naming schemes
 DRIDIR   := usr/lib
 DRIDIR32 := usr/lib32
@@ -24,14 +18,6 @@ LIBDIR   := lib
 ARCH     := x86
 XARCH    := x740
 
-ifeq ($(DISTRO),hardy)
-	XARCH   := x690
-endif
-
-ifeq ($(DISTRO),gutsy)
-	XARCH   := x690
-endif
-
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	LIBDIR  := lib64
 	ARCH    := x86_64
@@ -39,16 +25,14 @@ ifeq ($(DEB_BUILD_ARCH),amd64)
 endif
 
 # Package names
-PKG_driver      := xorg-driver-fglrx
-PKG_driver_dev  := xorg-driver-fglrx-dev
-PKG_kernel_src  := fglrx-kernel-source
+PKG_driver      := fglrx
+PKG_driver_dev  := fglrx-dev
 PKG_control     := fglrx-amdcccle
-PKG_UVD_library := libamdxvba1
 
 
 # Unfortunately, we won't have libstdc++5 at build time
 # Also, we can't go and use debian/shlibs.local.  It requires
-# that you have the library installed, and that library 
+# that you have the library installed, and that library
 # just forgot to ship a shlibs file.
 # See (LP: #271794) for more information
 DEB_DH_SHLIBDEPS_ARGS_ALL="-Xlib32"
@@ -61,9 +45,7 @@ configure/$(PKG_driver)::
 			 dkms.conf \
 			 $(PKG_driver).install \
 			 $(PKG_driver_dev).install \
-			 $(PKG_kernel_src).install \
 			 $(PKG_control).install \
-			 $(PKG_UVD_library).install \
 			 overrides/$(PKG_kernel_src); do \
 		sed -e "s|#XMODDIR#|$(XMODDIR)|"     \
 			-e "s|#XMODDIR32#|$(XMODDIR32)|" \
@@ -102,20 +84,14 @@ clean::
 		dkms.conf, \
 		$(PKG_driver).install, \
 		$(PKG_driver_dev).install, \
-		$(PKG_kernel_src).install, \
 		$(PKG_control).install, \
-		$(PKG_UVD_library).install \
-		overrides/$(PKG_kernel_src), \
+		overrides/$(PKG_driver), \
 		modaliases/fglrx-modules.alias.override}
-
-binary-install/$(PKG_UVD_library)::
-ifeq ($(DEB_BUILD_ARCH),amd64)
-	dh_install -p$(PKG_UVD_library) "arch/x86/usr/X11R6/lib/libAMD*.so*"           "usr/lib32"
-endif
 
 binary-install/$(PKG_driver)::
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	#driver package
+	dh_install -p$(PKG_UVD_library) "arch/x86/usr/X11R6/lib/libAMD*.so*"           "usr/lib32"
 	dh_install -XlibAMD -p$(PKG_driver) "arch/x86/usr/X11R6/lib/*.so*"           "usr/lib32"
 	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/modules/dri"     "$(DRIDIR32)"
 	dh_install -p$(PKG_driver) "arch/x86/usr/lib/*"                     "usr/lib32"
