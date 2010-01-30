@@ -808,7 +808,6 @@ rm -rf %{buildroot}
 
 %{_libdir}/%{drivername}/libfglrx_gamma.so.1*
 %{_libdir}/%{drivername}/libfglrx_dm.so.1*
-%{_libdir}/%{drivername}/libfglrx_tvout.so.1*
 %{_libdir}/%{drivername}/libatiadlxx.so
 %{_libdir}/%{drivername}/libAMDXvBA.cap
 %{_libdir}/%{drivername}/libAMDXvBA.so.1*
@@ -847,10 +846,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %{_libdir}/%{drivername}/libfglrx_gamma.a
 %{_libdir}/%{drivername}/libfglrx_dm.a
-%{_libdir}/%{drivername}/libfglrx_tvout.a
 %{_libdir}/%{drivername}/libfglrx_gamma.so
 %{_libdir}/%{drivername}/libfglrx_dm.so
-%{_libdir}/%{drivername}/libfglrx_tvout.so
 %{_libdir}/%{drivername}/libAMDXvBA.so
 %{_libdir}/%{drivername}/libXvBAW.so
 %{xorg_libdir}/modules/esut.a
