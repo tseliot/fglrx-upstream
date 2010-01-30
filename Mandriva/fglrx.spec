@@ -41,15 +41,19 @@
 %if !%{atibuild}
 # NOTE: These version definitions are overridden by ati-packager.sh when
 # building with the --buildpkg method of the installer.
+
+# When updating, please add new ids to ldetect-lst (merge2pcitable.pl).
+
 # version in installer filename:
-%define oversion	9-9
+%define oversion	10-1
 # Advertised version, for description:
-%define mversion	9.9
+%define mversion	10.1
 # driver version from ati-packager-helper.sh:
-%define iversion	8.65
+%define iversion	8.69
+# release:
+%define rel		3
 # rpm version (add 0 in order to not go backwards if iversion is two-decimal)
 %define version		%{iversion}%([ $(echo %iversion | wc -c) -le 5 ] && echo 0)
-%define rel		1
 %else
 # Best-effort if ATI has made late changes (in atibuild mode)
 %define _default_patch_fuzz 2
@@ -64,8 +68,6 @@
 %define xorg_libdir	%{_libdir}/xorg
 %define xorg_dridir	%{_libdir}/dri
 %define xorg_dridir32	%{_prefix}/lib/dri
-%define xorg_includedir	%{_includedir}
-%define ld_so_conf_dir	%{_sysconfdir}/ld.so.conf.d/GL
 %define ld_so_conf_file	ati.conf
 %define ati_extdir	%{_libdir}/%{drivername}/xorg
 %define xorg_extra_modules	%{_libdir}/xorg/extra-modules
@@ -113,16 +115,6 @@
 %define ldetect_cards_name      ATI Radeon (vesa)
 %endif
 
-%if %{mdkversion} <= 200600
-%define xorg_libdir	%{_prefix}/X11R6/%{_lib}
-%define xorg_dridir	%{xorg_libdir}/modules/dri
-%define xorg_dridir32	%{_prefix}/X11R6/lib/modules/dri
-%define xorg_includedir	%{_prefix}/X11R6/include
-%define ld_so_conf_dir	%{_sysconfdir}/ld.so.conf.d
-# fbdev/fglrx
-%define ldetect_cards_name      ATI Radeon (fbdev)
-%endif
-
 %ifarch %ix86
 %define xverdir		x%{xorg_version}
 %define archdir		arch/x86
@@ -144,7 +136,7 @@
 %endif
 
 # do not require fglrx stuff, they are all included
-%define common_requires_exceptions libfglrx.\\+\\.so%{qt_requires_exceptions}
+%define common_requires_exceptions libfglrx.\\+\\.so\\|libatiuki\\.so%{qt_requires_exceptions}
 
 %ifarch x86_64
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
@@ -181,23 +173,22 @@ Patch9:		fglrx-make_sh-custom-kernel-dir.patch
 # do not probe /proc for kernel info as we may be building for a
 # different kernel
 Patch10:	fglrx-make_sh-no-proc-probe.patch
+# fix build with 2.6.33+
+Patch11:	fglrx-2.6.33.patch
 License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
 Group:		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
 BuildRoot:	%{_tmppath}/%{name}-root
 %if !%{atibuild}
-%if %{mdkversion} <= 200600
-BuildRequires:	MesaGLU-devel
-%else
 BuildRequires:	mesagl-devel
 BuildRequires:	libxmu-devel
 BuildRequires:	libxaw-devel
 BuildRequires:	libxp-devel
+BuildRequires:	libxtst-devel
 BuildRequires:	imake
 # Used by atieventsd:
 Suggests:	acpid
-%endif
 BuildRequires:	ImageMagick
 %endif
 
@@ -212,10 +203,8 @@ This package corresponds to ATI Catalyst version %mversion.
 %package -n %{driverpkgname}
 Summary:	ATI proprietary X.org driver and libraries
 Group:		System/Kernel and hardware
-%if %{mdkversion} >= 200700
 Requires(post):	update-alternatives >= 1.9.0
 Requires(postun): update-alternatives
-%endif
 Obsoletes:	ati_igp
 %if %{mdkversion} >= 200800
 Suggests:	%{drivername}-control-center = %{version}
@@ -341,6 +330,7 @@ cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_
 %patch3 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 
 cat > README.install.urpmi <<EOF
 This driver is for ATI Radeon HD 2000 and newer cards.
@@ -355,7 +345,7 @@ packages will be automatically installed if not already present.
 4. Answer any questions asked and then quit.
 %if %{mdkversion} <= 200810
 5. Run "readlink -f /etc/alternatives/gl_conf". If it says
-   "%{ld_so_conf_dir}/%{ld_so_conf_file}", add the following lines into the
+   "%{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file}", add the following lines into the
    Files section of %{_sysconfdir}/X11/xorg.conf:
           ModulePath "%{ati_extdir}"
           ModulePath "%{xorg_libdir}/modules"
@@ -381,10 +371,8 @@ installation in the file 'README.install.urpmi' in this directory.
       ModulePath "%{ati_extdir}"
       ModulePath "%{xorg_libdir}/modules"
 %endif
-%if %{mdkversion} >= 200700
-- Run "update-alternatives --set gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file}" as root.
+- Run "update-alternatives --set gl_conf %{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file}" as root.
 - Run "ldconfig" as root.
-%endif
 EOF
 
 cat > README.8.600.upgrade.urpmi <<EOF
@@ -408,7 +396,7 @@ Additional manual upgrade steps are needed in order to fully enable all
 features of this version of the proprietary ATI driver on this release
 of Mandriva Linux:
 Run "readlink -f /etc/alternatives/gl_conf". If it says
-"%{ld_so_conf_dir}/%{ld_so_conf_file}", add the following two lines in the Files section
+"%{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file}", add the following two lines in the Files section
 of %{_sysconfdir}/X11/xorg.conf:
       ModulePath "%{ati_extdir}"
       ModulePath "%{xorg_libdir}/modules"
@@ -459,8 +447,8 @@ install -d -m755		%{buildroot}%{_includedir}
 cp -a common/usr/include/*	%{buildroot}%{_includedir}
 chmod 0644 %{buildroot}%{_includedir}/*/*.h
 
-install -d -m755 %{buildroot}%{xorg_includedir}/X11/extensions
-install -m644 common/usr/X11R6/include/X11/extensions/*.h  %{buildroot}%{xorg_includedir}/X11/extensions
+install -d -m755 %{buildroot}%{_includedir}/X11/extensions
+install -m644 common/usr/X11R6/include/X11/extensions/*.h  %{buildroot}%{_includedir}/X11/extensions
 
 # install binaries
 install -d -m755					%{buildroot}%{_sbindir}
@@ -502,26 +490,6 @@ install -m644 fglrx_tools/programs/fglrx_gamma/fglrx_xgamma.man %{buildroot}%{_m
 install -m644 common/usr/share/man/man8/* %{buildroot}%{_mandir}/man8
 
 # menu entry
-%if %{mdkversion} <= 200600
-install -d -m755 %{buildroot}%{_menudir}
-cat <<EOF >%{buildroot}%{_menudir}/%{drivername}-control-center
-?package(%{drivername}-control-center):command="%{_bindir}/amdcccle" \
-                  icon=%{drivername}-amdcccle.png \
-                  needs="x11" \
-                  section="System/Configuration/Hardware" \
-                  title="ATI Catalyst Control Center" \
-                  longtitle="ATI graphics adapter settings" \
-                  xdg="true"
-?package(%{drivername}-control-center):command="%{_bindir}/amdccclesu" \
-                  icon=%{drivername}-amdcccle.png \
-                  needs="x11" \
-                  section="System/Configuration/Hardware" \
-                  title="ATI Catalyst Control Center (super-user)" \
-                  longtitle="ATI graphics adapter settings - super-user mode" \
-                  xdg="true"
-EOF
-%endif
-
 install -d -m755 %{buildroot}%{_datadir}/applications
 install -m644 common/usr/share/applications/* %{buildroot}%{_datadir}/applications
 sed -i 's,^Icon=.*$,Icon=%{drivername}-amdcccle,' %{buildroot}%{_datadir}/applications/*.desktop
@@ -602,24 +570,23 @@ install -m755 arch/x86/usr/X11R6/lib/modules/dri/*		%{buildroot}%{xorg_dridir32}
 %endif
 
 # ld.so.conf
-install -d -m755			%{buildroot}%{ld_so_conf_dir}
-echo "%{_libdir}/%{drivername}" >	%{buildroot}%{ld_so_conf_dir}/%{ld_so_conf_file}
+install -d -m755			%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL
+echo "%{_libdir}/%{drivername}" >	%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file}
 %ifarch x86_64
-echo "%{_prefix}/lib/%{drivername}" >>	%{buildroot}%{ld_so_conf_dir}/%{ld_so_conf_file}
+echo "%{_prefix}/lib/%{drivername}" >>	%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file}
 %endif
-%if %{mdkversion} >= 200700
 touch					%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL.conf
-%endif
 
 # XvMCConfig
 install -d -m755 %{buildroot}%{_sysconfdir}/X11
 echo "libAMDXvBA.so.1" > %{buildroot}%{_sysconfdir}/X11/XvMCConfig-%{drivername}
 
 # install ldetect-lst pcitable files for backports
+sed -ne 's|^\s*FGL_ASIC_ID(\(0x....\)).*|\1|gp' common/lib/modules/fglrx/build_mod/fglrxko_pci_ids.h | tr '[:upper:]' '[:lower:]' | sort -u | sed 's,^.*$,0x1002\t\0\t"%{ldetect_cards_name}",' > pcitable.fglrx.lst
+[ $(stat -c%s pcitable.fglrx.lst) -gt 500 ]
 %if "%{ldetect_cards_name}" != ""
 install -d -m755 %{buildroot}%{_datadir}/ldetect-lst/pcitable.d
-sed -ne 's|^\s*FGL_ASIC_ID(\(0x....\)).*|\1|gp' common/lib/modules/fglrx/build_mod/fglrxko_pci_ids.h | tr '[:upper:]' '[:lower:]' | sort -u | sed 's,^.*$,0x1002\t\0\t"%{ldetect_cards_name}",' | gzip > %{buildroot}%{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
-[ $(stat -c%s %{buildroot}%{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz) -gt 500 ]
+gzip -c pcitable.fglrx.lst > %{buildroot}%{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
 %endif
 
 %if %{mdkversion} >= 200800
@@ -639,9 +606,8 @@ if [ ! -L %{_datadir}/applications/mandriva-amdcccle.desktop -a -e %{_datadir}/a
 fi
 %endif
 
-%if %{mdkversion} >= 200700
 %{_sbindir}/update-alternatives \
-	--install %{_sysconfdir}/ld.so.conf.d/GL.conf gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file} %{priority} \
+	--install %{_sysconfdir}/ld.so.conf.d/GL.conf gl_conf %{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file} %{priority} \
 	--slave %{_sysconfdir}/X11/XvMCConfig xvmcconfig %{_sysconfdir}/X11/XvMCConfig-%{drivername} \
 %if %{mdkversion} >= 200910
 	--slave %{xorg_extra_modules} xorg_extra_modules %{ati_extdir} \
@@ -652,12 +618,11 @@ fi
 %if %{mdkversion} >= 200800
 	--slave %{_libdir}/xorg/modules/extensions/libglx.so libglx %{ati_extdir}/libglx.so
 %endif
-%endif
 
 %if %{mdkversion} >= 200800
 if [ "$(readlink -e %{_sysconfdir}/ld.so.conf.d/GL.conf)" = "%{_sysconfdir}/ld.so.conf.d/GL/ati-hd2000.conf" ]; then
 	# Switch from the obsolete hd2000 branch:
-	%{_sbindir}/update-alternatives --set gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file}
+	%{_sbindir}/update-alternatives --set gl_conf %{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file}
 fi
 # When upgrading from alternatives setup, rpm may consider /etc/ati/atiogl.xml
 # to exist due to the symlink, even when we remove it in %pre:
@@ -708,11 +673,9 @@ true
 %_preun_service atieventsd
 
 %postun -n %{driverpkgname}
-%if %{mdkversion} >= 200700
-if [ ! -f %{ld_so_conf_dir}/%{ld_so_conf_file} ]; then
-  %{_sbindir}/update-alternatives --remove gl_conf %{ld_so_conf_dir}/%{ld_so_conf_file}
+if [ ! -f %{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file} ]; then
+  %{_sbindir}/update-alternatives --remove gl_conf %{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file}
 fi
-%endif
 # Call /sbin/ldconfig explicitely due to alternatives
 /sbin/ldconfig
 %if "%{ldetect_cards_name}" != ""
@@ -764,7 +727,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %doc README.install.urpmi README.manual-setup
 %doc README.8.600.upgrade.urpmi
-%doc common/usr/share/doc/fglrx/*
+# the documentation files are grossly out of date; the configuration options
+# described in configure.html seem to be used by the driver, though, so it is
+# packaged, while the other html files are not:
+%doc common/usr/share/doc/fglrx/configure.html
+%doc common/usr/share/doc/fglrx/ATI_LICENSE.TXT
 %if %{mdkversion} <= 200810
 %doc README.8.532.upgrade.urpmi
 %endif
@@ -773,13 +740,9 @@ rm -rf %{buildroot}
 %{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
 %endif
 
-%if %{mdkversion} >= 200700
 %ghost %{_sysconfdir}/ld.so.conf.d/GL.conf
 %dir %{_sysconfdir}/ld.so.conf.d/GL
 %{_sysconfdir}/ld.so.conf.d/GL/ati.conf
-%else
-%config(noreplace) %{_sysconfdir}/ld.so.conf.d/ati.conf
-%endif
 
 %{_sysconfdir}/X11/XvMCConfig-%{drivername}
 
@@ -873,9 +836,6 @@ rm -rf %{buildroot}
 %endif
 %{_datadir}/applications/amdcccle.desktop
 %{_datadir}/applications/amdccclesu.desktop
-%if %{mdkversion} <= 200600
-%{_menudir}/%{drivername}-control-center
-%endif
 %if %{bundle_qt}
 %dir %{_libdir}/%{drivername}-qt4
 %{_libdir}/%{drivername}-qt4/libQtCore.so.4
@@ -894,7 +854,7 @@ rm -rf %{buildroot}
 %{_libdir}/%{drivername}/libAMDXvBA.so
 %{_libdir}/%{drivername}/libXvBAW.so
 %{xorg_libdir}/modules/esut.a
-%{xorg_includedir}/X11/extensions/fglrx_gamma.h
+%{_includedir}/X11/extensions/fglrx_gamma.h
 %dir %{_includedir}/GL
 %{_includedir}/GL/*ATI.h
 %dir %{_includedir}/ATI
@@ -915,9 +875,61 @@ rm -rf %{buildroot}
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
 
-* Sat Sep 19 2009 Anssi Hannula <anssi@mandriva.org> 8.650-1mdv2008.0
-+ Revision: 444746
+* Fri Jan 29 2010 Anssi Hannula <anssi@mandriva.org> 8.690-3mdv2010.1
++ Revision: 498068
+- call __cmpxchg with constant size argument on 2.6.33+ (2.6.33.patch
+  modified, reported by Charles A Edwards)
+
+* Thu Jan 28 2010 Anssi Hannula <anssi@mandriva.org> 8.690-2mdv2010.1
++ Revision: 497792
+- add requires_exceptions on libatiuki.so.1 (Charles A Edwards)
+
+* Thu Jan 28 2010 Anssi Hannula <anssi@mandriva.org> 8.690-1mdv2010.1
++ Revision: 497689
+- new version 8.69 aka 10.1
+- drop 2.6.32.patch, applied upstream
+- add 2.6.33+ support (2.6.33.patch, fixes #57259)
+- custom libdri.so has been dropped upstream
+- do not package most of the very obsolete documentation (bug #57139)
+
+* Fri Jan 08 2010 Anssi Hannula <anssi@mandriva.org> 8.681-3mdv2010.1
++ Revision: 487448
+- fix dkms build on 2.6.32+ (fixes #56693, 2.6.32.patch from Ubuntu)
+
+* Sat Dec 19 2009 Anssi Hannula <anssi@mandriva.org> 8.681-1mdv2010.1
++ Revision: 480058
+- remove Mandriva 2006.0 support (this can be readded if still actually
+  needed, please contact us in such a case)
+- new version 8.681 aka 9.12
+- use now-bundled QT4 libraries on old distributions as needed
+
+* Sat Nov 21 2009 Anssi Hannula <anssi@mandriva.org> 8.671-1mdv2010.1
++ Revision: 468576
+- add libxtst-devel as buildrequires (now needed on cooker due to headers
+  having been moved away from x11 proto packages)
+- use the new upstream desktop files instead of providing our own
+- generate pcitable files on cooker as well in order to catch errors
+  (they are still not really installed on cooker, just when backporting)
+- new version 8.671 aka 9.11
+- add a comment in .spec reminding to update ldetect-lst
+
+* Fri Nov 06 2009 Anssi Hannula <anssi@mandriva.org> 8.661-2mdv2010.1
++ Revision: 461590
+- rebuild due to a missing changelog entry for the previous release
+
+* Fri Nov 06 2009 Anssi Hannula <anssi@mandriva.org> 8.661-1mdv2010.1
++ Revision: 461252
+- provide a pcitable.d file in backported packages, so that XFdrake sees
+  the installed fglrx driver as able to drive the graphics card even if
+  ldetect-lst package does not know it
+- new version 9.10 aka 8.661
+- adapt for upstream changes in xorg targets
+- drop rt-compat.patch, affected code has been removed
+- rediff make_sh-custom-kernel-dir.patch
 - add missing atibuild conditionals into package descriptions
+
+* Sat Sep 19 2009 Anssi Hannula <anssi@mandriva.org> 8.650-1mdv2010.0
++ Revision: 444730
 - new version 9.9 aka 8.65
 - drop fglrx-reenable-acpi-2.6.29.patch, now unneeded
 - replace fgl_glxgears-includes.patch with an include flag
