@@ -1,9 +1,7 @@
 #!/usr/bin/make -f
 # Copyright (C) 2002-2005 Flavio Stanchina
 # Copyright (C) 2005-2006 Aric Cyr
-# Copyright (C) 2007-2008 Mario Limonciello
-
-include /usr/share/cdbs/1/rules/debhelper.mk
+# Copyright (C) 2007-2010 Mario Limonciello
 
 # Figure out some magic versioning
 CVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d- -f1 | cut -d\: -f2)
@@ -18,28 +16,31 @@ LIBDIR   := lib
 ARCH     := x86
 XARCH    := x740
 
+# Package names
+PKG_driver      := fglrx
+PKG_driver_dev  := fglrx-dev
+PKG_control     := fglrx-amdcccle
+
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	LIBDIR  := lib64
 	ARCH    := x86_64
 	XARCH   := $(XARCH)_64a
 endif
 
-# Package names
-PKG_driver      := fglrx
-PKG_driver_dev  := fglrx-dev
-PKG_control     := fglrx-amdcccle
-
-
-# Unfortunately, we won't have libstdc++5 at build time
-# Also, we can't go and use debian/shlibs.local.  It requires
-# that you have the library installed, and that library
-# just forgot to ship a shlibs file.
-# See (LP: #271794) for more information
 DEB_DH_SHLIBDEPS_ARGS_ALL="-Xlib32"
-DEB_DH_SHLIBDEPS_ARGS_$(PKG_UVD_library)="-XlibAMD"
 
-configure/$(PKG_driver)::
+clean:
+	rm -f debian/{10fglrx, \
+		dkms.conf, \
+		$(PKG_driver).install, \
+		$(PKG_driver_dev).install, \
+		$(PKG_control).install, \
+		overrides/$(PKG_driver), \
+		modaliases/fglrx-modules.alias.override}
+	dh clean
 
+
+build:
 	#Create important strings
 	for i in 10fglrx \
 			 dkms.conf \
@@ -79,18 +80,12 @@ configure/$(PKG_driver)::
 		$(XARCH)/usr/X11R6/$(LIBDIR)/modules/drivers/fglrx_drv.so > \
 		debian/modaliases/fglrx-modules.alias.override
 
-clean::
-	rm -f debian/{10fglrx, \
-		dkms.conf, \
-		$(PKG_driver).install, \
-		$(PKG_driver_dev).install, \
-		$(PKG_control).install, \
-		overrides/$(PKG_driver), \
-		modaliases/fglrx-modules.alias.override}
+	dh build
 
-binary-install/$(PKG_driver)::
+
+binary:
+	#Steps that we can't easily represent in debhelper files or .in files yet
 ifeq ($(DEB_BUILD_ARCH),amd64)
-	#driver package
 	dh_install -p$(PKG_UVD_library) "arch/x86/usr/X11R6/lib/libAMD*.so*"           "usr/lib32"
 	dh_install -XlibAMD -p$(PKG_driver) "arch/x86/usr/X11R6/lib/*.so*"           "usr/lib32"
 	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/modules/dri"     "$(DRIDIR32)"
@@ -111,6 +106,10 @@ endif
 	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude ATI_LICENSE.TXT
 	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start --update-rcd-params="defaults 31"
 
+	#remove executable bits from stack
+	dh_install -p$(PKG_control)
+	execstack -c debian/$(PKG_control)/usr/bin/amdcccle
+	dh_install -p$(PKG_driver)
 	for i in \
 			debian/$(PKG_driver)/usr/bin/atiode \
 			debian/$(PKG_driver)/usr/sbin/amdnotifyui \
@@ -118,5 +117,9 @@ endif
 			debian/$(PKG_driver)/usr/lib/libGL.so.* \
 			; do execstack -q $$i; execstack -c $$i; done
 
-binary-install/$(PKG_control)::
-	execstack -c debian/$(PKG_control)/usr/bin/amdcccle
+	#Run the normal stuff
+	dh binary
+
+
+%:
+	dh $@
