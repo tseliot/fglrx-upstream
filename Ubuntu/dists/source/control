@@ -3,8 +3,7 @@ Section: restricted/misc
 Priority: extra
 Maintainer: Mario Limonciello <superm1@ubuntu.com>
 Uploaders: Mario Limonciello <superm1@ubuntu.com>, Alberto Milone <albertomilone@alice.it>
-Build-Depends: debhelper (>= 5),
-               cdbs,
+Build-Depends: debhelper (>= 7),
                libxext6, 
                libxrandr2, 
                libice6, 
@@ -18,7 +17,7 @@ Build-Depends: debhelper (>= 5),
                libxinerama1,
                libqtgui4,
                execstack
-Standards-Version: 3.8.0
+Standards-Version: 3.8.3
 Homepage: http://ati.amd.com/support/driver.html
 
 Package: fglrx
