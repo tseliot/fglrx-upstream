@@ -8,18 +8,18 @@ CVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut
 DVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d\: -f2)
 DISTRO   := $(shell dpkg-parsechangelog | grep '^Distribution:' | cut -d' ' -f2 | cut -d\: -f2)
 
-#Directory naming schemes
-DRIDIR   := usr/lib
-DRIDIR32 := usr/lib32
-XMODDIR  := $(DRIDIR)/xorg/modules
-LIBDIR   := lib
-ARCH     := x86
-XARCH    := x740
-
 # Package names
 PKG_driver      := fglrx
 PKG_driver_dev  := fglrx-dev
 PKG_control     := fglrx-amdcccle
+
+#Directory naming schemes
+DRIDIR   := usr/lib/$(PKG_driver)
+DRIDIR32 := usr/lib32/$(PKG_driver)
+XMODDIR  := $(DRIDIR)/xorg/modules
+LIBDIR   := lib
+ARCH     := x86
+XARCH    := x740
 
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	LIBDIR  := lib64
@@ -86,40 +86,51 @@ build:
 binary:
 	#Steps that we can't easily represent in debhelper files or .in files yet
 ifeq ($(DEB_BUILD_ARCH),amd64)
-	dh_install -p$(PKG_UVD_library) "arch/x86/usr/X11R6/lib/libAMD*.so*"           "usr/lib32"
-	dh_install -XlibAMD -p$(PKG_driver) "arch/x86/usr/X11R6/lib/*.so*"           "usr/lib32"
+	dh_install -p$(PKG_driver)    "arch/x86/usr/X11R6/lib/libAMD*.so*"           "$(DRIDIR32)"
+	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/*.so*"           "$(DRIDIR32)"
+	dh_installdirs -p$(PKG_driver) "$(DRIDIR32)"
 	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/modules/dri"     "$(DRIDIR32)"
-	dh_install -p$(PKG_driver) "arch/x86/usr/lib/*"                     "usr/lib32"
-	dh_installdirs -p$(PKG_driver) "usr/lib32/fglrx"
+	dh_install -p$(PKG_driver) "arch/x86/usr/lib/*"                     "$(DRIDIR32)"
 
 	for i in \
 			debian/$(PKG_driver)/$(DRIDIR32)/dri/fglrx_dri.so \
-			debian/$(PKG_driver)/usr/lib32/libGL.so.* \
+			debian/$(PKG_driver)/$(DRIDIR32)/libGL.so.* \
 			; do execstack -q $$i; execstack -c $$i; done
 
 	#they don't provide the symlink for us (starting at 8.699)
-	dh_link -p$(PKG_driver) usr/lib32/libatiuki.so.1.0 usr/lib32/libatiuki.so.1
+	dh_link -p$(PKG_driver) $(DRIDIR32)/libatiuki.so.1.0 $(DRIDIR32)/libatiuki.so.1
 endif
-	#they don't provide the symlink for us (starting at 8.699)
-	dh_link -p$(PKG_driver) usr/lib/libatiuki.so.1.0 usr/lib/libatiuki.so.1
-
 	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude ATI_LICENSE.TXT
 	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start --update-rcd-params="defaults 31"
 
 	#remove executable bits from stack
 	dh_install -p$(PKG_control)
-	execstack -c debian/$(PKG_control)/usr/bin/amdcccle
+	execstack -c debian/$(PKG_control)/$(DRIDIR)/bin/amdcccle
 	dh_install -p$(PKG_driver)
 	for i in \
-			debian/$(PKG_driver)/usr/bin/atiode \
-			debian/$(PKG_driver)/usr/sbin/amdnotifyui \
-			debian/$(PKG_driver)/usr/lib/dri/fglrx_dri.so \
-			debian/$(PKG_driver)/usr/lib/libGL.so.* \
+			debian/$(PKG_driver)/$(DRIDIR)/bin/atiode \
+			debian/$(PKG_driver)/$(DRIDIR)/bin/amdnotifyui \
+			debian/$(PKG_driver)/$(DRIDIR)/dri/fglrx_dri.so \
+			debian/$(PKG_driver)/$(DRIDIR)/libGL.so.* \
 			; do execstack -q $$i; execstack -c $$i; done
+
+
+	# Blacklist any other driver that udev may want to load instead of fglrx
+	printf "blacklist radeon\n" > $(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/modprobe.conf
+
+	#ld.so.conf
+	echo "$(DRIDIR)" >	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
+ifeq ($(DEB_BUILD_ARCH),amd64)
+	echo "$(DRIDIR32)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
+endif
+
 
 	#Run the normal stuff
 	dh binary
 
+
+override_dh_shlibdeps:
+	dh_shlibdeps -l`pwd`/debian/fglrx/usr/lib/fglrx
 
 %:
 	dh $@

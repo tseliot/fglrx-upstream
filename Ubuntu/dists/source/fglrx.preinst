@@ -85,20 +85,6 @@ case "$1" in
         ### remove old fglrx diversions ###
 	fix_diversions
 
-	### make new diversions ###
-	if [ ! -d /usr/lib/fglrx ]; then ###
-		mkdir -p /usr/lib/fglrx
-	fi
-	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libGL.so.1.2.xlibmesa /usr/lib/libGL.so.1.2 > /dev/null
-	dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib/fglrx/libglx.so.xlibmesa /usr/lib/xorg/modules/extensions/libglx.so > /dev/null
-
-	if [ -n "$HAS_LIB32" ]; then
-		if [ ! -d /usr/lib32/fglrx ]; then
-			mkdir -p /usr/lib32/fglrx
-		fi
-		dpkg-divert --add --rename --package $PKGNAME --divert /usr/lib32/fglrx/libGL.so.1.2.xlibmesa /usr/lib32/libGL.so.1.2 > /dev/null
-	fi
-
 	### Remove user changes to "conffiles""                     ###
 	### These files are stored in /etc but shouldn't be treated ###
 	### as conf files because updated drivers may stop working  ###
