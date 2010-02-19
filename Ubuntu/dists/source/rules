@@ -19,7 +19,7 @@ DRIDIR32 := usr/lib32/$(PKG_driver)
 XMODDIR  := $(DRIDIR)/xorg/modules
 LIBDIR   := lib
 ARCH     := x86
-XARCH    := x740
+XARCH    := x750
 
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	LIBDIR  := lib64
