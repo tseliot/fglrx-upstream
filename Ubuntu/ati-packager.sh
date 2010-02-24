@@ -221,7 +221,7 @@ buildPackage()
     case ${X_NAME} in
         gutsy)  X_DIR=x690;;
         hardy)  X_DIR=x690;;
-	intepid)X_DIR=x740;;
+	intrepid)X_DIR=x740;;
 	jaunty) X_DIR=x740;;
 	karmic) X_DIR=x740;;
         source) X_NAME=`lsb`;;

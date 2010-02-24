@@ -77,7 +77,7 @@ build:
 
 	# Generate modaliases
 	sh -e debian/modaliases/fglrx_supported \
-		$(XARCH)/usr/X11R6/$(LIBDIR)/modules/drivers/fglrx_drv.so > \
+		lib/modules/fglrx/build_mod/fglrxko_pci_ids.h > \
 		debian/modaliases/fglrx-modules.alias.override
 
 	dh build
