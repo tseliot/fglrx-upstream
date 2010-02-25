@@ -53,8 +53,6 @@ function _make_x
     # MOVE ARCH DIPENDENT files
     mkdir usr;
 
-    mv ${ROOT_DIR}/arch/${ARCH}/usr/* usr;
-
     # Se l'architettura è a 64 bit, allora sposto, se necessario,
     # anche la directory "${ROOT_DIR}/arch/x86/usr/lib" con le librerie
     # a 32 bit.
@@ -67,37 +65,27 @@ function _make_x
     #    /usr/lib32 (Bluewhite64)
     if [ ${ARCH} = "x86_64" ]; then
 	if [ ! -h /usr/lib64 ]; then # Se /usr/lib64 non è un link, allora Slamd64
-	    if [ -d /usr/lib ]; then # Se sono presenti già librerie a 32 bit
-		mv ${ROOT_DIR}/arch/x86/usr/lib usr; # Sposto le librerie sotto usr/lib
-		LIB_DIR=usr/lib; # Usata nel passaggio 1.1
+	    if [ -h /lib/ld-linux* ]; then # Se sono presenti già librerie a 32 bit
+		mv ${ROOT_DIR}/arch/x86/usr/* usr;
 	    fi
 	else # /usr/lib64 è un link simbolico, quindi Bluewhite64
-	    if [ -d /usr/lib32 ]; then # Se sono presenti già librerie a 32 bit
-		mkdir usr/lib32;
-		mv ${ROOT_DIR}/arch/x86/usr/lib/* usr/lib32; # Sposto le librerie sotto usr/lib
-		LIB_DIR=usr/lib32; # Usata nel passaggio 1.1
+	    if [ -h /lib32/ld-linux* ]; then # Se sono presenti già librerie a 32 bit
+		mv ${ROOT_DIR}/arch/x86/usr/* usr;
+		for dir in $(find usr -type d -name "*lib") # Rinomino lib in lib32
+		do 
+		    mv $dir ${dir}32; 
+		done
 	    fi
 	fi
     fi
 
-    # Aggiungo directory nell'elenco delle directory con le librerie $LIB_DIR
-    case ${ARCH} in
-	x86_64)
-   	    for lib_dir in usr/lib64 usr/X11R6/lib64 usr/X11R6/lib; do
-		if [ -d ${lib_dir}/ ]; then
-		    LIB_DIR="${LIB_DIR} ${lib_dir}";
-		fi;
-	    done
-	    LIB_DIR=${LIB_DIR# }; # Tolgo l'eventuale spazio iniziale
-	    ;;
-	x86)
-	    LIB_DIR=usr/lib usr/X11R6/lib;
-	    ;;
-    esac
+    # Copio i file relativi all'architettura. Nel caso di un architettura x86_64 mista con
+    # librerie a 32 bit, questa operazione sovrascrive i binari a 32 bit con quelli a 64 bit
+    cp -rf ${ROOT_DIR}/arch/${ARCH}/usr/* usr;
 
     # 1.1)
     # Make some symbolik link
-    for dir in ${LIB_DIR};
+    for dir in $(find usr -type d -name "lib*")
     do
 	( cd $dir;
 	    for file in *.so.1.?;
@@ -164,7 +152,7 @@ function _make_x
     # I moduli per il server X vanno ora sotto /usr/lib(64)/xorg/modules e non più
     # sotto /usr/X11R6/lib(64)/modules
     if (( $XORG_7 )); then
-	for dir in ${LIB_DIR}; # Move X usr/$LIB_DIR/modules in usr/$LIB_DIR/xorg/modules
+	for dir in $(find usr -type d -name "lib*"); # Move X usr/lib*/modules in usr/lib*/xorg/modules
 	do
 	    if [ -d ${dir}/modules ]; then # Controllo che la directory sia una di quelle che contiene i moduli
 		mkdir ${dir}/xorg;

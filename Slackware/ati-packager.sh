@@ -46,7 +46,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
 
-    BUILD_VER=1.4.0;
+    BUILD_VER=1.4.1;
 
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD;
