@@ -27,7 +27,7 @@ ifeq ($(DEB_BUILD_ARCH),amd64)
 	XARCH   := $(XARCH)_64a
 endif
 
-DEB_DH_SHLIBDEPS_ARGS_ALL="-Xlib32"
+# DEB_DH_SHLIBDEPS_ARGS_ALL="-Xlib32"
 
 clean:
 	rm -f debian/{10fglrx, \
@@ -130,7 +130,11 @@ endif
 
 
 override_dh_shlibdeps:
-	dh_shlibdeps -l`pwd`/debian/fglrx/usr/lib/fglrx
+ifeq ($(DEB_BUILD_ARCH),amd64)
+	dh_shlibdeps -l$(CURDIR)/debian/fglrx/usr/lib/fglrx:$(CURDIR)/debian/fglrx/usr/lib32/fglrx
+else
+	dh_shlibdeps -l$(CURDIR)/debian/fglrx/usr/lib/fglrx
+endif
 
 %:
 	dh $@
