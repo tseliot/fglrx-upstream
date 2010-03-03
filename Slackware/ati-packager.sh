@@ -53,7 +53,7 @@ function _init_env
     echo "$ROOT_DIR" | grep -q ' ' && echo ${MESSAGE[7]} && exit 1;
 
     # Comandi interni alla bash da cui il builder dipende
-    BUILTIN_DEPS=([ cd echo exit local return set source);
+    BUILTIN_DEPS=(\[ cd echo exit local return set source);
 
     # Comandi esterni da cui il builder dipende nella fase di creazione dei pacchetti
     BUILD_DEPS=(chmod cp cut file find grep gzip id ln makepkg mkdir modinfo mv rm sed sh
