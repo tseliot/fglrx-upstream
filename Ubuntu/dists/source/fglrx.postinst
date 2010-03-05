@@ -94,7 +94,7 @@ if [ "$1" = "configure" ]; then
     fi
 
     update-alternatives --force \
-        --install /etc/ld.so.conf.d/GL.conf gl_conf /usr/lib/fglrx/ld.so.conf 9700 \
+        --install /etc/ld.so.conf.d/GL.conf gl_conf /usr/lib/fglrx/ld.so.conf 1000 \
         --slave /usr/bin/aticonfig aticonfig /usr/lib/fglrx/bin/aticonfig \
         --slave /usr/bin/atiode atiode /usr/lib/fglrx/bin/atiode \
         --slave /usr/bin/amdnotifyui amdnotifyui /usr/lib/fglrx/bin/amdnotifyui \

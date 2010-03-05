@@ -119,9 +119,9 @@ endif
 	printf "blacklist radeon\n" > $(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/modprobe.conf
 
 	#ld.so.conf
-	echo "$(DRIDIR)" >	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
+	echo "/$(DRIDIR)" >	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
 ifeq ($(DEB_BUILD_ARCH),amd64)
-	echo "$(DRIDIR32)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
+	echo "/$(DRIDIR32)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
 endif
 
 
