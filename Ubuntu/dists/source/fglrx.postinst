@@ -99,6 +99,7 @@ if [ "$1" = "configure" ]; then
         --slave /usr/bin/atiode atiode /usr/lib/fglrx/bin/atiode \
         --slave /usr/bin/amdnotifyui amdnotifyui /usr/lib/fglrx/bin/amdnotifyui \
         --slave /usr/bin/amdcccle amdcccle /usr/lib/fglrx/bin/amdcccle \
+        --slave /usr/bin/amdxdg-su amdxdg_su /usr/lib/fglrx/bin/amdxdg-su \
         --slave /usr/bin/fgl_glxgears fgl_glxgears /usr/lib/fglrx/bin/fgl_glxgears \
         --slave /usr/bin/fglrxinfo fglrxinfo /usr/lib/fglrx/bin/fglrxinfo \
         --slave /usr/bin/atiodcli atiodcli  /usr/lib/fglrx/bin/atiodcli \
