@@ -114,6 +114,9 @@ endif
 			debian/$(PKG_driver)/$(DRIDIR)/libGL.so.* \
 			; do execstack -q $$i; execstack -c $$i; done
 
+	# Make some additional scripts executable
+	find debian/$(PKG_control)/$(DRIDIR)/bin/ \
+		-type f | xargs chmod a+x
 
 	# Blacklist any other driver that udev may want to load instead of fglrx
 	printf "blacklist radeon\n" > $(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/modprobe.conf
