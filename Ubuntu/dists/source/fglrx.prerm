@@ -24,6 +24,9 @@ case "$1" in
 	
 		update-alternatives --remove gl_conf /usr/lib/fglrx/ld.so.conf
 
+		# Trigger gmenu so as to update the gnome menu
+		dpkg-trigger gmenucache || true
+
 		# explicit ldconfig due to alternatives
 		ldconfig
 	;;

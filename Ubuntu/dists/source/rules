@@ -134,7 +134,7 @@ endif
 
 override_dh_shlibdeps:
 ifeq ($(DEB_BUILD_ARCH),amd64)
-	dh_shlibdeps -l$(CURDIR)/debian/fglrx/usr/lib/fglrx:$(CURDIR)/debian/fglrx/usr/lib32/fglrx
+	dh_shlibdeps -l$(CURDIR)/debian/fglrx/usr/lib/fglrx:$(CURDIR)/debian/fglrx/usr/lib32/fglrx -Xlib32
 else
 	dh_shlibdeps -l$(CURDIR)/debian/fglrx/usr/lib/fglrx
 endif
