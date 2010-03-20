@@ -1,7 +1,7 @@
 Source: fglrx-installer
 Section: restricted/misc
 Priority: extra
-Maintainer: Mario Limonciello <superm1@ubuntu.com>
+Maintainer: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Uploaders: Mario Limonciello <superm1@ubuntu.com>, Alberto Milone <albertomilone@alice.it>
 Build-Depends: debhelper (>= 7),
                libxext6, 

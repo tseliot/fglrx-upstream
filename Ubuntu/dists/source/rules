@@ -83,7 +83,7 @@ build:
 	dh build
 
 
-binary:
+binary-arch:
 	#Steps that we can't easily represent in debhelper files or .in files yet
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	dh_install -p$(PKG_driver)    "arch/x86/usr/X11R6/lib/libAMD*.so*"           "$(DRIDIR32)"
@@ -129,8 +129,11 @@ endif
 
 
 	#Run the normal stuff
-	dh binary
+	dh binary-arch
 
+binary: binary-arch binary-indep ;
+	#Run the normal stuff
+	dh binary
 
 override_dh_shlibdeps:
 ifeq ($(DEB_BUILD_ARCH),amd64)
