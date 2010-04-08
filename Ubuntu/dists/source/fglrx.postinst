@@ -109,7 +109,7 @@ if [ "$1" = "configure" ]; then
         --slave /usr/lib/xorg/modules/drivers/fglrx_drv.so fglrx_drv /usr/lib/fglrx/xorg/modules/drivers/fglrx_drv.so \
         --slave /usr/lib/dri/fglrx_dri.so fglrx_dri /usr/lib/fglrx/dri/fglrx_dri.so \
         --slave /usr/lib/libAMDXvBA.cap libAMDXvBA_cap /usr/lib/fglrx/libAMDXvBA.cap \
-        --slave /etc/modprobe.d/fglrx.conf fglrx_modconf /usr/lib/fglrx/modprobe.conf \
+        --slave /etc/modprobe.d/fglrx.conf fglrx_modconf /lib/fglrx/modprobe.conf \
         --slave /usr/lib/xorg/extra-modules xorg_extra_modules /usr/lib/fglrx/xorg \
     # ldconfig needs to be run immediately as we're changing /etc/ld.so.conf.d/ with
     # alternatives.
@@ -127,7 +127,8 @@ if [ "$1" = "configure" ]; then
         update-initramfs -u
             
         if [ -n "$NEWEST_KERNEL" ] && [ ${CURRENT_KERNEL} != ${NEWEST_KERNEL} ]; then
-            update-initramfs -u -k $CURRENT_KERNEL
+            # This can fail when dealing with a chroot see LP: #556653
+            update-initramfs -u -k $CURRENT_KERNEL || true
         fi
     fi
 

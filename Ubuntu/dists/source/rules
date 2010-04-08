@@ -21,6 +21,13 @@ LIBDIR   := lib
 ARCH     := x86
 XARCH    := x750
 
+# This is a hack to make sure that
+# the blacklist file is available
+# early in the boot process when
+# /usr is on a separate partition.
+# See LP: #538071.
+PKG_LIBDIR := lib/fglrx
+
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	LIBDIR  := lib64
 	ARCH    := x86_64
@@ -119,7 +126,7 @@ endif
 		-type f | xargs chmod a+x
 
 	# Blacklist any other driver that udev may want to load instead of fglrx
-	printf "blacklist radeon\n" > $(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/modprobe.conf
+	printf "blacklist radeon\n" > $(CURDIR)/debian/$(PKG_driver)/$(PKG_LIBDIR)/modprobe.conf
 
 	#ld.so.conf
 	echo "/$(DRIDIR)" >	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
