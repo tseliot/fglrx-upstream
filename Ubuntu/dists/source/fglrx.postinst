@@ -110,6 +110,7 @@ if [ "$1" = "configure" ]; then
         --slave /usr/lib/dri/fglrx_dri.so fglrx_dri /usr/lib/fglrx/dri/fglrx_dri.so \
         --slave /usr/lib/libAMDXvBA.cap libAMDXvBA_cap /usr/lib/fglrx/libAMDXvBA.cap \
         --slave /etc/modprobe.d/fglrx.conf fglrx_modconf /lib/fglrx/modprobe.conf \
+        --slave /etc/X11/Xsession.d/10fglrx 10fglrx /usr/lib/fglrx/10fglrx \
         --slave /usr/lib/xorg/extra-modules xorg_extra_modules /usr/lib/fglrx/xorg \
     # ldconfig needs to be run immediately as we're changing /etc/ld.so.conf.d/ with
     # alternatives.
