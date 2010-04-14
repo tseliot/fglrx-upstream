@@ -28,7 +28,7 @@ XARCH    := x750
 # See LP: #538071.
 PKG_LIBDIR := lib/fglrx
 
-ifeq ($(DEB_BUILD_ARCH),amd64)
+ifeq ($(DEB_HOST_ARCH),amd64)
 	LIBDIR  := lib64
 	ARCH    := x86_64
 	XARCH   := $(XARCH)_64a
@@ -37,13 +37,6 @@ endif
 # DEB_DH_SHLIBDEPS_ARGS_ALL="-Xlib32"
 
 clean:
-	rm -f debian/{10fglrx, \
-		dkms.conf, \
-		$(PKG_driver).install, \
-		$(PKG_driver_dev).install, \
-		$(PKG_control).install, \
-		overrides/$(PKG_driver), \
-		modaliases/fglrx-modules.alias.override}
 	dh clean
 
 
@@ -92,7 +85,7 @@ build:
 
 binary-arch:
 	#Steps that we can't easily represent in debhelper files or .in files yet
-ifeq ($(DEB_BUILD_ARCH),amd64)
+ifeq ($(DEB_HOST_ARCH),amd64)
 	dh_install -p$(PKG_driver)    "arch/x86/usr/X11R6/lib/libAMD*.so*"           "$(DRIDIR32)"
 	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/*.so*"           "$(DRIDIR32)"
 	dh_installdirs -p$(PKG_driver) "$(DRIDIR32)"
@@ -106,6 +99,8 @@ ifeq ($(DEB_BUILD_ARCH),amd64)
 
 	#they don't provide the symlink for us (starting at 8.699)
 	dh_link -p$(PKG_driver) $(DRIDIR32)/libatiuki.so.1.0 $(DRIDIR32)/libatiuki.so.1
+else
+	dh_installdirs -p$(PKG_driver)
 endif
 	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude ATI_LICENSE.TXT
 	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start --update-rcd-params="defaults 31"
@@ -130,7 +125,7 @@ endif
 
 	#ld.so.conf
 	echo "/$(DRIDIR)" >	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
-ifeq ($(DEB_BUILD_ARCH),amd64)
+ifeq ($(DEB_HOST_ARCH),amd64)
 	echo "/$(DRIDIR32)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
 endif
 
@@ -143,7 +138,7 @@ binary: binary-arch binary-indep ;
 	dh binary
 
 override_dh_shlibdeps:
-ifeq ($(DEB_BUILD_ARCH),amd64)
+ifeq ($(DEB_HOST_ARCH),amd64)
 	dh_shlibdeps -l$(CURDIR)/debian/fglrx/usr/lib/fglrx:$(CURDIR)/debian/fglrx/usr/lib32/fglrx -Xlib32
 else
 	dh_shlibdeps -l$(CURDIR)/debian/fglrx/usr/lib/fglrx
