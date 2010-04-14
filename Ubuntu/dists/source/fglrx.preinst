@@ -20,23 +20,6 @@ if [ `dpkg --print-architecture` = "amd64" ]; then
 	HAS_LIB32="yes"
 fi
 
-# Snippet from  http://www.dpkg.org/dpkg/ConffileHandling
-mv_conffile() {
-    CONFFILE="$1"
-
-    if [ -e "$CONFFILE" ]; then
-        md5sum="`md5sum \"$CONFFILE\" | sed -e \"s/ .*//\"`"
-        old_md5sum="`sed -n -e \"/^Conffiles:/,/^[^ ]/{\\\\' $CONFFILE'{s/.* //;p}}\" /var/lib/dpkg/status`"
-        if [ "$md5sum" != "$old_md5sum" ]; then
-            echo "Conffile $CONFFILE has been modified by you."
-            echo "AMD graphics driver requires $CONFFILE to be updated when driver is updated."
-            echo "Saving as $CONFFILE.dpkg-bak ..."
-            mv -f "$CONFFILE" "$CONFFILE".dpkg-bak
-        fi
-    fi
-}
-
-
 fix_diversions()
 {
     # Remove very old style diversions
@@ -86,21 +69,15 @@ case "$1" in
         ### remove old fglrx diversions ###
 	fix_diversions
 
-	### Remove user changes to "conffiles""                     ###
-	### These files are stored in /etc but shouldn't be treated ###
-	### as conf files because updated drivers may stop working  ###
-	### if they are modified.                                   ###
-	mv_conffile "/etc/ati/amdpcsdb.default"
-	mv_conffile "/etc/ati/atiogl.xml"
-	mv_conffile "/etc/ati/authatieventsd.sh"
-	mv_conffile "/etc/ati/control"
-	mv_conffile "/etc/ati/logo_mask.xbm.example"
-	mv_conffile "/etc/ati/signature"
-	mv_conffile "/etc/ati/logo.xbm.example"
-
         # Remove the file if it's not a symlink (see LP: #552903)
         if [ ! -L /etc/X11/Xsession.d/10fglrx ]; then
             rm -f /etc/X11/Xsession.d/10fglrx
+        fi
+
+        # Remove the directory if it's not a symlink (as it should be
+        # a slave link now)
+        if [ ! -L /etc/ati ]; then
+            rm -Rf /etc/ati
         fi
 
         ## Just in case they installed without debs before, finish a proper uninstall routine ##

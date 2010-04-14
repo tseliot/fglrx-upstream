@@ -15,8 +15,8 @@ debian/overrides/fglrx                          usr/share/lintian/overrides
 debian/acpi/fglrx-*-aticonfig                   etc/acpi/events
 debian/acpi/fglrx-powermode.sh                  etc/acpi
 debian/10fglrx                                  #DRIDIR#
-etc/ati                                         etc
-debian/replacements/authatieventsd.sh           etc/ati
+etc/ati/*                                       #DRIDIR#/etc/ati
+debian/replacements/authatieventsd.sh           #DRIDIR#/etc/ati
 
 #binaries
 arch/#ARCH#/usr/sbin/*                          #DRIDIR#/bin
