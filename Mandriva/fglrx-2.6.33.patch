@@ -52,7 +52,7 @@ Index: ati10.1/common/lib/modules/fglrx/build_mod/firegl_public.c
  
  #if defined(__i386__)
  #ifndef do_div
-@@ -1470,7 +1478,16 @@
+@@ -1470,7 +1478,18 @@
  #ifndef __HAVE_ARCH_CMPXCHG
      return __fgl_cmpxchg(ptr,old,new,size);
  #else
@@ -63,7 +63,9 @@ Index: ati10.1/common/lib/modules/fglrx/build_mod/firegl_public.c
 +	    case 1: return __cmpxchg((unsigned long *)ptr,old,new,1);
 +	    case 2: return __cmpxchg((unsigned long *)ptr,old,new,2);
 +	    case 4: return __cmpxchg((unsigned long *)ptr,old,new,4);
++#if BITS_PER_LONG > 32
 +	    case 8: return __cmpxchg((unsigned long *)ptr,old,new,8);
++#endif
 +    }
 +    WARN_ON(1);
 +    return old;
