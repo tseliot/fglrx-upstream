@@ -57,9 +57,13 @@ fix_diversions()
      done
 
     #before 8.699 we had to divert libdri
-    dpkg-divert --remove --rename --package $OLDPKGNAME \
-        --divert /usr/lib/fglrx/libdri.so.xlibmesa   \
+    if dpkg-divert --list $OLDPKGNAME | \
+       grep /usr/lib/xorg/modules/extensions/libdri.so > /dev/null ; then
+        rm -f /usr/lib/xorg/modules/extensions/libdri.so > /dev/null
+        dpkg-divert --remove --rename --package $OLDPKGNAME \
+        --divert /usr/lib/fglrx/libdri.so.xlibmesa \
         /usr/lib/xorg/modules/extensions/libdri.so > /dev/null
+    fi
 
 }
 
