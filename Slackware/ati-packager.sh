@@ -69,11 +69,15 @@ function _init_env
     ARCH=$(arch);
     [[ $ARCH != x86_64 ]] && ARCH='x86';
 
-    # major e minor number del kernel attuale
-    KNL_VER=$(uname -r | cut -d '.' -f -2)
+    # Informazioni sul kernel in uso
+    KNL_RELEASE=$(uname -r)
+    KNL_VERSION=$(echo $KNL_RELEASE | cut -d '.' -f1)
+    KNL_MAJOR=$(echo $KNL_RELEASE | cut -d '.' -f2)
+    KNL_MINOR=$(echo $KNL_RELEASE | cut -d '.' -f3)
+    KNL_BUILD=$(echo $KNL_RELEASE | cut -d '.' -f4)
 
     # Directory, relativa alla root directory attuale, in cui si trova questo script.
-    # Si ricorda che quando l'ati-installer.sh esegue questo script, la root directory
+    # Si ricordi che quando l'ati-installer.sh esegue questo script, la root directory
     # non è quella in cui si trova questo script.
     SCRIPT_DIR=packages/Slackware;
 
@@ -373,7 +377,7 @@ case $1 in
 	fi
 
 	# Controllo che la versione del kernel sia maggiore o uguale a 2.6
-	if [ $(echo $KNL_VER | cut -d'.' -f1) -lt 2 ] || [ $(echo $KNL_VER | cut -d'.' -f2) -lt 6 ]; then
+	if [ $KNL_VERSION -lt 2 ] || [ $KNL_MAJOR -lt 6 ]; then
 	    (( $DRYRUN )) && _print_with_color '1;31' "${MESSAGE[14]} >= 2.6";
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP};
 	fi

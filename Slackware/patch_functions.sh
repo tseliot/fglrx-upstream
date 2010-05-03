@@ -21,31 +21,71 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
+# Usata da _module_patch e da _internal_patch
+#
+# Applica la patch $1, se e solo se, esiste il programma 'patch'
+function _apply_the_patch
+{
+    if ! grep 'bin/patch$' ${DIR_PACKAGE}/* &> /dev/null; then
+	_print_with_color '1;31' "${MESSAGE[23]}\n";
+    else
+	_print_with_color '1;32' "${MESSAGE[24]}\n";
+	patch < $1;
+    fi
+}
+
+# Usata da _module_patch
+#
+# Un insieme di patch interne allo SlackBuild. Viene invocata solo se non sono già state trovate patch locali in /etc/ati/patch
+function _internal_patch
+{
+    local ATI_DRIVER_MAJOR_VER=${ATI_DRIVER_VER:0:4}     # Primi 4 caratteri (Es: 8.732 -> 8.73)
+    local INT_PATCH_DIR=${ROOT_DIR}/${SCRIPT_DIR}/patch  # Directory che contiene le patch interne
+    local file=none                                      # Nome della patch da applicare
+
+    # 1)
+    # ATI Driver 8.73x e kernel >= 2.6.33+
+    if [ ${ATI_DRIVER_MAJOR_VER} == 8.73 -a ${KNL_VERSION} -eq 2 -a ${KNL_MAJOR} -eq 6 -a ${KNL_MINOR} -ge 33 ]; then
+	file=patch-8.73x-2.6.33+;
+    fi
+
+    # Controllo l'esistenza della patch e, in caso affermativo, la applico
+    if [ -f ${INT_PATCH_DIR}/$file ]; then
+	_print_with_color '1;33' "${MESSAGE[27]}";
+	echo -e "\t$file";
+    	_apply_the_patch ${INT_PATCH_DIR}/$file
+    fi
+}
+
+# Usata dal file make_module.sh
+#
 # Applica le patch ai file prima di creare il modulo del kernel
-# Si dà la possibilità all'utente di patchare i file, se esiste
-# un file chiamato /etc/ati/patch/patch-${ATI_DRIVER_VER}-${KNL_VER}
+#
+# Si dà la possibilità all'utente di patchare i file. Se esiste
+# un file chiamato:
+#     /etc/ati/patch/patch-${ATI_DRIVER_VER}-${KNL_RELEASE}
 # allora la funzione esegue:
-#     patch < /etc/ati/patch/patch-${ATI_DRIVER_VER}-${KNL_VER}
+#     patch < /etc/ati/patch/patch-${ATI_DRIVER_VER}-${KNL_RELEASE}
+#
+# Se non esiste un file di patch utente, allora si testano le eventuali
+# patch interne invocando la funzione:
+#    _internal_patch
 function _module_patch
 {
-    local KNL_VER=$(uname -r)
     local DIR_PATCH=/etc/ati/patch
-
+    local EXT_PATCH_FOUND=0
+    
     # Vecchia patch per il file make.sh fornito dalla ATI
     sed -i '/if.*\[.*$MODVERSIONS = 0 \]/{s/\($MODVERSIONS\)/"\1"/}' make.sh
-
+    
     # Controllo se l'utente ha delle patch da applicare
     if [ -d $DIR_PATCH ]; then
 	for file in ${DIR_PATCH}/*; do
-	    if [ -f $file ] && [ $file = "${DIR_PATCH}/patch-${ATI_DRIVER_VER}-${KNL_VER}" ]; then
+	    if [ -f $file ] && [ $file = "${DIR_PATCH}/patch-${ATI_DRIVER_VER}-${KNL_RELEASE}" ]; then
 		_print_with_color '1;33' "${MESSAGE[22]}";
 		echo -e "\t$file";
-		if ! grep 'bin/patch$' ${DIR_PACKAGE}/* &> /dev/null; then
-		    _print_with_color '1;31' "${MESSAGE[23]}\n";
-		else
-		    _print_with_color '1;32' "${MESSAGE[24]}\n";
-		    patch < $file;
-		fi
+		_apply_the_patch $file;
+		EXT_PATCH_FOUND=1;
 		break;
 	    fi
 	done
@@ -53,12 +93,17 @@ function _module_patch
 	# Applico la ati_to_gpl.patch, se la trovo e se l'md5sum corrisponde
 	if [ -f ${DIR_PATCH}/ati_to_gpl.patch ]; then
 	    _print_with_color '1;33' "${MESSAGE[25]}"
-	    if md5sum -c ${ROOT_DIR}/${SCRIPT_DIR}/atg.md5sum; then #&> /dev/null; then
+	    if md5sum -c ${ROOT_DIR}/${SCRIPT_DIR}/atg.md5sum; then
 		_print_with_color '1;32' "${MESSAGE[24]}\n";
 		sh ${DIR_PATCH}/ati_to_gpl.patch;
 	    else
 		_print_with_color '1;31' "${MESSAGE[26]}\n";
 	    fi
 	fi
+    fi
+
+    # Se non ho trovato patch locali, provo quelle interne allo SlackBuild
+    if [ $EXT_PATCH_FOUND -eq 0 ]; then
+	_internal_patch
     fi
 }

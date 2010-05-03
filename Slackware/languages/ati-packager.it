@@ -25,3 +25,4 @@ non posso applicare la patch: programma patch mancante
 la applico
 Trovata la ati_to_gpl.patch, controllo l'md5sum
 L'md5sum è fallito, non sembra essere la ati_to_gpl.patch originale
+Trovata la patch interna:
