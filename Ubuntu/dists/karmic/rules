@@ -146,4 +146,4 @@ endif
 			; do execstack -q $$i; execstack -c $$i; done
 
 binary-install/$(PKG_control)::
-	execstack -c debian/$(PKG_control)/$(DRIDIR)/bin/amdcccle
+	execstack -c debian/$(PKG_control)/usr/bin/amdcccle
