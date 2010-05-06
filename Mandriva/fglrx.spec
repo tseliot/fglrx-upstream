@@ -45,14 +45,14 @@
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl).
 
 # version in installer filename:
-%define oversion	10-1
+%define oversion	10-4
 # Advertised version, for description:
-%define mversion	10.1
+%define mversion	10.4
 # driver version from ati-packager-helper.sh:
-%define iversion	8.69
+%define iversion	8.723
 # release:
-%define rel		3
-# rpm version (add 0 in order to not go backwards if iversion is two-decimal)
+%define rel		1
+# rpm version (adds 0 in order to not go backwards if iversion is two-decimal)
 %define version		%{iversion}%([ $(echo %iversion | wc -c) -le 5 ] && echo 0)
 %else
 # Best-effort if ATI has made late changes (in atibuild mode)
@@ -86,7 +86,7 @@
 %endif
 
 %if %{mdkversion} <= 201000
-%define xorg_version	740
+%define xorg_version    740
 %endif
 
 %if %{mdkversion} <= 200900
@@ -140,7 +140,7 @@
 %endif
 
 # do not require fglrx stuff, they are all included
-%define common_requires_exceptions libfglrx.\\+\\.so\\|libatiuki\\.so%{qt_requires_exceptions}
+%define common_requires_exceptions libfglrx.\\+\\.so\\|libati.\\+\\.so%{qt_requires_exceptions}
 
 %ifarch x86_64
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
@@ -151,6 +151,14 @@
 %else
 %define _requires_exceptions %common_requires_exceptions
 %endif
+
+# (anssi) Do not require qt for amdnotifyui (used as event notifier, as
+# of 04/2010 only for DisplayPort failures). installing
+# fglrx-control-center will satisfy the dependency.
+# It is not moved to fglrx-control-center as due to its small size it may
+# be wanted on e.g. KDE Ones, which can't have the full fglrx-control-center,
+# and due to it having nothing to do with fglrx-control-center.
+%define _exclude_files_from_autoreq ^%{_sbindir}/amdnotifyui$
 
 Summary:	ATI proprietary X.org driver and libraries
 Name:		%{name}
@@ -179,6 +187,8 @@ Patch9:		fglrx-make_sh-custom-kernel-dir.patch
 Patch10:	fglrx-make_sh-no-proc-probe.patch
 # fix build with 2.6.33+
 Patch11:	fglrx-2.6.33.patch
+# fix build with 2.6.34+
+Patch12:	fglrx-2.6.34.patch
 License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
 Group:		System/Kernel and hardware
@@ -335,6 +345,7 @@ cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 
 cat > README.install.urpmi <<EOF
 This driver is for ATI Radeon HD 2000 and newer cards.
@@ -441,7 +452,9 @@ PACKAGE_NAME="%{drivername}"
 PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="fglrx"
 DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
-MAKE[0]="sh make.sh --uname_r=\${kernelver} --uname_a=none --kernel-dir=\${kernel_source_dir} --no-proc-probe"
+# uname_v set to none so that make.sh doesn't try to use "uname -v" to see
+# if the target kernel is SMP (we may be compiling for a different kernel)
+MAKE[0]="sh make.sh --uname_r=\${kernelver} --uname_v=none --kernel-dir=\${kernel_source_dir} --no-proc-probe --norootcheck"
 CLEAN="rm -rf 2.6.x/.tmp_versions; make -C2.6.x clean"
 AUTOINSTALL="yes"
 EOF
@@ -497,6 +510,8 @@ install -m644 common/usr/share/man/man8/* %{buildroot}%{_mandir}/man8
 install -d -m755 %{buildroot}%{_datadir}/applications
 install -m644 common/usr/share/applications/* %{buildroot}%{_datadir}/applications
 sed -i 's,^Icon=.*$,Icon=%{drivername}-amdcccle,' %{buildroot}%{_datadir}/applications/*.desktop
+# control center doesn't really use GNOME/KDE libraries:
+sed -i 's,GNOME;KDE;,,' %{buildroot}%{_datadir}/applications/*.desktop
 sed -i 's,^Exec=.*$,Exec=%{_bindir}/amdccclesu,' %{buildroot}%{_datadir}/applications/amdccclesu.desktop
 
 # icons
@@ -549,7 +564,7 @@ install -m755 %{xverdir}/usr/X11R6/%{_lib}/modules/drivers/*.so* %{buildroot}%{x
 install -d -m755						%{buildroot}%{xorg_libdir}/modules/linux
 install -m755 %{xverdir}/usr/X11R6/%{_lib}/modules/linux/*.so*	%{buildroot}%{xorg_libdir}/modules/linux
 %if %{mdkversion} <= 201000
-# no *.a files exist in x750+ dirs
+# no such files in x750+ dirs
 install -m644 %{xverdir}/usr/X11R6/%{_lib}/modules/*.a		%{buildroot}%{xorg_libdir}/modules
 %endif
 install -m644 %{xverdir}/usr/X11R6/%{_lib}/modules/*.*o		%{buildroot}%{xorg_libdir}/modules
@@ -584,9 +599,19 @@ echo "%{_prefix}/lib/%{drivername}" >>	%{buildroot}%{_sysconfdir}/ld.so.conf.d/G
 %endif
 touch					%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL.conf
 
+# modprobe.conf
+install -d -m755			%{buildroot}%{_sysconfdir}/modprobe.d
+touch					%{buildroot}%{_sysconfdir}/modprobe.d/display-driver
+install -d -m755			%{buildroot}%{_sysconfdir}/%{drivername}
+echo "blacklist radeon"			> %{buildroot}%{_sysconfdir}/%{drivername}/modprobe.conf
+
+# modprobe.preload.d
+install -d -m755			%{buildroot}%{_sysconfdir}/modprobe.preload.d
+touch					%{buildroot}%{_sysconfdir}/modprobe.preload.d/display-driver
+echo "fglrx"				> %{buildroot}%{_sysconfdir}/%{drivername}/modprobe.preload
+
 # XvMCConfig
-install -d -m755 %{buildroot}%{_sysconfdir}/X11
-echo "libAMDXvBA.so.1" > %{buildroot}%{_sysconfdir}/X11/XvMCConfig-%{drivername}
+echo "libAMDXvBA.so.1" > %{buildroot}%{_sysconfdir}/%{drivername}/XvMCConfig
 
 # install ldetect-lst pcitable files for backports
 sed -ne 's|^\s*FGL_ASIC_ID(\(0x....\)).*|\1|gp' common/lib/modules/fglrx/build_mod/fglrxko_pci_ids.h | tr '[:upper:]' '[:lower:]' | sort -u | sed 's,^.*$,0x1002\t\0\t"%{ldetect_cards_name}",' > pcitable.fglrx.lst
@@ -615,7 +640,10 @@ fi
 
 %{_sbindir}/update-alternatives \
 	--install %{_sysconfdir}/ld.so.conf.d/GL.conf gl_conf %{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file} %{priority} \
-	--slave %{_sysconfdir}/X11/XvMCConfig xvmcconfig %{_sysconfdir}/X11/XvMCConfig-%{drivername} \
+	--slave %{_sysconfdir}/X11/XvMCConfig xvmcconfig %{_sysconfdir}/%{drivername}/XvMCConfig \
+	--slave %{_libdir}/libAMDXvBA.cap %{_lib}AMDXvBA_cap %{_libdir}/%{drivername}/libAMDXvBA.cap \
+	--slave %{_sysconfdir}/modprobe.d/display-driver display-driver.modconf %{_sysconfdir}/%{drivername}/modprobe.conf \
+	--slave %{_sysconfdir}/modprobe.preload.d/display-driver display-driver.preload %{_sysconfdir}/%{drivername}/modprobe.preload \
 %if %{mdkversion} >= 200910
 	--slave %{xorg_extra_modules} xorg_extra_modules %{ati_extdir} \
 %else
@@ -641,7 +669,7 @@ fi
 # empty line so that /sbin/ldconfig is not passed to update-alternatives
 %endif
 # Call /sbin/ldconfig explicitely due to alternatives
-/sbin/ldconfig
+/sbin/ldconfig -X
 %_post_service atieventsd
 %if "%{ldetect_cards_name}" != ""
 [ -x %{_sbindir}/update-ldetect-lst ] && %{_sbindir}/update-ldetect-lst || :
@@ -751,7 +779,12 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/ld.so.conf.d/GL
 %{_sysconfdir}/ld.so.conf.d/GL/ati.conf
 
-%{_sysconfdir}/X11/XvMCConfig-%{drivername}
+%ghost %{_sysconfdir}/modprobe.d/display-driver
+%ghost %{_sysconfdir}/modprobe.preload.d/display-driver
+%dir %{_sysconfdir}/%{drivername}
+%{_sysconfdir}/%{drivername}/XvMCConfig
+%{_sysconfdir}/%{drivername}/modprobe.conf
+%{_sysconfdir}/%{drivername}/modprobe.preload
 
 %dir %{_sysconfdir}/ati
 %{_sysconfdir}/ati/control
@@ -880,6 +913,66 @@ rm -rf %{buildroot}
 %changelog
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
+
+* Wed May 05 2010 Anssi Hannula <anssi@mandriva.org> 8.723-1mdv2010.0
++ Revision: 542272
+- version 8.723 aka 10.4
+  o this is older than the previous version, but contains support for
+    older X.org servers and is therefore suitable for backporting
+- fix incorrect categories in menu entry files (issue reported by St?\195?\169phane)
+
+* Wed May 05 2010 Anssi Hannula <anssi@mandriva.org> 8.723.1-6mdv2010.1
++ Revision: 542231
+- add a modprobe.preload.d entry loading the module before X server
+- blacklist radeon module in modprobe.d entry as udev will now otherwise
+  load it
+
+* Sat May 01 2010 Thomas Backlund <tmb@mandriva.org> 8.723.1-5mdv2010.1
++ Revision: 541442
+- fix build with 2.6.34 series kernels (from Charles A Edwards)
+
+* Wed Apr 28 2010 Anssi Hannula <anssi@mandriva.org> 8.723.1-4mdv2010.1
++ Revision: 540653
+- add alternatives slave for libAMDXvBA.cap (fixes load of XvBA)
+- update version info in description (this driver is actually newer than
+  10.4, i.e. not a prerelease after all)
+
+* Tue Apr 27 2010 Anssi Hannula <anssi@mandriva.org> 8.723.1-3mdv2010.1
++ Revision: 539736
+- do not require qt4 libs in the main package (reported by Christophe
+  Fergeau)
+  o this allows installing the driver without installing qt4 libraries
+  o without qt4 libraries DisplayLink failure notifications won't be shown
+  o to get the notifications, users can install fglrx-control-center package
+
+* Tue Apr 27 2010 Christophe Fergeau <cfergeau@mandriva.com> 8.723.1-2mdv2010.1
++ Revision: 539576
+- rebuild so that shared libraries are properly stripped again
+
+* Wed Apr 21 2010 Anssi Hannula <anssi@mandriva.org> 8.723.1-1mdv2010.1
++ Revision: 537743
+- new 10.4 prerelease 8.723.1 from ubuntu
+- fix module load on 32-bit 2.6.33+ systems (modified 2.6.33.patch)
+
+* Tue Mar 30 2010 Anssi Hannula <anssi@mandriva.org> 8.721-1mdv2010.1
++ Revision: 528938
+- new version 8.721 (10.4 prerelease from Ubuntu)
+  o includes X.org server 1.7 support
+- call ldconfig with -X parameter
+- adapt file lists
+- rediff fglrx-2.6.33.patch
+
+* Tue Mar 30 2010 Anssi Hannula <anssi@mandriva.org> 8.712-1mdv2010.1
++ Revision: 528935
+- new version 8.712 aka 10.3
+- fix dkms build as non-root user
+- fix false smp detection when running on smp kernel
+- remove /tmp/AtiXUEvent* before starting atieventsd (fixes bug #57291)
+
+* Thu Feb 25 2010 Anssi Hannula <anssi@mandriva.org> 8.702-1mdv2010.1
++ Revision: 511385
+- new version 10.2 aka 8.702
+- generalize requires_exceptions on libati*.so.* to avoid future surprises
 
 * Fri Jan 29 2010 Anssi Hannula <anssi@mandriva.org> 8.690-3mdv2010.1
 + Revision: 498068
@@ -1196,7 +1289,7 @@ rm -rf %{buildroot}
   ati-packager.sh
 - restore menu on 2006.0 builds
 
-  + Thierry Vignaud <tvignaud@mandriva.com>
+  + Thierry Vignaud <tv@mandriva.org>
     - drop old menu
 
 * Sun Dec 30 2007 Anssi Hannula <anssi@mandriva.org> 8.44.3-4mdv2008.1
@@ -1221,7 +1314,7 @@ rm -rf %{buildroot}
   + Olivier Blin <oblin@mandriva.com>
     - restore BuildRoot
 
-  + Thierry Vignaud <tvignaud@mandriva.com>
+  + Thierry Vignaud <tv@mandriva.org>
     - kill re-definition of %%buildroot on Pixel's request
 
 * Sun Oct 28 2007 Anssi Hannula <anssi@mandriva.org> 8.40.4-8mdv2008.1
@@ -1263,7 +1356,7 @@ rm -rf %{buildroot}
 - add a note into README.install.urpmi about reconfiguring being
   unnecessary when upgrading
 
-  + Thierry Vignaud <tvignaud@mandriva.com>
+  + Thierry Vignaud <tv@mandriva.org>
     - kill desktop-file-validate's 'warning: key "Encoding" in group "Desktop Entry" is deprecated'
 
 * Sun Aug 26 2007 Anssi Hannula <anssi@mandriva.org> 8.40.4-1mdv2008.0
