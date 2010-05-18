@@ -44,9 +44,9 @@ function _internal_patch
     local file=none                                      # Nome della patch da applicare
 
     # 1)
-    # ATI Driver 8.73x e kernel >= 2.6.33+
-    if [ ${ATI_DRIVER_MAJOR_VER} == 8.73 -a ${KNL_VERSION} -eq 2 -a ${KNL_MAJOR} -eq 6 -a ${KNL_MINOR} -ge 33 ]; then
-	file=patch-8.73x-2.6.33+;
+    # ATI Driver 8.74 e kernel == 2.6.34
+    if [ ${ATI_DRIVER_MAJOR_VER} == 8.74 -a ${KNL_VERSION} -eq 2 -a ${KNL_MAJOR} -eq 6 -a ${KNL_MINOR} -eq 34 ]; then
+	file=patch-8.74-2.6.34;
     fi
 
     # Controllo l'esistenza della patch e, in caso affermativo, la applico
@@ -74,10 +74,10 @@ function _module_patch
 {
     local DIR_PATCH=/etc/ati/patch
     local EXT_PATCH_FOUND=0
-    
+
     # Vecchia patch per il file make.sh fornito dalla ATI
     sed -i '/if.*\[.*$MODVERSIONS = 0 \]/{s/\($MODVERSIONS\)/"\1"/}' make.sh
-    
+
     # Controllo se l'utente ha delle patch da applicare
     if [ -d $DIR_PATCH ]; then
 	for file in ${DIR_PATCH}/*; do
