@@ -361,6 +361,11 @@ echo "Please read \"/usr/share/doc/packages/fglrx/README.SuSE\" for"
 echo "configuration details when using SaX2."
 echo "*************************************************************"
 echo
+# recreate initrd without KMS, if the use of KMS is enabled in initrd
+if grep -q NO_KMS_IN_INITRD=\"no\" /etc/sysconfig/kernel; then
+  sed -i 's/NO_KMS_IN_INITRD.*/NO_KMS_IN_INITRD="yes"/g' /etc/sysconfig/kernel
+  mkinitrd
+fi
 exit 0
 
 %preun

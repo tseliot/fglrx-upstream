@@ -2,7 +2,7 @@
 # spec file header                                                          #
 #############################################################################
 
-Name: fglrx64_7_4_0_SLE11
+Name: fglrx64_7_5_0_SUSE113
 Summary: %ATI_DRIVER_SUMMARY
 Version: %ATI_DRIVER_VERSION
 Release: %ATI_DRIVER_RELEASE
