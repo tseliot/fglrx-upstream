@@ -43,12 +43,6 @@ function _internal_patch
     local INT_PATCH_DIR=${ROOT_DIR}/${SCRIPT_DIR}/patch  # Directory che contiene le patch interne
     local file=none                                      # Nome della patch da applicare
 
-    # 1)
-    # ATI Driver 8.74 e kernel == 2.6.34
-    if [ ${ATI_DRIVER_MAJOR_VER} == 8.74 -a ${KNL_VERSION} -eq 2 -a ${KNL_MAJOR} -eq 6 -a ${KNL_MINOR} -eq 34 ]; then
-	file=patch-8.74-2.6.34;
-    fi
-
     # Controllo l'esistenza della patch e, in caso affermativo, la applico
     if [ -f ${INT_PATCH_DIR}/$file ]; then
 	_print_with_color '1;33' "${MESSAGE[27]}";
