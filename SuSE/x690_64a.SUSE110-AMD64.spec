@@ -87,8 +87,11 @@ pushd $tmpdir/fglrx
     install -m 644 etc/ati/* $RPM_BUILD_ROOT/etc/ati
     rm -rf etc/ati
   fi
-  ls etc/* && install -m 644 etc/* $RPM_BUILD_ROOT/etc/ati
-  rm -rf etc/
+  mkdir -p $RPM_BUILD_ROOT/etc/security/console.apps
+  install -m 755 etc/security/console.apps/amdcccle-su \
+    $RPM_BUILD_ROOT/etc/security/console.apps
+  mkdir -p $RPM_BUILD_ROOT/etc/pam.d
+  ln -snf su $RPM_BUILD_ROOT/etc/pam.d/amdcccle-su
   if [ -f usr/X11R6/bin/amdcccle ]; then
     if ! ldd usr/X11R6/bin/amdcccle | grep -q libexpat.so.0; then
       cp -r usr/share/ati $RPM_BUILD_ROOT/usr/share
@@ -403,8 +406,11 @@ exit 0
 %ifarch x86_64
 %dir %{DRI_DRIVERS_DIR}
 %endif
+%dir /etc/security/console.apps/
 /etc/ati/
 /etc/modprobe.d/fglrx.conf
+/etc/pam.d/amdcccle-su
+/etc/security/console.apps/amdcccle-su
 /usr/include/GL/glxATI.h
 /usr/include/GL/glATI.h
 %ifarch x86_64
