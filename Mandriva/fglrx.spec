@@ -489,9 +489,11 @@ for file in common/usr/share/ati/amdcccle/*.qm; do
 	echo "%%lang($lang) %{_datadir}/ati/amdcccle/$file" >> amdcccle.langs
 done
 
-# amdcccle super-user mode (via consolehelper)
-ln -s %{_bindir}/amdcccle %{buildroot}%{_sbindir}/amdccclesu
-ln -s consolehelper %{buildroot}%{_bindir}/amdccclesu
+# amdcccle super-user mode
+install -d -m755 %{buildroot}%{_sysconfdir}/security/console.apps
+install -d -m755 %{buildroot}%{_sysconfdir}/pam.d
+install -m644 common/etc/security/console.apps/* %{buildroot}%{_sysconfdir}/security/console.apps
+ln -s su %{buildroot}%{_sysconfdir}/pam.d/amdcccle-su
 
 # man pages
 install -d -m755 %{buildroot}%{_mandir}/man1 %{buildroot}%{_mandir}/man8
@@ -506,7 +508,6 @@ install -m644 common/usr/share/applications/* %{buildroot}%{_datadir}/applicatio
 sed -i 's,^Icon=.*$,Icon=%{drivername}-amdcccle,' %{buildroot}%{_datadir}/applications/*.desktop
 # control center doesn't really use GNOME/KDE libraries:
 sed -i 's,GNOME;KDE;,,' %{buildroot}%{_datadir}/applications/*.desktop
-sed -i 's,^Exec=.*$,Exec=%{_bindir}/amdccclesu,' %{buildroot}%{_datadir}/applications/amdccclesu.desktop
 
 # icons
 install -d -m755 %{buildroot}%{_miconsdir} %{buildroot}%{_iconsdir} %{buildroot}%{_liconsdir}
@@ -855,9 +856,9 @@ rm -rf %{buildroot}
 %files -n %{drivername}-control-center -f amdcccle.langs
 %defattr(-,root,root)
 %doc common/usr/share/doc/amdcccle/*
+%{_sysconfdir}/security/console.apps/amdcccle-su
+%{_sysconfdir}/pam.d/amdcccle-su
 %{_bindir}/amdcccle
-%{_bindir}/amdccclesu
-%{_sbindir}/amdccclesu
 %dir %{_datadir}/ati
 %dir %{_datadir}/ati/amdcccle
 %if %{atibuild}
