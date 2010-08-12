@@ -77,11 +77,15 @@
 # cooker ldetect-lst should be up-to-date
 %define ldetect_cards_name      %nil
 
-%if %{mdkversion} <= 201000 || %{atibuild}
+%if %{mdkversion} <= 201010 || %{atibuild}
 # ATI cards not listed in main ldetect-lst pcitable are not likely
 # to be supported by radeon which is from the same time period.
 # radeonhd has greater chance of working due to it not using ID lists.
 # (main pcitable entries override our entries)
+%define ldetect_cards_name	ATI Radeon HD 2000 and later (vesa/fglrx)
+%endif
+
+%if %{mdkversion} <= 201000
 %define ldetect_cards_name      ATI Radeon HD 2000 and later (radeonhd/fglrx)
 %endif
 
