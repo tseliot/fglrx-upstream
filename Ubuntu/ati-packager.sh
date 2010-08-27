@@ -217,13 +217,14 @@ buildPackage()
 
 
     #Detect x* dir name corresponding to X_NAME
-    X_DIR=x750
+    X_DIR=x760
     case ${X_NAME} in
         gutsy)  X_DIR=x690;;
         hardy)  X_DIR=x690;;
 	intrepid)X_DIR=x740;;
 	jaunty) X_DIR=x740;;
 	karmic) X_DIR=x740;;
+	lucid)  X_DIR=x750;;
         source) X_NAME=`lsb`;;
     esac
 
