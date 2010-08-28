@@ -113,6 +113,10 @@ if [ "$1" = "configure" ]; then
         --slave /etc/X11/Xsession.d/10fglrx 10fglrx /usr/lib/fglrx/10fglrx \
         --slave /etc/ati ati_conf /usr/lib/fglrx/etc/ati \
         --slave /usr/lib/xorg/extra-modules xorg_extra_modules /usr/lib/fglrx/xorg \
+        --slave /usr/lib/libaticalcl.so libaticalcl.so /usr/lib/fglrx/libaticalcl.so \
+        --slave /usr/lib32/libaticalcl.so libaticalcl.so_lib32 /usr/lib32/fglrx/libaticalcl.so \
+        --slave /usr/lib/libaticalrt.so libaticalrt.so /usr/lib/fglrx/libaticalrt.so \
+        --slave /usr/lib32/libaticalrt.so libaticalrt.so_lib32 /usr/lib32/fglrx/libaticalrt.so \
     # ldconfig needs to be run immediately as we're changing /etc/ld.so.conf.d/ with
     # alternatives.
     LDCONFIG_NOTRIGGER=y ldconfig
