@@ -30,7 +30,7 @@ function _apply_the_patch
 	_print_with_color '1;31' "${MESSAGE[23]}\n";
     else
 	_print_with_color '1;32' "${MESSAGE[24]}\n";
-	patch < $1;
+	patch -p0 < $1;
     fi
 }
 
