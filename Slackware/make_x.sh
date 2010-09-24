@@ -72,8 +72,8 @@ function _make_x
 	    if [ -h /lib32/ld-linux* ]; then # Se sono presenti già librerie a 32 bit
 		mv ${ROOT_DIR}/arch/x86/usr/* usr;
 		for dir in $(find usr -type d -name "*lib") # Rinomino lib in lib32
-		do 
-		    mv $dir ${dir}32; 
+		do
+		    mv $dir ${dir}32;
 		done
 	    fi
 	fi
@@ -127,8 +127,7 @@ function _make_x
 
     # 4.3) Assicuro i giusti permessi ai binari in usr/X11R6/bin
     ( cd usr/X11R6/bin;
-	chmod a+x aticonfig fgl_glxgears fglrxinfo fglrx_xgamma 2>/dev/null;
-	chmod go-x amdcccle fireglcontrolpanel 2>/dev/null;
+	chmod a+x *
     )
 
     # 4.4) Aggiusto i permessi ai file in etc/ati
