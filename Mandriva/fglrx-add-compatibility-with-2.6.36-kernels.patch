@@ -1,0 +1,38 @@
+From db944ac1f8dfefbc6d9e42e12aa578ff6121cbc6 Mon Sep 17 00:00:00 2001
+From: Alberto Milone <alberto.milone@canonical.com>
+Date: Fri, 24 Sep 2010 14:54:35 +0200
+Subject: [PATCH 1/2] Add compatibility with 2.6.36 kernels
+
+
+Signed-off-by: Alberto Milone <alberto.milone@canonical.com>
+
+[Adapted for Mandriva build, make build conditional / tmb]
+Signed-off-by: Thomas Backlund <tmb@mandriva.org>
+
+---
+--- fglrx-8.771.orig/common/lib/modules/fglrx/build_mod/firegl_public.c	2010-09-01 17:05:31.000000000 +0300
++++ fglrx-8.771/common/lib/modules/fglrx/build_mod/firegl_public.c	2010-10-02 20:18:27.905570816 +0300
+@@ -320,7 +320,11 @@ int ip_firegl_release(struct inode* inod
+     return firegl_release((KCL_IO_FILE_Handle)filp);
+ }
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,35)
++long ip_firegl_ioctl(struct file* filp, unsigned int cmd, unsigned long arg)
++#else
+ int ip_firegl_ioctl(struct inode* inode, struct file* filp, unsigned int cmd, unsigned long arg)
++#endif
+ {
+     return firegl_ioctl((KCL_IO_FILE_Handle)filp, cmd, arg);
+ }
+@@ -407,7 +411,11 @@ static struct file_operations firegl_fop
+ #endif
+     open:    ip_firegl_open,
+     release: ip_firegl_release,
++#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,35)
++    unlocked_ioctl: ip_firegl_ioctl,
++#else
+     ioctl:   ip_firegl_ioctl,
++#endif
+     mmap:    ip_firegl_mmap,
+ 
+     write:   ip_firegl_write,
