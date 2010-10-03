@@ -64,7 +64,7 @@
 
 %define driverpkgname	x11-driver-video-fglrx
 %define drivername	fglrx
-%define xorg_version	750
+%define xorg_version	760
 %define xorg_libdir	%{_libdir}/xorg
 %define xorg_dridir	%{_libdir}/dri
 %define xorg_dridir32	%{_prefix}/lib/dri
@@ -78,6 +78,7 @@
 %define ldetect_cards_name      %nil
 
 %if %{mdkversion} <= 201010 || %{atibuild}
+%define xorg_version	750
 # ATI cards not listed in main ldetect-lst pcitable are not likely
 # to be supported by radeon which is from the same time period.
 # radeonhd has greater chance of working due to it not using ID lists.
