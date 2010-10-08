@@ -27,24 +27,25 @@ Index: ati-9.10/common/lib/modules/fglrx/build_mod/make.sh
      esac
  done
  
-@@ -155,6 +166,9 @@
+@@ -155,6 +166,10 @@
  # ==============================================================
  # assing default location of linux kernel headers
  
 +if [ -n "$kernel_dir" ]; then
-+  linuxincludes="$kernel_dir/include"
++  linuxbuild=$kernel_dir
++  linuxsources=$linuxbuild
 +else
- linuxincludes=/usr/src/linux/include
+ linuxbuild=/usr/src/linux
+ linuxsources=$linuxbuild
  
- # in /lib/modules/<kernel-version> there is a symlink for latest kernel
 @@ -163,6 +177,7 @@
-     # just comment this line out if you already set an alternative location
-     linuxincludes=/lib/modules/${uname_r}/build/include
+     linuxbuild=/lib/modules/${uname_r}/build
+     linuxsources=/lib/modules/${uname_r}/source
  fi
 +fi
  
- # ==============================================================
- # print some statistics, helpful for analyzing any build failures
+ linuxincludes=$linuxbuild/include
+ 
 @@ -419,6 +434,7 @@
      LIBIP_PREFIX=$(echo "$LIBIP_PREFIX" | sed -e 's|^\([^/]\)|../\1|') \
      MODFLAGS="-DMODULE -DATI -DFGL -DPAGE_ATTR_FIX=$PAGE_ATTR_FIX $def_smp $def_modversions" \
