@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2009 Emanuele Tomasi, Ezio Ghibaudo
+# Copyright (c) 2009 Emanuele Tomasi
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -330,8 +330,7 @@ case $1 in
     --buildprep)
 	echo -e "\n${MESSAGE[0]} $BUILD_VER"\
 		"\n--------------------------------------------"\
-		"\n${MESSAGE[1]}"\
-		"\n${MESSAGE[2]}\n";
+		"\n${MESSAGE[1]}\n";
 
 	EXIT_STATUS=0;
 
