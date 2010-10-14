@@ -7,7 +7,7 @@ Check for command
 Only root can do it!
 The name of the current directory should not contain any spaces
 ERROR: kernel version not detected
-ERROR: i don't have make module
+ERROR: I don't have make module
 unsupported.
 make_module.sh script missing!
 make_x.sh script missing!
