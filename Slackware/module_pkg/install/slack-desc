@@ -15,6 +15,5 @@ fglrx-module: If you change kernel you can run the ati installer with:
 fglrx-module:    --buildpkg Slackware/Only_Module
 fglrx-module:
 fglrx-module: ATI web site:
-fglrx-module:     http://ati.amd.com
+fglrx-module:     http://www.amd.com/
 fglrx-module:
-

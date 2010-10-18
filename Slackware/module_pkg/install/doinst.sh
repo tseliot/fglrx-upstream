@@ -23,5 +23,11 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
+# Remove the old fglrx module, if is there
+if grep '^fglrx\>' /proc/modules >/dev/null
+then
+    modprobe -r fglrx
+fi
+
 # Run depmod
 depmod;
