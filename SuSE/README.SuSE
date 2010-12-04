@@ -4,7 +4,7 @@ ATI fglrx driver configuration (including 3D support)
 Switch to runlevel 3 ("init 3") and use the following command as user
 "root" to configure the ATI fglrx driver (including 3D support).
 
-  sax2 -r -m 0=fglrx
+   sax2 -r -m 0=fglrx
 
 There's no need to try to enable 3D support via SaX2. It's already
 enabled automatically when SaX2 is starting.
