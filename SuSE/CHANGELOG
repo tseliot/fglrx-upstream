@@ -1,0 +1,19 @@
+-------------------------------------------------------------------
+Mon Dec 13 07:42:31 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
+
+- packaging script and spec file were completely rewritten
+- add a verbose mode (1 = what are you doing, 2 = tell me everything)
+  Usage:
+  # VERBOSE="1" ./ati-driver-installer-(version)-(arch).sh --buildpkg ...
+  # VERBOSE="2" ./ati-driver-installer-(version)-(arch).sh --buildpkg ...
+- add an auto detection of openSUSE and SLE version and architecture
+  Usage:
+  # ./ati-driver-installer-(version)-(arch).sh --buildpkg SuSE/SUSE-autodetection
+- add a switch to unlock unsupported openSUSE version
+  Usage:
+  # UNSUPPORTED="yes" ./ati-driver-installer-(version)-(arch).sh --buildpkg ...
+- add a rebuild script boot.fglrxrebuild at boot time (init) with a
+  logging function to /var/log/fglrx-build.log
+- add a renew fglrx-kernel-build.sh with a support to rebuild of all
+  available installed kernel flavors and versions
+- renew the patches
