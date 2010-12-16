@@ -27,6 +27,8 @@
 # compile only supported kernels
 
 KERNEL_LIST="`rpm -q kernel kernel-desktop kernel-default kernel-pae | grep -v 'not installed' | sort`"
+SUMMARY_REPORT=""
+ERROR_CODE=0
 
 for KERNEL in ${KERNEL_LIST}
 do
@@ -62,6 +64,7 @@ do
         echo "file ${SOURCE_FILE} says: COMPAT_ALLOC_USER_SPACE=${COMPAT_ALLOC_USER_SPACE}"
     fi
     pushd /usr/src/kernel-modules/fglrx
+        SUMMARY_REPORT="${SUMMARY_REPORT}\n   Kernel   => ${KERNEL}\n"
         make -C ${LINUX_SOURCE} M=${PWD} MODFLAGS="-DMODULE -DATI -DFGL -DCOMPAT_ALLOC_USER_SPACE=${COMPAT_ALLOC_USER_SPACE}"
         if [ $? -ne 0 ]; then
             echo -n -e "\n"
@@ -69,19 +72,32 @@ do
             echo "Build of kernel module failed!"
             echo "******************************"
             echo -n -e "\n"
-            exit 1
-        fi
-        make -C ${LINUX_SOURCE} M=${PWD} modules_install
-        if [ $? -ne 0 ]; then
-            echo -n -e "\n"
-            echo "*************************************"
-            echo "Installation of kernel module failed!"
-            echo "*************************************"
-            echo -n -e "\n"
+            SUMMARY_REPORT="${SUMMARY_REPORT}   Build    => [\e[1;31m FAILURE \e[0m]\n"
+            SUMMARY_REPORT="${SUMMARY_REPORT}   Install  => [\e[1;31m FAILURE \e[0m]\n"
+            ERROR_CODE=1
+        else
+            SUMMARY_REPORT="${SUMMARY_REPORT}   Build    => [\e[1;32m OK \e[0m]\n"
+            make -C ${LINUX_SOURCE} M=${PWD} modules_install
+            if [ $? -ne 0 ]; then
+                echo -n -e "\n"
+                echo "*************************************"
+                echo "Installation of kernel module failed!"
+                echo "*************************************"
+                echo -n -e "\n"
+                SUMMARY_REPORT="${SUMMARY_REPORT}   Install  => [\e[1;31m FAILURE \e[0m]\n"
+                ERROR_CODE=1
+            else
+                SUMMARY_REPORT="${SUMMARY_REPORT}   Install  => [\e[1;32m OK \e[0m]\n"
+            fi
         fi
         make -C ${LINUX_SOURCE} M=${PWD} clean
     popd
 done
 
 depmod -a
-exit 0
+
+echo -e "\n\nSummary report:"
+printf '=%.0s' $(seq 1 80) && echo -n -e "\n"
+echo -e "${SUMMARY_REPORT}"
+
+exit ${ERROR_CODE}

@@ -227,12 +227,12 @@ echo "Apply some patches ..."
         echo "ati-2.6.27-build-fix-1.patch could not applied! Please report this bug to Sebastian Siebert <freespacer@gmx.de>. Thank you."
     fi
 %endif
-%if %suse_version > 1130
-    patch -p0 -s < /usr/share/doc/packages/fglrx/patches/ati-opensuse-11.4.patch
+%if %suse_version > 1100
+    patch -p0 -s < /usr/share/doc/packages/fglrx/patches/ati-2.6.36-compat_alloc_user_space.patch
     if [ $? -eq 0 ]; then
-        echo "ati-opensuse-11.4.patch applied successfully."
+        echo "ati-2.6.36-compat_alloc_user_space.patch applied successfully."
     else
-        echo "ati-opensuse-11.4.patch could not applied! Please report this bug to Sebastian Siebert <freespacer@gmx.de>. Thank you."
+        echo "ati-2.6.36-compat_alloc_user_space.patch could not applied! Please report this bug to Sebastian Siebert <freespacer@gmx.de>. Thank you."
     fi
 %endif
 # placeholder_for_additional_patches_for_fglrx_sources

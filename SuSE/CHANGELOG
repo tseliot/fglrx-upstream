@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Thu Dec 16 23:37:56 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
+
+- retrofit the fglrx-kernel-build.sh:
+  - fixed an issue with a build failure and exit too early. The successive
+    kernels was not builded the fglrx kernel module.
+  - improve a summary report of the build and installation of the
+    fglrx kernel module to all kernel versions and flavors.
+- add a patch for kernel >= 2.6.36 with the issue of the function with
+  compat_alloc_user_space(). The make flag "-DCOMPAT_ALLOC_USER_SPACE=..."
+  does not work.
+- remove obsolete patch: ati-opensuse-11.4.patch
+
+-------------------------------------------------------------------
 Mon Dec 13 07:42:31 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
 
 - packaging script and spec file were completely rewritten
