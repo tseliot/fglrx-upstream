@@ -24,6 +24,17 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
+
+# Get number of CPU cores to speed up compilation on multi-core machines.
+NUM_CORES="`cat /proc/cpuinfo | grep '^processor' | wc -l | grep -E '^[0-9]+$'`";
+
+# If CPU cores could not detected, used only 1 core for compilation.
+if [ ! "${NUM_CORES}" -gt 0 ]; then
+    NUM_CORES=1
+fi
+
+echo -e "\nUsed CPUs/Cores for compilation   =>   [\e[1;32m ${NUM_CORES} \e[0m]"
+
 # compile only supported kernels
 
 KERNEL_LIST="`rpm -q kernel kernel-desktop kernel-default kernel-pae | grep -v 'not installed' | sort`"
@@ -65,7 +76,7 @@ do
     fi
     pushd /usr/src/kernel-modules/fglrx
         SUMMARY_REPORT="${SUMMARY_REPORT}\n   Kernel   => ${KERNEL}\n"
-        make -C ${LINUX_SOURCE} M=${PWD} MODFLAGS="-DMODULE -DATI -DFGL -DCOMPAT_ALLOC_USER_SPACE=${COMPAT_ALLOC_USER_SPACE}"
+        make -j${NUM_CORES} -C ${LINUX_SOURCE} M=${PWD} MODFLAGS="-DMODULE -DATI -DFGL -DCOMPAT_ALLOC_USER_SPACE=${COMPAT_ALLOC_USER_SPACE}"
         if [ $? -ne 0 ]; then
             echo -n -e "\n"
             echo "******************************"
@@ -77,7 +88,7 @@ do
             ERROR_CODE=1
         else
             SUMMARY_REPORT="${SUMMARY_REPORT}   Build    => [\e[1;32m OK \e[0m]\n"
-            make -C ${LINUX_SOURCE} M=${PWD} modules_install
+            make -j${NUM_CORES} -C ${LINUX_SOURCE} M=${PWD} modules_install
             if [ $? -ne 0 ]; then
                 echo -n -e "\n"
                 echo "*************************************"
@@ -90,10 +101,11 @@ do
                 SUMMARY_REPORT="${SUMMARY_REPORT}   Install  => [\e[1;32m OK \e[0m]\n"
             fi
         fi
-        make -C ${LINUX_SOURCE} M=${PWD} clean
+        make -j${NUM_CORES} -C ${LINUX_SOURCE} M=${PWD} clean
     popd
 done
 
+echo "Calling 'depmod -a' this may take a while..."
 depmod -a
 
 echo -e "\n\nSummary report:"

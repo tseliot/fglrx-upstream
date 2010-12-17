@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec 17 06:20:24 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
+
+- retrofit the fglrx-kernel-build.sh:
+  - improve speed up the compilation on multi-core machines
+
+-------------------------------------------------------------------
 Thu Dec 16 23:37:56 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
 
 - retrofit the fglrx-kernel-build.sh:
