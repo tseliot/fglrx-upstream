@@ -67,7 +67,7 @@
 
 %define driverpkgname	x11-driver-video-fglrx
 %define drivername	fglrx
-%define xorg_version	760
+%define xorg_version	pic
 # highest supported videodrv abi
 %define videodrv_abi	8
 %define xorg_libdir	%{_libdir}/xorg
@@ -91,7 +91,6 @@
 %endif
 
 %if %{mdkversion} <= 201020
-%define xorg_version	750
 %define ldetect_cards_name	ATI Radeon HD 2000 and later (vesa/fglrx)
 %endif
 
@@ -99,12 +98,7 @@
 %define ldetect_cards_name	ATI Radeon HD 2000 and later (radeonhd/fglrx)
 %endif
 
-%if %{mdkversion} <= 201000
-%define xorg_version    740
-%endif
-
 %if %{mdkversion} <= 200900
-%define xorg_version	690
 %define ati_extdir	%{xorg_libdir}/modules/extensions/%{drivername}
 # radeonhd/fglrx
 %define ldetect_cards_name      ATI Radeon X1300 and later
@@ -597,10 +591,6 @@ install -d -m755						%{buildroot}%{xorg_libdir}/modules/drivers
 install -m755 %{xverdir}/usr/X11R6/%{_lib}/modules/drivers/*.so* %{buildroot}%{xorg_libdir}/modules/drivers
 install -d -m755						%{buildroot}%{xorg_libdir}/modules/linux
 install -m755 %{xverdir}/usr/X11R6/%{_lib}/modules/linux/*.so*	%{buildroot}%{xorg_libdir}/modules/linux
-%if %{mdkversion} <= 201000
-# no such files in x750+ dirs
-install -m644 %{xverdir}/usr/X11R6/%{_lib}/modules/*.a		%{buildroot}%{xorg_libdir}/modules
-%endif
 install -m644 %{xverdir}/usr/X11R6/%{_lib}/modules/*.*o		%{buildroot}%{xorg_libdir}/modules
 install -d -m755						%{buildroot}%{ati_extdir}
 install -m755 %{xverdir}/usr/X11R6/%{_lib}/modules/extensions/*.so* %{buildroot}%{ati_extdir}
@@ -927,9 +917,6 @@ rm -rf %{buildroot}
 %{_libdir}/%{drivername}/libfglrx_dm.so
 %{_libdir}/%{drivername}/libAMDXvBA.so
 %{_libdir}/%{drivername}/libXvBAW.so
-%if %{mdkversion} <= 201000
-%{xorg_libdir}/modules/esut.a
-%endif
 %{_includedir}/X11/extensions/fglrx_gamma.h
 %dir %{_includedir}/GL
 %{_includedir}/GL/*ATI.h
