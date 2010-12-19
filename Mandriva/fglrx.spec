@@ -77,7 +77,7 @@
 # cooker ldetect-lst should be up-to-date
 %define ldetect_cards_name      %nil
 
-%if %{mdkversion} <= 201010 || %{atibuild}
+%if %{mdkversion} <= 201020 || %{atibuild}
 %define xorg_version	750
 # ATI cards not listed in main ldetect-lst pcitable are not likely
 # to be supported by radeon which is from the same time period.
