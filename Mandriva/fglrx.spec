@@ -45,13 +45,13 @@
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl).
 
 # version in installer filename:
-%define oversion	10-4
+%define oversion	10-12
 # Advertised version, for description:
-%define mversion	10.4
+%define mversion	10.12
 # driver version from ati-packager-helper.sh:
-%define iversion	8.723
+%define iversion	8.801
 # release:
-%define rel		1
+%define rel		2
 # rpm version (adds 0 in order to not go backwards if iversion is two-decimal)
 %define version		%{iversion}%([ $(echo %iversion | wc -c) -le 5 ] && echo 0)
 %else
@@ -62,9 +62,14 @@
 %define priority	1000
 %define release %mkrel %{rel}
 
+# set to 1 for a prerelease driver with an ubuntu tarball as source
+%define ubuntu_prerelease 0
+
 %define driverpkgname	x11-driver-video-fglrx
 %define drivername	fglrx
 %define xorg_version	760
+# highest supported videodrv abi
+%define videodrv_abi	8
 %define xorg_libdir	%{_libdir}/xorg
 %define xorg_dridir	%{_libdir}/dri
 %define xorg_dridir32	%{_prefix}/lib/dri
@@ -77,8 +82,7 @@
 # cooker ldetect-lst should be up-to-date
 %define ldetect_cards_name      %nil
 
-%if %{mdkversion} <= 201020 || %{atibuild}
-%define xorg_version	750
+%if %{atibuild}
 # ATI cards not listed in main ldetect-lst pcitable are not likely
 # to be supported by radeon which is from the same time period.
 # radeonhd has greater chance of working due to it not using ID lists.
@@ -86,8 +90,13 @@
 %define ldetect_cards_name	ATI Radeon HD 2000 and later (vesa/fglrx)
 %endif
 
+%if %{mdkversion} <= 201020
+%define xorg_version	750
+%define ldetect_cards_name	ATI Radeon HD 2000 and later (vesa/fglrx)
+%endif
+
 %if %{mdkversion} <= 201000
-%define ldetect_cards_name      ATI Radeon HD 2000 and later (radeonhd/fglrx)
+%define ldetect_cards_name	ATI Radeon HD 2000 and later (radeonhd/fglrx)
 %endif
 
 %if %{mdkversion} <= 201000
@@ -170,7 +179,11 @@ Name:		%{name}
 Version:	%{version}
 Release:	%{release}
 %if !%{atibuild}
+%if !%{ubuntu_prerelease}
 Source0:	https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-%{oversion}-x86.x86_64.run
+%else
+Source0:        fglrx-installer_%{iversion}.orig.tar.gz
+%endif
 %endif
 Source1:	ati-packager.sh
 Source2:	atieventsd.init
@@ -190,6 +203,7 @@ Patch9:		fglrx-make_sh-custom-kernel-dir.patch
 # do not probe /proc for kernel info as we may be building for a
 # different kernel
 Patch10:	fglrx-make_sh-no-proc-probe.patch
+
 License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
 Group:		System/Kernel and hardware
@@ -242,6 +256,15 @@ Conflicts:	x11-server-common < 1.4.2-5
 %if %{mdkversion} >= 200910
 # many intermediate changes in alternatives scheme
 Conflicts:	x11-server-common < 1.6.0-11
+%endif
+%if %{mdkversion} >= 201100
+Requires:	x11-server-common >= 1.9
+%if !%{atibuild}
+# Conflict with the next videodrv ABI break.
+# The driver may support multiple ABI versions and therefore
+# a strict version-specific requirement would not be enough.
+Conflicts:	xserver-abi(videodrv-%(echo $((%{videodrv_abi} + 1))))
+%endif
 %endif
 Provides:	atieventsd = %{version}-%{release}
 Obsoletes:	atieventsd < %{version}-%{release}
@@ -330,7 +353,12 @@ ln -s %{ati_dir}/%{xverdir} %{ati_dir}/arch .
 # patches affects common, so we cannot symlink it:
 cp -a %{ati_dir}/common .
 %else
+%if %ubuntu_prerelease
+%setup -q -T -D -a 0
+ln -s . common
+%else
 sh %{SOURCE0} --extract .
+%endif
 
 mkdir fglrx_tools
 tar -xzf common/usr/src/ati/fglrx_sample_source.tgz -C fglrx_tools
@@ -339,12 +367,18 @@ cd fglrx_tools # ensure patch does not touch outside
 %patch4 -p1
 cd -
 cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_gamma/fglrx_gamma.h
+%if %ubuntu_prerelease
+[ -d "%xverdir" ] || (echo This driver version does not support your X.org server. Please wait for a new release from ATI. >&2; false)
+%else
 [ "%iversion" = "$(./ati-packager-helper.sh --version)" ]
 %endif
+%endif
 
-%patch3 -p1
-%patch9 -p1
-%patch10 -p1
+cd common # ensure patches do not touch outside
+%patch3 -p2
+%patch9 -p2
+%patch10 -p2
+cd ..
 
 cat > README.install.urpmi <<EOF
 This driver is for ATI Radeon HD 2000 and newer cards.
@@ -917,8 +951,72 @@ rm -rf %{buildroot}
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
 
-* Wed May 05 2010 Anssi Hannula <anssi@mandriva.org> 8.723-1mdv2010.0
-+ Revision: 542272
+* Fri Dec 17 2010 Oden Eriksson <oeriksson@mandriva.com> 8.801-1mdv2011.0
++ Revision: 622548
+- 10.12, 8.801
+
+* Thu Nov 18 2010 Anssi Hannula <anssi@mandriva.org> 8.791-1mdv2011.0
++ Revision: 598736
+- new version 8.791 aka 10.11
+- clarify atibuild conditional statement
+- hardcode videodrv abi as the driver is precompiled
+
+* Thu Nov 11 2010 Thierry Vignaud <tv@mandriva.org> 8.783-2mdv2011.0
++ Revision: 595848
+- require xorg server with proper ABI
+
+* Fri Oct 22 2010 Anssi Hannula <anssi@mandriva.org> 8.783-1mdv2011.0
++ Revision: 587534
+- new version 8.783 aka 10.10
+- rediff make_sh-custom-kernel-dir.patch
+
+* Tue Oct 12 2010 Anssi Hannula <anssi@mandriva.org> 8.780-1mdv2011.0
++ Revision: 585045
+- new 10.10 prerelease with X.org server 1.9 support (from Ubuntu)
+- remove CVE-2010-3081 patch, fixed upstream
+- rediff affected patches
+
+* Sat Oct 02 2010 Thomas Backlund <tmb@mandriva.org> 8.771-3mdv2011.0
++ Revision: 582570
+- Add compatibility with 2.6.36 kernels (P11, from Ubuntu)
+- Use CFLAGS_MODULE together with MODFLAGS in make.sh (P12, from Ubuntu)
+
+* Tue Sep 21 2010 Anssi Hannula <anssi@mandriva.org> 8.771-2mdv2011.0
++ Revision: 580368
+- apply CVE-2010-3081 64bit security fix from the kernel commit c41d68a5
+  locally (also fixes build on kernels with c41d68a5 applied)
+- rediff custom-kernel-dir.patch
+
+* Fri Sep 17 2010 Anssi Hannula <anssi@mandriva.org> 8.771-1mdv2011.0
++ Revision: 579247
+- new version 10.9 aka 8.771
+- switch to the upstream amdxdg-su wrapper for the superuser control
+  center mode as it now works well
+
+* Sat Sep 04 2010 Anssi Hannula <anssi@mandriva.org> 8.762-3mdv2011.0
++ Revision: 575801
+- new version 8.762 aka 10.8
+
+* Thu Aug 12 2010 Anssi Hannula <anssi@mandriva.org> 8.753-2mdv2011.0
++ Revision: 569320
+- fix XvBA on x86_64 (.cap file was being loaded from a wrong place, so
+  compatibility symlink was added; reported by Balcaen John)
+- provide pcitable.d files on 2010.1 as well, marking cards as vesa/fglrx
+
+* Thu Aug 12 2010 Anssi Hannula <anssi@mandriva.org> 8.753-1mdv2011.0
++ Revision: 569194
+- new version 8.753 aka 10.7
+- drop 2.6.34.patch, fixed upstream
+
+* Fri Jul 09 2010 Anssi Hannula <anssi@mandriva.org> 8.741-1mdv2011.0
++ Revision: 549894
+- new version 8.741 aka 10.6
+- remove fglrx-2.6.33.patch, fixed upstream
+
+* Fri Jun 11 2010 Anssi Hannula <anssi@mandriva.org> 8.732-1mdv2010.1
++ Revision: 547892
+- new version 8.732 aka 10.5
+- allow specifying repository url for generate-fglrx-spec-from-svn.sh
 - version 8.723 aka 10.4
   o this is older than the previous version, but contains support for
     older X.org servers and is therefore suitable for backporting
