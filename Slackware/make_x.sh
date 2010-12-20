@@ -35,13 +35,8 @@ function _make_x
 	x670*) # Xorg Server 6.7
 	    USE_X_VERSION=${X_VERSION/x670/x680}; # Use the xorg 6.8 files
 	    ;;
-	x7*) # Xorg Server 7.x
+	xpic*) # Xorg Server 6.9 or later
 	    XORG_7=1;
-            # Se non esiste la directory dei file dipendenti da X (passo 3),
-            # prendo i file dalla directory x690
-            if [ ! -d ${ROOT_DIR}/${X_VERSION} ]; then
-		USE_X_VERSION=$(echo $X_VERSION | sed 's/x[[:digit:]]*/x690/');
-	    fi
 	    ;;
     esac
 
@@ -108,7 +103,6 @@ function _make_x
     # MOVE USE_X_VERSION DEPENDENT files
     cp -rp ${ROOT_DIR}/${USE_X_VERSION}/usr/* usr;
 
-
     # 4)
     # Aggiusto i permessi
     # 4.1) Nella directory usr, tolgo i diritti di esecuzione a tutti i file che non siano:
@@ -147,7 +141,7 @@ function _make_x
     )
 
     # 6)
-    # If use xorg >= 7, remove obsolete directory X11R6
+    # If use xorg >= 6.9, remove obsolete directory X11R6
     # I moduli per il server X vanno ora sotto /usr/lib(64)/xorg/modules e non più
     # sotto /usr/X11R6/lib(64)/modules
     if (( $XORG_7 )); then
