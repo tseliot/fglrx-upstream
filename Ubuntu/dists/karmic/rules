@@ -22,15 +22,15 @@ DRIDIR32 := usr/lib32
 XMODDIR  := $(DRIDIR)/xorg/modules
 LIBDIR   := lib
 ARCH     := x86
-XARCH    := x740
+XARCH    := xpic
 
-ifeq ($(DISTRO),hardy)
-	XARCH   := x690
-endif
+#ifeq ($(DISTRO),hardy)
+#	XARCH   := x690
+#endif
 
-ifeq ($(DISTRO),gutsy)
-	XARCH   := x690
-endif
+#ifeq ($(DISTRO),gutsy)
+#	XARCH   := x690
+#endif
 
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	LIBDIR  := lib64
