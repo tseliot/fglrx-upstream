@@ -46,7 +46,7 @@ function _init_env
 {
     [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1;
 
-    BUILD_VER=1.4.1;
+    BUILD_VER=1.4.2;
 
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD;
@@ -319,6 +319,12 @@ case $1 in
     # Questo script onora le API versione 2 dell'ati-installer.sh
     --getAPIVersion)
 	exit 2;
+	;;
+
+    # Lista dei maintainer (separata da ';')
+    --get-maintainer)
+	echo "Emanuele Tomasi <tomasi@cli.di.unipi.it>";
+	exit 0;
 	;;
 esac
 
