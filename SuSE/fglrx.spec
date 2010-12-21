@@ -293,6 +293,11 @@ if grep -q NO_KMS_IN_INITRD=\"no\" /etc/sysconfig/kernel; then
     sed -i 's/NO_KMS_IN_INITRD.*/NO_KMS_IN_INITRD="yes"/g' /etc/sysconfig/kernel
     mkinitrd
 fi
+if [ ! -f /etc/X11/xorg.conf ]; then
+    touch /etc/X11/xorg.conf
+fi
+aticonfig --del-pcs-key=LDC,ReleaseVersion
+aticonfig --del-pcs-key=LDC,Catalyst_Version
 exit 0
 
 %preun

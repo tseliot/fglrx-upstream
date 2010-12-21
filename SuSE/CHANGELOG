@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Dec 21 17:23:16 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
+
+- add two aticonfig commands to remove keys as follows:
+  - LDC/ReleaseVersion
+  - LDC/Catalyst_Version
+
+-------------------------------------------------------------------
 Tue Dec 21 13:25:15 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
 
 - changes in ati-packager.sh:
