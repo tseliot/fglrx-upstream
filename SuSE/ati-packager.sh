@@ -391,6 +391,7 @@ ACTION=$1
 case "${ACTION}" in
 --get-supported)
     getSupportedPackages
+    exit 0
     ;;
 --buildpkg)
     PACKAGE=$2
