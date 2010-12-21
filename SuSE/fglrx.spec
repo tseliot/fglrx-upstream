@@ -18,6 +18,8 @@ Requires:       kernel-devel kernel-default-devel kernel-desktop-devel
 %endif
 Provides:       fglrx km_fglrx
 Obsoletes:      fglrx km_fglrx ati-fglrxG02 x11-video-fglrxG02
+Obsoletes:      fglrx_6_9_0_SLE10 fglrx64_6_9_0_SLE10 fglrx_7_4_0_SLE11 fglrx64_7_4_0_SLE11
+Obsoletes:      fglrx_7_4_0_SUSE111 fglrx64_7_4_0_SUSE111 fglrx_7_4_0_SUSE112 fglrx64_7_4_0_SUSE112 fglrx_7_5_0_SUSE113 fglrx64_7_5_0_SUSE113 fglrx_7_6_0_SUSE114 fglrx64_7_6_0_SUSE114
 ExclusiveArch:  %ix86 x86_64
 BuildRoot:      %ATI_DRIVER_BUILD_ROOT
 

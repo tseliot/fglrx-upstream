@@ -1,4 +1,27 @@
 -------------------------------------------------------------------
+Tue Dec 21 13:25:15 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
+
+- changes in ati-packager.sh:
+  - add option "--get-maintainer"
+  - new package name conventions:
+    fglrx{,64}_xpic_{SLE,SUSE}(osversion)-(fglrxversion).(arch).rpm
+- change in supportedOS.sh:
+  - rename XOrg-Version to xpic
+- change in spec file:
+  - all old package name conventions are obsolete:
+    fglrx{,64}_6_9_0_SLE10
+    fglrx{,64}_7_4_0_SLE11
+    fglrx{,64}_7_4_0_SUSE111
+    fglrx{,64}_7_4_0_SUSE112
+    fglrx{,64}_7_5_0_SUSE113
+    fglrx{,64}_7_6_0_SUSE114
+
+-------------------------------------------------------------------
+Tue Dec 21 08:31:03 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
+
+- add a missing "exit 0" on get-supported
+
+-------------------------------------------------------------------
 Fri Dec 17 06:20:24 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
 
 - retrofit the fglrx-kernel-build.sh:

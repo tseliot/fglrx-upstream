@@ -31,16 +31,16 @@
 # Important: The array should have a consecutive numbers!
 
 # supported os
-SUSE[0]="SLE10 IA32-x690 AMD64-x690_64a"
-SUSE[1]="SLE11 IA32-x740 AMD64-x740_64a"
-SUSE[2]="SUSE111 IA32-x740 AMD64-x740_64a"
-SUSE[3]="SUSE112 IA32-x740 AMD64-x740_64a"
-SUSE[4]="SUSE113 IA32-x750 AMD64-x750_64a"
+SUSE[0]="SLE10 IA32-xpic AMD64-xpic_64a"
+SUSE[1]="SLE11 IA32-xpic AMD64-xpic_64a"
+SUSE[2]="SUSE111 IA32-xpic AMD64-xpic_64a"
+SUSE[3]="SUSE112 IA32-xpic AMD64-xpic_64a"
+SUSE[4]="SUSE113 IA32-xpic AMD64-xpic_64a"
 SUSE[5]="SUSE autodetection"
 
 # unsupported os (unofficial package list)
 # unlock this list with, for example:
 # UNSUPPORTED="yes" ./ati-driver-installer-<version>-<architecture>.run --buildpkg SuSE/SUSE114-AMD64
 if [ "${UNSUPPORTED}" = "yes" -o "${UNSUPPORTED}" = "true" -o "${UNSUPPORTED}" = "1"  ]; then
-    SUSE[6]="SUSE114 IA32-x760 AMD64-x760_64a"
+    SUSE[6]="SUSE114 IA32-xpic AMD64-xpic_64a"
 fi

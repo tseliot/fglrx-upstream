@@ -97,9 +97,9 @@ buildPackage()
 
     debugMsg "Assemble the package name for rpm build ...\n"
     if [ "${ARCH}" = "IA32" ]; then
-        PACKAGE_NAME="fglrx_${XORG:1:1}_${XORG:2:1}_${XORG:3:1}_${SUSE_VERSION}"
+        PACKAGE_NAME="fglrx_xpic_${SUSE_VERSION}"
     elif [ "${ARCH}" = "AMD64" ]; then
-        PACKAGE_NAME="fglrx64_${XORG:1:1}_${XORG:2:1}_${XORG:3:1}_${SUSE_VERSION}"
+        PACKAGE_NAME="fglrx64_xpic_${SUSE_VERSION}"
     fi
     debugMsg "   Package name: ${PACKAGE_NAME}" && print_okay
 
@@ -391,6 +391,10 @@ ACTION=$1
 case "${ACTION}" in
 --get-supported)
     getSupportedPackages
+    exit 0
+    ;;
+--get-maintainer)
+    echo "Sebastian Siebert <freespacer@gmx.de>"
     exit 0
     ;;
 --buildpkg)
