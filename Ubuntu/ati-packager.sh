@@ -343,6 +343,12 @@ identify()
 
 }
 
+getMaintainer()
+{
+    echo "Alberto Milone <alberto.milone@canonical.com>"
+    exit 0
+}
+
 #Starting point of this script, process the {action} argument
 
 #Requested action
@@ -359,6 +365,9 @@ case "${action}" in
 #API v2+ stuff:
 --getAPIVersion)
     getAPIVersion
+    ;;
+--get-maintainer)
+    getMaintainer
     ;;
 --identify)
     identify $2
