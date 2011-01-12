@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 12 20:14:29 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- rewritten the list of supported openSUSE and SLE
+  to fixed a bad substitution in a non-bash shell
+
+-------------------------------------------------------------------
 Tue Dec 21 17:23:16 CET 2010 - Sebastian Siebert <freespacer@gmx.de>
 
 - add two aticonfig commands to remove keys as follows:

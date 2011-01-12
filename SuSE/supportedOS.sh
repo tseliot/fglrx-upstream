@@ -24,23 +24,22 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-# The pattern of this array is
-# for openSUSE: SUSE[(number+1)]="SUSE(version) (arch)-(xorg version) ..."
-# for SLE:      SUSE[(number+1)]="SLE(version) (arch)-(xorg version) ..."
-#
-# Important: The array should have a consecutive numbers!
-
 # supported os
-SUSE[0]="SLE10 IA32-xpic AMD64-xpic_64a"
-SUSE[1]="SLE11 IA32-xpic AMD64-xpic_64a"
-SUSE[2]="SUSE111 IA32-xpic AMD64-xpic_64a"
-SUSE[3]="SUSE112 IA32-xpic AMD64-xpic_64a"
-SUSE[4]="SUSE113 IA32-xpic AMD64-xpic_64a"
-SUSE[5]="SUSE autodetection"
+SUSE_LIST="SLE10-IA32 \
+SLE10-AMD64 \
+SLE11-IA32 \
+SLE11-AMD64 \
+SUSE111-IA32 \
+SUSE111-AMD64 \
+SUSE112-IA32 \
+SUSE112-AMD64 \
+SUSE113-IA32 \
+SUSE113-AMD64 \
+SUSE-autodetection"
 
 # unsupported os (unofficial package list)
 # unlock this list with, for example:
 # UNSUPPORTED="yes" ./ati-driver-installer-<version>-<architecture>.run --buildpkg SuSE/SUSE114-AMD64
 if [ "${UNSUPPORTED}" = "yes" -o "${UNSUPPORTED}" = "true" -o "${UNSUPPORTED}" = "1"  ]; then
-    SUSE[6]="SUSE114 IA32-xpic AMD64-xpic_64a"
+    SUSE_LIST="${SUSE_LIST} SUSE114-IA32 SUSE114-AMD64"
 fi

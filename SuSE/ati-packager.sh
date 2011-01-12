@@ -34,23 +34,14 @@ export LANG=C
 #Purpose: lists distribution supported packages
 getSupportedPackages()
 {
-    for POSITION in $(seq 0 32)
+    for CURRENT_SUSE in ${SUSE_LIST}
     do
-        # break if the value is empty
-        if [ -z "${SUSE[$POSITION]}" ]; then
-            break;
-        fi
-
         # get the SUSE-Version
-        SUSE_VERSION=`echo "${SUSE[$POSITION]}" | cut -f1 -d" "`
-        ARCH_XORG_LIST=`echo "${SUSE[$POSITION]}" | cut -f2- -d" "`
+        SUSE_VERSION=`echo "${CURRENT_SUSE}" | cut -f1 -d"-"`
+        ARCH=`echo "${CURRENT_SUSE}" | cut -f2- -d"-"`
 
         # list all available version of openSUSE and SLE
-        for ARCH_XORG in ${ARCH_XORG_LIST}
-        do
-            ARCH=`echo ${ARCH_XORG} | cut -f1 -d"-"`
-            echo "${SUSE_VERSION}-${ARCH}"
-        done
+        echo "${SUSE_VERSION}-${ARCH}"
     done
 }
 
@@ -68,31 +59,26 @@ buildPackage()
     fi
 
     debugMsg "Get information about the machine architecture and the version of SUSE and XOrg ...\n"
-    for POSITION in $(seq 0 32)
+    for CURRENT_SUSE in ${SUSE_LIST}
     do
-        # break if the value is empty
-        if [ -z "${SUSE[$POSITION]}" ]; then
-            break;
+        # get the SUSE-Version
+        SUSE_VERSION=`echo "${CURRENT_SUSE}" | cut -f1 -d"-"`
+        ARCH=`echo "${CURRENT_SUSE}" | cut -f2 -d"-"`
+        if [ "${ARCH}" = "IA32" ]; then
+            XORG="xpic"
+        elif [ "${ARCH}" = "AMD64" ]; then
+            XORG="xpic_64a"
         fi
 
-        # get the SUSE-Version
-        SUSE_VERSION=`echo "${SUSE[$POSITION]}" | cut -f1 -d" "`
-        ARCH_XORG_LIST=`echo "${SUSE[$POSITION]}" | cut -f2- -d" "`
-
         # list all available version of openSUSE and SLE
-        for ARCH_XORG in ${ARCH_XORG_LIST}
-        do
-            ARCH=`echo ${ARCH_XORG} | cut -f1 -d"-"`
-            XORG=`echo ${ARCH_XORG} | cut -f2 -d"-"`
-            if [ "${PACKAGE_NAME}" = "${SUSE_VERSION}-${ARCH}" ]; then
-                debugMsg "   Package name: ${PACKAGE_NAME}\n"
-                debugMsg "   Distribution: ${SUSE_VERSION}\n"
-                debugMsg "   Architecture: ${ARCH}\n"
-                debugMsg "   XOrg version: ${XORG}"
-                print_okay
-                break 2
-            fi
-        done
+        if [ "${PACKAGE_NAME}" = "${SUSE_VERSION}-${ARCH}" ]; then
+            debugMsg "   Package name: ${PACKAGE_NAME}\n"
+            debugMsg "   Distribution: ${SUSE_VERSION}\n"
+            debugMsg "   Architecture: ${ARCH}\n"
+            debugMsg "   XOrg version: ${XORG}"
+            print_okay
+            break 2
+        fi
     done
 
     debugMsg "Assemble the package name for rpm build ...\n"
