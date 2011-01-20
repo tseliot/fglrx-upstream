@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jan 20 08:42:32 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- removed support for openSUSE 11.1
+
+-------------------------------------------------------------------
 Thu Jan 20 08:19:56 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - activated packaging for openSUSE 11.4
