@@ -138,7 +138,7 @@ buildPackage()
         || checkReturnOutput $?
     mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx/patches \
         || checkReturnOutput $?
-    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/X11R6/lib \
+    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
         || checkReturnOutput $?
     if [ "${ARCH}" = "IA32" ]; then
         mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib/xorg/modules/{drivers,linux,updates} \
@@ -155,7 +155,7 @@ buildPackage()
     elif [ "${ARCH}" = "AMD64" ]; then
         mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib64/dri \
             || checkReturnOutput $?
-        mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/X11R6/lib64 \
+        mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
             || checkReturnOutput $?
         mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/{drivers,linux,updates} \
             || checkReturnOutput $?
@@ -178,8 +178,6 @@ buildPackage()
     cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/lib/modules/fglrx/build_mod/* ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx \
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/X11R6/bin/* ${TMP_BUILD_PATH}/usr/bin \
-        || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/X11R6/include/* ${TMP_BUILD_PATH}/usr/include \
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/include/* ${TMP_BUILD_PATH}/usr/include \
         || checkReturnOutput $?
@@ -208,7 +206,9 @@ buildPackage()
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib/modules/dri/* ${TMP_BUILD_PATH}/usr/lib/dri \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib/{libGL*,libfglrx*} ${TMP_BUILD_PATH}/usr/X11R6/lib \
+        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
+            || checkReturnOutput $?
+        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
@@ -228,7 +228,9 @@ buildPackage()
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib64/modules/dri/* ${TMP_BUILD_PATH}/usr/lib64/dri \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib64/{libGL*,libfglrx*} ${TMP_BUILD_PATH}/usr/X11R6/lib64 \
+        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib64/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64 \
+            || checkReturnOutput $?
+        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib64/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/lib64/* ${TMP_BUILD_PATH}/usr/lib64 \
             || checkReturnOutput $?
@@ -236,7 +238,9 @@ buildPackage()
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/x86/usr/X11R6/lib/modules/dri/* ${TMP_BUILD_PATH}/usr/lib/dri \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/x86/usr/X11R6/lib/{libGL*,libfglrx*} ${TMP_BUILD_PATH}/usr/X11R6/lib \
+        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/x86/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
+            || checkReturnOutput $?
+        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/x86/usr/X11R6/lib/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/x86/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
@@ -255,6 +259,8 @@ buildPackage()
     cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/sbin/* ${TMP_BUILD_PATH}/usr/sbin \
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/share/ati/* ${TMP_BUILD_PATH}/usr/share/ati \
+        || checkReturnOutput $?
+    cp ${VERBOSE_OPTION} ${DISTRO_PATH}/amd-uninstall.sh ${TMP_BUILD_PATH}/usr/share/ati \
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} ${DISTRO_PATH}/atieventsd.sh ${TMP_BUILD_PATH}/etc/init.d/atieventsd \
         || checkReturnOutput $?
@@ -308,9 +314,6 @@ END_SED_SCRIPT
 
     # build the package
     debugMsg "Build the rpm package now ..."
-    
-
-
     if [ "${ARCH}" = "IA32" ]; then
         if [ "${VERBOSE_LEVEL}" = "2" ]; then
             rpmbuild -bb --target i586 ${TMP_SPEC_FILE} 2>&1 | tee ${TMP_BUILD_OUTPUT}

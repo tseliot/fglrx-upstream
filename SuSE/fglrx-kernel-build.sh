@@ -74,7 +74,9 @@ do
         fi
         echo "file ${SOURCE_FILE} says: COMPAT_ALLOC_USER_SPACE=${COMPAT_ALLOC_USER_SPACE}"
     fi
-    pushd /usr/src/kernel-modules/fglrx
+    pushd /usr/src/kernel-modules/fglrx/2.6.x
+        make clean
+        cp ../{*.h,*.c,*.a} .
         SUMMARY_REPORT="${SUMMARY_REPORT}\n   Kernel   => ${KERNEL}\n"
         make -j${NUM_CORES} -C ${LINUX_SOURCE} M=${PWD} MODFLAGS="-DMODULE -DATI -DFGL -DCOMPAT_ALLOC_USER_SPACE=${COMPAT_ALLOC_USER_SPACE}"
         if [ $? -ne 0 ]; then
@@ -101,7 +103,10 @@ do
                 SUMMARY_REPORT="${SUMMARY_REPORT}   Install  => [\e[1;32m OK \e[0m]\n"
             fi
         fi
-        make -j${NUM_CORES} -C ${LINUX_SOURCE} M=${PWD} clean
+        make clean
+        if [ -f modules.order ]; then
+            rm -f modules.order
+        fi
     popd
 done
 

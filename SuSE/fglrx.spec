@@ -27,12 +27,10 @@ BuildRoot:      %ATI_DRIVER_BUILD_ROOT
 %define MODULES_DIR       /usr/%{_lib}/xorg/modules
 %define DRI_DRIVERS_DIR   /usr/%{_lib}/dri
 %define DRI_DRIVERS32_DIR /usr/lib/dri
-%define X11_INCLUDE_DIR   /usr/include/X11
 %else
 %define MODULES_DIR       /usr/X11R6/%{_lib}/modules
 %define DRI_DRIVERS_DIR   /usr/X11R6/%{_lib}/modules/dri
 %define DRI_DRIVERS32_DIR /usr/X11R6/lib/modules/dri
-%define X11_INCLUDE_DIR   /usr/X11R6/include/X11
 %endif
 
 # local rpm options
@@ -59,14 +57,13 @@ mkdir -p $RPM_BUILD_ROOT/etc/ati \
          $RPM_BUILD_ROOT/etc/modprobe.d \
          $RPM_BUILD_ROOT/etc/pam.d \
          $RPM_BUILD_ROOT/etc/security/console.apps \
-         $RPM_BUILD_ROOT/usr/X11R6/%{_lib} \
+         $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/fglrx \
 %ifarch x86_64
-         $RPM_BUILD_ROOT/usr/X11R6/lib \
+         $RPM_BUILD_ROOT/usr/X11R6/lib/fglrx \
 %endif
          $RPM_BUILD_ROOT/usr/bin \
          $RPM_BUILD_ROOT/usr/include/ATI/GL \
          $RPM_BUILD_ROOT/usr/include/GL \
-         $RPM_BUILD_ROOT%{X11_INCLUDE_DIR}/extensions \
          $RPM_BUILD_ROOT%{DRI_DRIVERS_DIR} \
 %ifarch x86_64
          $RPM_BUILD_ROOT%{DRI_DRIVERS32_DIR} \
@@ -78,7 +75,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/ati \
          $RPM_BUILD_ROOT/usr/%{_lib}/powersave/scripts \
 %endif
          $RPM_BUILD_ROOT%{MODULES_DIR}/{linux,drivers} \
-         $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions \
+         $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/fglrx \
          $RPM_BUILD_ROOT/usr/sbin \
          $RPM_BUILD_ROOT/usr/share/applications \
          $RPM_BUILD_ROOT/usr/share/ati/{amdcccle,%{_lib}} \
@@ -100,23 +97,27 @@ pushd $tmpdir/fglrx
     ln -s su $RPM_BUILD_ROOT/etc/pam.d/amdcccle-su
     install -m 755 etc/security/console.apps/amdcccle-su \
                    $RPM_BUILD_ROOT/etc/security/console.apps
+    install -m 755 usr/X11R6/%{_lib}/fglrx/* \
+                   $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/fglrx
+    rm -rf usr/X11R6/%{_lib}/fglrx
     install -m 755 usr/X11R6/%{_lib}/* \
                    $RPM_BUILD_ROOT/usr/X11R6/%{_lib}
+    ln -s fglrx/libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so.1.2
     ln -s libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so.1
     ln -s libGL.so.1 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so
     ln -s libfglrx_dm.so.1.0 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_dm.so.1
     ln -s libfglrx_dm.so.1 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_dm.so
-    ln -s libfglrx_gamma.so.1.0 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_gamma.so.1
-    ln -s libfglrx_gamma.so.1 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_gamma.so
 %ifarch x86_64
+    install -m 755 usr/X11R6/lib/fglrx/* \
+                   $RPM_BUILD_ROOT/usr/X11R6/lib/fglrx
+    rm -rf usr/X11R6/lib/fglrx
     install -m 755 usr/X11R6/lib/* \
                    $RPM_BUILD_ROOT/usr/X11R6/lib
+    ln -s fglrx/libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/lib/libGL.so.1.2
     ln -s libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/lib/libGL.so.1
     ln -s libGL.so.1 $RPM_BUILD_ROOT/usr/X11R6/lib/libGL.so
     ln -s libfglrx_dm.so.1.0 $RPM_BUILD_ROOT/usr/X11R6/lib/libfglrx_dm.so.1
     ln -s libfglrx_dm.so.1 $RPM_BUILD_ROOT/usr/X11R6/lib/libfglrx_dm.so
-    ln -s libfglrx_gamma.so.1.0 $RPM_BUILD_ROOT/usr/X11R6/lib/libfglrx_gamma.so.1
-    ln -s libfglrx_gamma.so.1 $RPM_BUILD_ROOT/usr/X11R6/lib/libfglrx_gamma.so
 %endif
     install -m 755 usr/bin/* \
                    $RPM_BUILD_ROOT/usr/bin
@@ -124,8 +125,6 @@ pushd $tmpdir/fglrx
                    $RPM_BUILD_ROOT/usr/include/ATI/GL
     install -m 644 usr/include/GL/* \
                    $RPM_BUILD_ROOT/usr/include/GL
-    install -m 644 usr/include/X11/extensions/* \
-                   $RPM_BUILD_ROOT%{X11_INCLUDE_DIR}/extensions
     install -m 755 usr/%{_lib}/dri/* \
                    $RPM_BUILD_ROOT%{DRI_DRIVERS_DIR}
     rm -rf usr/%{_lib}/dri
@@ -142,8 +141,9 @@ pushd $tmpdir/fglrx
                    $RPM_BUILD_ROOT%{MODULES_DIR}/drivers
     install -m 755 usr/%{_lib}/xorg/modules/linux/* \
                    $RPM_BUILD_ROOT%{MODULES_DIR}/linux
-    install -m 755 usr/%{_lib}/xorg/modules/updates/extensions/* \
-                   $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions
+    install -m 755 usr/%{_lib}/xorg/modules/updates/extensions/fglrx/* \
+                   $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/fglrx
+    ln -s fglrx/libglx.so $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/libglx.so
     rm -rf usr/%{_lib}/xorg/modules/{drivers,linux,updates}
     install -m 755 usr/%{_lib}/xorg/modules/* \
                    $RPM_BUILD_ROOT%{MODULES_DIR}
@@ -177,6 +177,8 @@ pushd $tmpdir/fglrx
     echo "X-SuSE-translate=false" >> $RPM_BUILD_ROOT/usr/share/applications/amdcccle.desktop
     echo "GenericName=ATI Catalyst Control Center (Administrative)" >> $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
     echo "X-SuSE-translate=false" >> $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
+    install -m 755 usr/share/ati/amd-uninstall.sh \
+                   $RPM_BUILD_ROOT/usr/share/ati
     install -m 755 usr/share/ati/amdcccle/* \
                    $RPM_BUILD_ROOT/usr/share/ati/amdcccle
     install -m 755 usr/share/ati/%{_lib}/* \
@@ -202,7 +204,6 @@ pushd $tmpdir/fglrx
     rm -rf usr/src/kernel-modules/fglrx/2.6.x
     install -m 644 usr/src/kernel-modules/fglrx/* \
                    $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
-    ln -s 2.6.x/Makefile $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx/Makefile
 popd
 rm -rf $tmpdir
 export NO_BRP_CHECK_RPATH=true
@@ -296,8 +297,8 @@ fi
 if [ ! -f /etc/X11/xorg.conf ]; then
     touch /etc/X11/xorg.conf
 fi
-aticonfig --del-pcs-key=LDC,ReleaseVersion
-aticonfig --del-pcs-key=LDC,Catalyst_Version
+aticonfig --del-pcs-key=LDC,ReleaseVersion >/dev/null 2>&1
+aticonfig --del-pcs-key=LDC,Catalyst_Version >/dev/null 2>&1
 exit 0
 
 %preun
@@ -351,7 +352,6 @@ exit 0
 /usr/bin/*
 /usr/include/ATI/GL/*
 /usr/include/GL/*
-%{X11_INCLUDE_DIR}/extensions/*
 /usr/%{_lib}/*
 %{DRI_DRIVERS_DIR}/*
 %ifarch x86_64
@@ -365,8 +365,10 @@ exit 0
 %{MODULES_DIR}/drivers/*
 %{MODULES_DIR}/linux/*
 %{MODULES_DIR}/updates/extensions/*
+%{MODULES_DIR}/updates/extensions/fglrx/*
 /usr/sbin/*
 /usr/share/applications/*
+/usr/share/ati/amd-uninstall.sh
 /usr/share/ati/amdcccle/*
 /usr/share/ati/%{_lib}/*
 /usr/share/doc/packages/fglrx/*
@@ -374,7 +376,7 @@ exit 0
 /usr/share/doc/packages/fglrx/user-manual/*
 /usr/share/man/man8/*
 /usr/share/pixmaps/*
-/usr/src/kernel-modules/fglrx/*
+%verify(not md5 size mtime) /usr/src/kernel-modules/fglrx/*
 /usr/src/kernel-modules/fglrx/2.6.x/*
 %verify(not mtime) %{MODULES_DIR}/drivers/fglrx_drv.*
 # powersave script
