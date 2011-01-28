@@ -132,9 +132,6 @@ endif
 	#they don't provide the symlink for us (starting at 8.699)
 	dh_link -p$(PKG_driver) usr/lib/libatiuki.so.1.0 usr/lib/libatiuki.so.1
 
-	#they don't provide the symlink for us (starting at 8.72)
-	dh_link -p$(PKG_driver) usr/lib/libfglrx_gamma.so.1.0 usr/lib/libfglrx_gamma.so.1
-
 	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude ATI_LICENSE.TXT
 	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start --update-rcd-params="defaults 31"
 

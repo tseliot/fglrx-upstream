@@ -6,7 +6,6 @@ xorg-driver-fglrx: binary-without-manpage usr/bin/aticonfig
 xorg-driver-fglrx: binary-without-manpage usr/bin/atiodcli
 xorg-driver-fglrx: binary-without-manpage usr/bin/atiode
 xorg-driver-fglrx: binary-without-manpage usr/bin/fgl_glxgears
-xorg-driver-fglrx: binary-without-manpage usr/bin/fglrx_xgamma
 xorg-driver-fglrx: binary-without-manpage usr/bin/fglrxinfo
 xorg-driver-fglrx: binary-without-manpage usr/sbin/atieventsd
 xorg-driver-fglrx: binary-without-manpage usr/sbin/amdnotifyui
@@ -16,4 +15,4 @@ xorg-driver-fglrx: sharedobject-in-library-directory-missing-soname usr/lib/liba
 xorg-driver-fglrx: shlib-with-non-pic-code usr/lib/libGL.so.1.2
 
 #It's awfully silly to break these out as they are only ever installed with fglrx
-xorg-driver-fglrx: package-name-doesnt-match-sonames libGL1 libfglrx-dm1.0 libfglrx-gamma1 libfglrx-pp1.0 libfglrx-tvout1
+xorg-driver-fglrx: package-name-doesnt-match-sonames libGL1 libfglrx-dm1.0 libfglrx-pp1.0 libfglrx-tvout1
