@@ -89,7 +89,7 @@ case "$1" in
 
         echo "Check for the fglrx kernel module is running..."
         if [ -z "`lsmod | grep fglrx`" ]; then
-            echo "   The fglrx kernel module is not loaded! Try it to modeprobe now ..."
+            echo "   The fglrx kernel module is not loaded! Try it to modprobe now ..."
             modprobe --first-time fglrx
             if [ -n "`lsmod | grep fglrx`" ]; then
                 echo "   The fglrx kernel module was successfully loaded."
