@@ -27,10 +27,10 @@
 function _apply_the_patch
 {
     if ! grep 'bin/patch$' ${DIR_PACKAGE}/* &> /dev/null; then
-	_print_with_color '1;31' "${MESSAGE[23]}\n";
+	_print_with_color '1;31' "${MESSAGE[23]}\n"
     else
-	_print_with_color '1;32' "${MESSAGE[24]}\n";
-	patch -p0 < $1;
+	_print_with_color '1;32' "${MESSAGE[24]}\n"
+	patch -p0 < $1
     fi
 }
 
@@ -45,15 +45,15 @@ function _internal_patch
 
     # Controllo l'esistenza della patch e, in caso affermativo, la applico
     if [ -f ${INT_PATCH_DIR}/$file ]; then
-	_print_with_color '1;33' "${MESSAGE[27]}";
-	echo -e "\t$file";
+	_print_with_color '1;33' "${MESSAGE[27]}"
+	echo -e "\t$file"
     	_apply_the_patch ${INT_PATCH_DIR}/$file
     fi
 }
 
 # Usata dal file make_module.sh
 #
-# Applica le patch ai file prima di creare il modulo del kernel
+# Applica Le patch ai file prima di creare il modulo del kernel
 #
 # Si dà la possibilità all'utente di patchare i file. Se esiste
 # un file chiamato:
@@ -76,11 +76,11 @@ function _module_patch
     if [ -d $DIR_PATCH ]; then
 	for file in ${DIR_PATCH}/*; do
 	    if [ -f $file ] && [ $file = "${DIR_PATCH}/patch-${ATI_DRIVER_VER}-${KNL_RELEASE}" ]; then
-		_print_with_color '1;33' "${MESSAGE[22]}";
-		echo -e "\t$file";
-		_apply_the_patch $file;
-		EXT_PATCH_FOUND=1;
-		break;
+		_print_with_color '1;33' "${MESSAGE[22]}"
+		echo -e "\t$file"
+		_apply_the_patch $file
+		EXT_PATCH_FOUND=1
+		break
 	    fi
 	done
 
@@ -88,10 +88,10 @@ function _module_patch
 	if [ -f ${DIR_PATCH}/ati_to_gpl.patch ]; then
 	    _print_with_color '1;33' "${MESSAGE[25]}"
 	    if md5sum -c ${ROOT_DIR}/${SCRIPT_DIR}/atg.md5sum; then
-		_print_with_color '1;32' "${MESSAGE[24]}\n";
-		sh ${DIR_PATCH}/ati_to_gpl.patch;
+		_print_with_color '1;32' "${MESSAGE[24]}\n"
+		sh ${DIR_PATCH}/ati_to_gpl.patch
 	    else
-		_print_with_color '1;31' "${MESSAGE[26]}\n";
+		_print_with_color '1;31' "${MESSAGE[26]}\n"
 	    fi
 	fi
     fi

@@ -24,29 +24,29 @@
 # Crea il pacchetto per il server X
 function _make_x
 {
-    local CHECK_SCRIPT=./check.sh;
-    local XORG_7=0;
+    local CHECK_SCRIPT=./check.sh
+    local XORG_7=0
 
     # set X_VERSION
     PATH=$PATH:/usr/X11/bin:/usr/X11R6/bin
-    source ${CHECK_SCRIPT} --noprint;
+    source ${CHECK_SCRIPT} --noprint
 
     case ${X_VERSION} in
 	x670*) # Xorg Server 6.7
 	    USE_X_VERSION=${X_VERSION/x670/x680}; # Use the xorg 6.8 files
 	    ;;
 	xpic*) # Xorg Server 6.9 or later
-	    XORG_7=1;
+	    XORG_7=1
 	    ;;
     esac
 
-    [ -z $USE_X_VERSION ] && USE_X_VERSION=${X_VERSION};
+    [ -z $USE_X_VERSION ] && USE_X_VERSION=${X_VERSION}
 
-    cd ${X_PKG_DIR};
+    cd ${X_PKG_DIR}
 
     # 1)
     # MOVE ARCH DIPENDENT files
-    mkdir usr;
+    mkdir usr
 
     # Se l'architettura è a 64 bit, allora sposto, se necessario,
     # anche la directory "${ROOT_DIR}/arch/x86/usr/lib" con le librerie
@@ -61,14 +61,14 @@ function _make_x
     if [ ${ARCH} = "x86_64" ]; then
 	if [ ! -h /usr/lib64 ]; then # Se /usr/lib64 non è un link, allora Slamd64
 	    if [ -h /lib/ld-linux* ]; then # Se sono presenti già librerie a 32 bit
-		mv ${ROOT_DIR}/arch/x86/usr/* usr;
+		mv ${ROOT_DIR}/arch/x86/usr/* usr
 	    fi
 	else # /usr/lib64 è un link simbolico, quindi Bluewhite64
 	    if [ -h /lib32/ld-linux* ]; then # Se sono presenti già librerie a 32 bit
-		mv ${ROOT_DIR}/arch/x86/usr/* usr;
+		mv ${ROOT_DIR}/arch/x86/usr/* usr
 		for dir in $(find usr -type d -name "*lib") # Rinomino lib in lib32
 		do
-		    mv $dir ${dir}32;
+		    mv $dir ${dir}32
 		done
 	    fi
 	fi
@@ -76,32 +76,32 @@ function _make_x
 
     # Copio i file relativi all'architettura. Nel caso di un architettura x86_64 mista con
     # librerie a 32 bit, questa operazione sovrascrive i binari a 32 bit con quelli a 64 bit
-    cp -rf ${ROOT_DIR}/arch/${ARCH}/usr/* usr;
+    cp -rf ${ROOT_DIR}/arch/${ARCH}/usr/* usr
 
     # 1.1)
     # Make some symbolik link
     for dir in $(find usr -type d -name "lib*")
     do
-	( cd $dir;
-	    for file in *.so.1.?;
+	( cd $dir
+	    for file in *.so.1.?
 	    do
 		[ $file = '*.so.1.?' ] && break; # Se vero, allora non esistono file '*.so.1.?'
-		ln -s $file ${file%.*};
-		ln -s $file ${file%%.*}.so;
+		ln -s $file ${file%.*}
+		ln -s $file ${file%%.*}.so
 	    done
 	)
     done
 
     # 2)
     # MOVE ARCH INDIPENDENT files
-    cp -rp ${ROOT_DIR}/common/usr/* usr;
+    cp -rp ${ROOT_DIR}/common/usr/* usr
     mkdir -p etc/ati
     mv ${ROOT_DIR}/common/etc/ati/{amdpcsdb.default,atiogl.xml,authatieventsd.sh,control,fglrxprofiles.csv,fglrxrc,signature}\
-        etc/ati/ 2>/dev/null;
+        etc/ati/ 2>/dev/null
 
     # 3)
     # MOVE USE_X_VERSION DEPENDENT files
-    cp -rp ${ROOT_DIR}/${USE_X_VERSION}/usr/* usr;
+    cp -rp ${ROOT_DIR}/${USE_X_VERSION}/usr/* usr
 
     # 4)
     # Aggiusto i permessi
@@ -109,34 +109,34 @@ function _make_x
     #      - binari
     #      - librerie (a meno che non siano .a, a questi tolgo il permesso di esecuzion)
     #      - directory
-    ( cd usr;
+    ( cd usr
 	find . -not \( -wholename "*bin*" -o \( -wholename "*lib*" -a -not -wholename "*.a" \) \) -not -type d\
 	   | xargs chmod -x
     )
 
     # 4.2) I file in usr/sbin devono avere il permesso di esecuzione solo per il root
-    ( cd usr/sbin;
-   	chmod go-x *;
+    ( cd usr/sbin
+   	chmod go-x *
     )
 
     # 4.3) Assicuro i giusti permessi ai binari in usr/X11R6/bin
-    ( cd usr/X11R6/bin;
+    ( cd usr/X11R6/bin
 	chmod a+x *
     )
 
     # 4.4) Aggiusto i permessi ai file in etc/ati
-    ( cd etc/ati;
-	chmod a-x *;
-	chmod a+x authatieventsd.sh 2>/dev/null;
+    ( cd etc/ati
+	chmod a-x *
+	chmod a+x authatieventsd.sh 2>/dev/null
     )
 
     # 5)
     # Alcuni dei file in etc/ati devono essere spostati come .new in modo da preservarli con la rimozione del
     # pacchetto. Inoltre lo script di installazione del pacchetto provvederà a rinominarli o a cancellarli se
     # necessario.
-    ( cd etc/ati;
+    ( cd etc/ati
 	for file in amdpcsdb; do
-	    [ -f $file ] && mv $file ${file}.new;
+	    [ -f $file ] && mv $file ${file}.new
 	done
     )
 
@@ -148,21 +148,21 @@ function _make_x
 	for dir in $(find usr -type d -name "lib*"); # Move X usr/lib*/modules in usr/lib*/xorg/modules
 	do
 	    if [ -d ${dir}/modules ]; then # Controllo che la directory sia una di quelle che contiene i moduli
-		mkdir ${dir}/xorg;
-		mv ${dir}/modules ${dir}/xorg;
+		mkdir ${dir}/xorg
+		mv ${dir}/modules ${dir}/xorg
 	    fi
 	done
-	cp -a usr/X11R6/* usr/;
-	rm -rf usr/X11R6;
+	cp -a usr/X11R6/* usr/
+	rm -rf usr/X11R6
     fi
 
     # 7)
     # - Sposto, se esiste, la directory usr/share/man in usr.
     # - Comprimo le pagine di manuale, se esistono
     if [ -d usr/share/man ]; then
-      mv usr/share/man usr;
+      mv usr/share/man usr
       for file in usr/man/*/*; do
-        gzip $file;
+        gzip $file
       done
     fi
 
@@ -172,17 +172,17 @@ function _make_x
     # la directory
     if [ -d usr/share/gnome ]; then
 	mkdir -p usr/share/applications
-	find usr/share/gnome -name '*desktop' -exec mv '{}' usr/share/applications \;
-	rm -rf usr/share/gnome;
+	find usr/share/gnome -name '*desktop' -exec mv '{}' usr/share/applications \
+	rm -rf usr/share/gnome
     fi
 
     # 9)
     # MAKE PACKAGE
-    local X_PACK_NAME=${X_PACK_PARTIAL_NAME/fglrx-/fglrx-${X_VERSION}-}.tgz;
+    local X_PACK_NAME=${X_PACK_PARTIAL_NAME/fglrx-/fglrx-${X_VERSION}-}.tgz
 
     # Modify the slack-desc
-    ( cd install;
-	sed s/fglrx:/fglrx-${X_VERSION}:/ slack-desc > slack-desc.tmp;
+    ( cd install
+	sed s/fglrx:/fglrx-${X_VERSION}:/ slack-desc > slack-desc.tmp
 	mv -f slack-desc.tmp slack-desc
     )
 
@@ -190,11 +190,11 @@ function _make_x
     find . | xargs file | sed -n "/ELF.*executable/b PRINT;/ELF.*shared object/b PRINT;d;:PRINT s/\(.*\):.*/\1/;p;"\
 	| xargs strip --strip-unneeded 2> /dev/null
 
-    makepkg -l y -c n ${DEST_DIR}/${X_PACK_NAME};
+    makepkg -l y -c n ${DEST_DIR}/${X_PACK_NAME}
 
-    [ "x${TMP_FILE}" != "x" ] && echo ${X_PACK_NAME} >> ${TMP_FILE};
+    [ "x${TMP_FILE}" != "x" ] && echo ${X_PACK_NAME} >> ${TMP_FILE}
 
-    cd ${ROOT_DIR};
+    cd ${ROOT_DIR}
 
-    return 0;
+    return 0
 }
