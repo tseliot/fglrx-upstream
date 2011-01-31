@@ -218,31 +218,23 @@ function _buildpkg
     local DRYRUN=0
     [ "x$2" != 'x' ] && DRYRUN=1
 
-    local OPTIONS=`echo $1 | tr [:upper:] [:lower:]`
-    case $OPTIONS in
-	only_module | slack_module)
+    case "$1" in
+	Only_Module)
 	    (( $DRYRUN )) && return 0
 	    source ${SCRIPT_DIR}/make_module.sh
 	    _make_module
 	    ;;
-	only_x | slack_x)
+	Only_X)
 	    (( $DRYRUN )) && return 0
 	    source ${SCRIPT_DIR}/make_x.sh
 	    _make_x
 	    ;;
-	all | slackware)
+	All)
 	    (( $DRYRUN )) && return 0
 	    source ${SCRIPT_DIR}/make_module.sh
 	    _make_module
 	    source ${SCRIPT_DIR}/make_x.sh
 	    _make_x
-	    ;;
-	test)
-	    (( $DRYRUN )) && return 0
-	    local CHECK_SCRIPT=./check.sh
-	    PATH=$PATH:/usr/X11/bin:/usr/X11R6/bin
-	    source ${CHECK_SCRIPT} --noprint
-	    set
 	    ;;
 	*) echo "$1 ${MESSAGE[10]}"
            return 1
