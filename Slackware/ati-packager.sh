@@ -44,13 +44,13 @@ function _set_builder_language
 # d'ambiente utitli per le altre funzioni.
 function _init_env
 {
-    [ $(id -u) -gt 0 ] && echo ${MESSAGE[6]} && exit 1
+    [ $(id -u) -gt 0 ] && _print '' '' ${MESSAGE[6]} && exit 1
 
     BUILD_VER=1.4.2
 
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD
-    echo "$ROOT_DIR" | grep -q ' ' && echo ${MESSAGE[7]} && exit 1
+    echo "$ROOT_DIR" | grep -q ' ' && _print '' '' ${MESSAGE[7]} && exit 1
 
     # Comandi interni alla bash da cui il builder dipende
     BUILTIN_DEPS=(\[ cd echo exit local return set source)
@@ -108,10 +108,9 @@ function _init_env
     # se, e solo se, l'installer ($PPID) viene invocato con l'opzione --buildandinstallpkg,
     # e viene cancellato quando questo script viene invocato con il paramentro
     # --installpkg
+    TMP_FILE=''
     if grep -q -- '--buildandinstallpkg' /proc/${PPID}/cmdline; then
-      TMP_FILE=${DEST_DIR}/tmpSlackwarePkg.txt
-    else
-      TMP_FILE=''
+	TMP_FILE=${DEST_DIR}/tmpSlackwarePkg.txt
     fi
 
     # Controllo l'esistenza di alcuni comandi utili ma non necessari
@@ -135,7 +134,7 @@ function _check_external_command
 
     # Se non ho il comando which e neanche il comando grep, errore
     if (( ! $USE_WHICH )) && ! grep -V &> /dev/null; then
-	_print_with_color '1;31' "${MESSAGE[4]} grep"
+	_print '1;31' '' "${MESSAGE[4]} grep"
 	return 1
     fi
 
@@ -151,7 +150,7 @@ function _check_external_command
     while [ $i -lt ${#DEPS[@]} ]
     do
 	if (( $DRYRUN )); then
-	    echo -n "${MESSAGE[5]} ${DEPS[$i]}"
+	    _print '' 'n' "${MESSAGE[5]} ${DEPS[$i]}"
 	    (( $USE_TPUT )) && tput hpa 35
 	    echo -n '[ '
 	fi
@@ -163,11 +162,12 @@ function _check_external_command
 	fi
 
 	if [ $? != 0 ]; then
-	    (( $DRYRUN )) && local OPT='_n'
-	    _print_with_color "1;31${OPT}" "${MESSAGE[4]} ${DEPS[$i]}"
+	    local OPT=''
+	    (( $DRYRUN )) && OPT='n'
+	    _print '1;31' "${OPT}" "${MESSAGE[4]} ${DEPS[$i]}"
 	    DEPS_OK=1
 	elif (( $DRYRUN )); then
-	    _print_with_color '1;32_n' 'OK'
+	    _print '1;32' 'n' 'OK'
 	fi
 
 	(( $DRYRUN )) && echo ' ]'
@@ -183,24 +183,33 @@ function _check_external_command
 }
 
 # Stampa a video i parametri $[2-*]
-# $1 è nella forma COLORE[_n], dove
-# COLORE può essere uno dei seguenti valori (quelli nella forma ?;??):
+# $1 può essere una stringa nulla ('') oppure un colore nella forma ?;??.
+#    Per il colore si veda uno dei seguenti valori:
 #
-# Nero           0;30     Grigio Scuro  1;30
-# Blu            0;34     Blu Chiaro    1;34
-# Verde          0;32     Verde Chiaro  1;32
-# Ciano          0;36     Ciano Chiaro  1;36
-# Rosso          0;31     Rosso Chiaro  1;31
-# Viola          0;35     Viola Chiaro  1;35
-# Marrone        0;33     Giallo        1;33
-# Grigio Chiaro  0;37     Bianco        1;37
-function _print_with_color
+#    Nero           0;30     Grigio Scuro  1;30
+#    Blu            0;34     Blu Chiaro    1;34
+#    Verde          0;32     Verde Chiaro  1;32
+#    Ciano          0;36     Ciano Chiaro  1;36
+#    Rosso          0;31     Rosso Chiaro  1;31
+#    Viola          0;35     Viola Chiaro  1;35
+#    Marrone        0;33     Giallo        1;33
+#    Grigio Chiaro  0;37     Bianco        1;37
+#
+# $2 può essere una stringa nulla ('') oppure il carattere 'n'. Se vale 'n',
+#    allora dopo la stampa non va a capo.
+function _print
 {
-    local COLOR=${1%_*}
-    local NEW_LINE=${1#*_}
-    [ $1 = $NEW_LINE ] && NEW_LINE=''
-    shift
-    echo -e${NEW_LINE} "\E[${COLOR}m${*}\E[00m"
+    local color=$1
+    local new_line=$2
+    shift 2
+
+    if [ -z $color ]
+    then
+	echo -e${new_line} "${*}"
+    else
+	echo -e${new_line} "\E[${color}m${*}\E[00m"
+    fi
+
     return 0
 }
 
@@ -212,8 +221,8 @@ function _print_with_color
 #             ritorna 0 se lo è, 1 altrimenti
 function _buildpkg
 {
-    [ ! -e ${SCRIPT_DIR}/make_module.sh ] && _print_with_color '1;31' "${MESSAGE[11]}\n" && return 1
-    [ ! -e ${SCRIPT_DIR}/make_x.sh ] && _print_with_color '1;31' "${MESSAGE[12]}\n" && return 1
+    [ ! -e ${SCRIPT_DIR}/make_module.sh ] && _print '1;31' '' "${MESSAGE[11]}\n" && return 1
+    [ ! -e ${SCRIPT_DIR}/make_x.sh ] && _print '1;31' '' "${MESSAGE[12]}\n" && return 1
 
     local DRYRUN=0
     [ "x$2" != 'x' ] && DRYRUN=1
@@ -236,9 +245,9 @@ function _buildpkg
 	    source ${SCRIPT_DIR}/make_x.sh
 	    _make_x
 	    ;;
-	*) echo "$1 ${MESSAGE[10]}"
-           return 1
-	   ;;
+	*) _print '' '' "$1 ${MESSAGE[10]}"
+            return 1
+	    ;;
     esac
 
     return 0
@@ -247,40 +256,40 @@ function _buildpkg
 # Implemente l'opzione --installpkg dello script
 function _installpkg
 {
-  _print_with_color '1;32' "${MESSAGE[19]}"
+    _print '1;32' '' "${MESSAGE[19]}"
 
   # Controllo l'esistenza del file temporaneo in cui sono scritti i nomi dei pacchetti
   # da installare
-  [ ! -f ${TMP_FILE} ] && _print_with_color '1;31' "${MESSAGE[16]} ${TMP_FILE}, ${MESSAGE[17]}" && return 1
+    [ ! -f ${TMP_FILE} ] && _print '1;31' '' "${MESSAGE[16]} ${TMP_FILE}, ${MESSAGE[17]}" && return 1
 
   # Controllo che il server X non sia attivo
-  ps -C X >/dev/null && _print_with_color '1;31' "${MESSAGE[16]} ${MESSAGE[20]}" && return 1
+    ps -C X >/dev/null && _print '1;31' '' "${MESSAGE[16]} ${MESSAGE[20]}" && return 1
 
   # Se MODULE_IN_MEMORY == 1 il modulo è già presente in memoria
-  local MODULE_IN_MEMORY=0
-  lsmod | grep -q ${MODULE_NAME%.ko.gz} && MODULE_IN_MEMORY=1
+    local MODULE_IN_MEMORY=0
+    lsmod | grep -q ${MODULE_NAME%.ko.gz} && MODULE_IN_MEMORY=1
 
   # Installo i pacchetti
-  for pkg in $(<${TMP_FILE})
+    for pkg in $(<${TMP_FILE})
     do
-      if [ -f ${DIR_PACKAGE}${pkg%.tgz} ]; then
-        upgradepkg --reinstall "${DEST_DIR}/$pkg"; # Il pacchetto era già installato
-      elif [ -f ${DIR_PACKAGE}$(echo $pkg | cut -d'-' -f-2)* ]; then
-	upgradepkg "${DEST_DIR}/$pkg"; # Il pacchetto era installato ad una versione diversa
-      else
-	installpkg "${DEST_DIR}/$pkg"; # Il pacchetto non era installato
-      fi
+	if [ -f ${DIR_PACKAGE}${pkg%.tgz} ]; then
+            upgradepkg --reinstall "${DEST_DIR}/$pkg"; # Il pacchetto era già installato
+	elif [ -f ${DIR_PACKAGE}$(echo $pkg | cut -d'-' -f-2)* ]; then
+	    upgradepkg "${DEST_DIR}/$pkg"; # Il pacchetto era installato ad una versione diversa
+	else
+	    installpkg "${DEST_DIR}/$pkg"; # Il pacchetto non era installato
+	fi
     done
 
   # Se il modulo è già in memoria, scarico il vecchio e
   # ricarico il nuovo
-  if [ $MODULE_IN_MEMORY -eq 1 ]; then
-    echo "${MESSAGE[21]} ${MODULE_NAME%.ko.gz};"
-    modprobe -r ${MODULE_NAME%.ko.gz}
-    modprobe ${MODULE_NAME%.ko.gz}
-  fi
+    if [ $MODULE_IN_MEMORY -eq 1 ]; then
+	_print '' '' "${MESSAGE[21]} ${MODULE_NAME%.ko.gz};"
+	modprobe -r ${MODULE_NAME%.ko.gz}
+	modprobe ${MODULE_NAME%.ko.gz}
+    fi
 
-  return 0
+    return 0
 }
 
 # Directory che contiene l'elenco dei pacchetti installati nelle distribuzioni
@@ -326,15 +335,15 @@ case $1 in
     # Controllo che tutto il necessario alla costruzione dei pacchetti
     # sia correttamente installato
     --buildprep)
-	echo -e "\n${MESSAGE[0]} $BUILD_VER"\
-		"\n--------------------------------------------"\
-		"\n${MESSAGE[1]}\n"
+	_print '' '' "\n${MESSAGE[0]} $BUILD_VER"\
+                     "\n--------------------------------------------"\
+                     "\n${MESSAGE[1]}\n"
 
 	EXIT_STATUS=0
 
 	# Controllo che $3 sia un blank oppure --dryrun
 	if [ "x$3" != 'x' ] && [ "x$3" != 'x--dryrun' ]; then
-	    _print_with_color '1;31' "${MESSAGE[16]} $3 ${MESSAGE[18]}"
+	    _print '1;31' '' "${MESSAGE[16]} $3 ${MESSAGE[18]}"
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 	fi
 
@@ -369,20 +378,20 @@ case $1 in
 	# Controllo che la versione del server Xorg sia maggiore o uguale a 6.7
 	source ./check.sh --noprint
 	if [ -z ${X_VERSION} ]; then
-	    (( $DRYRUN )) && _print_with_color '1;31' "${MESSAGE[13]} >= 6.7"
+	    (( $DRYRUN )) && _print '1;31' '' "${MESSAGE[13]} >= 6.7"
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 	fi
 
 	# Controllo che la versione del kernel sia maggiore o uguale a 2.6
 	if [ $KNL_VERSION -lt 2 ] || [ $KNL_MAJOR -lt 6 ]; then
-	    (( $DRYRUN )) && _print_with_color '1;31' "${MESSAGE[14]} >= 2.6"
+	    (( $DRYRUN )) && _print '1;31' '' "${MESSAGE[14]} >= 2.6"
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 	fi
 
 	# Controllo la versione delle librerie glibc
 	GLIBC_VER=$(ldconfig --version| head -n1 | grep -o [[:digit:]]\.[[:digit:]])
 	if [ $(echo $GLIBC_VER | cut -d'.' -f1) -lt 2 ] || [ $(echo $GLIBC_VER | cut -d'.' -f2) -lt 2 ]; then
-	    (( $DRYRUN )) && _print_with_color '1;31' "${MESSAGE[15]} >= 2.2"
+	    (( $DRYRUN )) && _print '1;31' '' "${MESSAGE[15]} >= 2.2"
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 	fi
 

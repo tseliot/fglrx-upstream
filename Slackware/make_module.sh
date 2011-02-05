@@ -61,7 +61,7 @@ function _make_module
 
     # Make modules with ati's script
     if ! sh make.sh; then
-	echo ${MESSAGE[9]}
+	_print '' '' ${MESSAGE[9]}
 	exit 1
     fi
 

@@ -160,10 +160,10 @@ function _make_x
     # - Sposto, se esiste, la directory usr/share/man in usr.
     # - Comprimo le pagine di manuale, se esistono
     if [ -d usr/share/man ]; then
-      mv usr/share/man usr
-      for file in usr/man/*/*; do
-        gzip $file
-      done
+	mv usr/share/man usr
+	for file in usr/man/*/*; do
+            gzip $file
+	done
     fi
 
     # 8)
@@ -172,7 +172,7 @@ function _make_x
     # la directory
     if [ -d usr/share/gnome ]; then
 	mkdir -p usr/share/applications
-	find usr/share/gnome -name '*desktop' -exec mv '{}' usr/share/applications \
+	find usr/share/gnome -name '*desktop' -exec mv '{}' usr/share/applications
 	rm -rf usr/share/gnome
     fi
 
