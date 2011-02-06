@@ -49,8 +49,7 @@ function _init_env
     BUILTIN_DEPS=(\[ cd echo exit local return set source)
 
     # Comandi esterni da cui il builder dipende nella fase di creazione dei pacchetti
-    BUILD_DEPS=(chmod cp cut file find grep gzip id ln makepkg mkdir modinfo mv rm sed sh
-	strip tar tr xargs)
+    BUILD_DEPS=(chmod cp cut file find gzip ln makepkg mkdir modinfo mv rm sed sh strip tar tr xargs)
 
     # Comandi esterni da cui il builder dipende nella fase di installazione dei pacchetti
     INSTALL_DEPS=(basename dirname depmod installpkg lsmod md5sum modprobe ps upgradepkg)
@@ -127,29 +126,31 @@ function _check_external_command
 	install)
 	    local DEPS=(${INSTALL_DEPS[@]})
 	    ;;
+	*)
+	    local DEPS=($*)
+	    ;;
     esac
 
     while [ $i -lt ${#DEPS[@]} ]
     do
-	local command=${DEPS[$i]}
+	local _command=${DEPS[$i]}
 	if (( $DRYRUN )); then
-	    _print '' 'n' "`eval_gettext \"Check for command: \\\${command}\"`"
+	    _print '' 'n' "`eval_gettext \"Check for command: \\\${_command}\"`"
 	    (( $USE_TPUT )) && tput hpa 45
 	    echo -n '   [ '
 	fi
 
 	if (( $USE_WHICH )); then
-	    which ${command} &> /dev/null
+	    which ${_command} &> /dev/null
 	else
-	    grep "bin/${command}\$" ${DIR_PACKAGE}/* &> /dev/null
+	    grep "bin/${_command}\$" ${DIR_PACKAGE}/* &> /dev/null
 	fi
 
 	if [ $? != 0 ]; then
-	    local OPT=''
 	    if (( $DRYRUN )); then
 		_print '1;31' 'n' "`gettext 'NOT FOUND'`"
 	    else
-		_print '1;31' '' "`eval_gettext \"You have to install \\\${command}\"`"
+		_print '1;31' '' "`eval_gettext \"You have to install \\\${_command}\"`"
 	    fi
 	    DEPS_OK=1
 	elif (( $DRYRUN )); then
