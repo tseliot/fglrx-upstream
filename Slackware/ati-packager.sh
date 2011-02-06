@@ -27,6 +27,17 @@
 # d'ambiente utitli per le altre funzioni.
 function _init_env
 {
+    # Mi assicuro che tutti i comandi interni alla bash necessari, siano abilitati
+    enable cd echo exit export local return set source test
+
+    # Controllo i comandi esterni, essenziali!
+    if ! grep --version >& /dev/null || ! id --version >& /dev/null\
+	|| ! gettext --version >& /dev/null; then
+	_print '1;31' '' 'You have to install at least one these commands:'\
+                         '\n\t- grep\n\t- id\n\t- gettext'
+	exit 1
+    fi
+
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD
 
@@ -35,27 +46,25 @@ function _init_env
     # non è quella in cui si trova questo script.
     SCRIPT_DIR=packages/Slackware
 
+    # Settaggi per gettext. Inclusione della funzione eval_gettext().
     export TEXTDOMAIN=ATI_SlackBuild
     export TEXTDOMAINDIR=${ROOT_DIR}/${SCRIPT_DIR}/locale
-    . gettext.sh
+    if ! source gettext.sh; then
+	_print '1;31' '' 'gettext.sh: file not found or not executable'
+	exit 1
+    fi
 
     [ $(id -u) -gt 0 ] && _print '' '' "`gettext 'Only root can do it!'`" && exit 1
 
-    BUILD_VER=1.4.2
-
     echo "$ROOT_DIR" | grep -q ' ' && _print '' '' "`gettext 'The name of the current directory should not contain any spaces'`" && exit 1
 
-    # Comandi interni alla bash da cui il builder dipende
-    BUILTIN_DEPS=(\[ cd echo exit local return set source)
+    BUILD_VER=1.4.3
 
     # Comandi esterni da cui il builder dipende nella fase di creazione dei pacchetti
     BUILD_DEPS=(chmod cp cut file find gzip ln makepkg mkdir modinfo mv rm sed sh strip tar tr xargs)
 
     # Comandi esterni da cui il builder dipende nella fase di installazione dei pacchetti
     INSTALL_DEPS=(basename dirname depmod installpkg lsmod md5sum modprobe ps upgradepkg)
-
-    # Mi assicuro che tutti i comandi interni alla bash necessari, siano abilitati
-    enable ${BUILTIN_DEPS[@]}
 
     # Architettura, può essere 'x86' o 'x86_64'
     ARCH=$(arch)
