@@ -378,7 +378,7 @@ case $1 in
 	fi
 
 	# Controllo la versione delle librerie glibc
-	GLIBC_VER=$(ldconfig --version| head -n1 | grep -o [[:digit:]]\.[[:digit:]])
+	GLIBC_VER=$(ldconfig --version| head -n1 | grep -o [[:digit:]]\.[[:digit:]]*)
 	if [ $(echo $GLIBC_VER | cut -d'.' -f1) -lt 2 ] || [ $(echo $GLIBC_VER | cut -d'.' -f2) -lt 2 ]; then
 	    (( $DRYRUN )) && _print '1;31' '' "`gettext 'ERROR: the version of glibc must be >= 2.2'`"
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
