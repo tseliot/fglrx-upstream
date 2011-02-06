@@ -51,17 +51,17 @@ function _make_module
     local MODULE_DIR=lib/modules/fglrx/build_mod
 
     # Copy arch-depend files
-    mv arch/${ARCH}/${MODULE_DIR}/* common/${MODULE_DIR}
+#    mv arch/${ARCH}/${MODULE_DIR}/* common/${MODULE_DIR}
 
     cd common/${MODULE_DIR}
 
     # Se ci sono, applico le patch
     source ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh
     _module_patch
-
+exit 1
     # Make modules with ati's script
     if ! sh make.sh; then
-	_print '' '' ${MESSAGE[9]}
+	_print '' '' "`gettext "ERROR: I didn't make module"`"
 	exit 1
     fi
 

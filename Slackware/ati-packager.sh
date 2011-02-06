@@ -23,34 +23,27 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-# Imposta la lingua dei messaggi del builder.
-# Crea l'array MESSAGE usato per le stampe dei messaggi in output
-function _set_builder_language
-{
-    local EXT=$(echo $LANG | cut -d '_' -f1)
-    local FILE='/packages/Slackware/languages/ati-packager.en'
-
-    if [ -e "${PWD}"/packages/Slackware/languages/ati-packager.${EXT} ]; then
-	local FILE="/packages/Slackware/languages/ati-packager.${EXT}"
-    fi
-
-    local IFS=$(echo -e '\n\t')
-    MESSAGE=($(cat "${PWD}"$FILE))
-
-    return 0
-}
-
 # Inizializzazione: esegue alcuni controlli di base e imposta delle variabili
 # d'ambiente utitli per le altre funzioni.
 function _init_env
 {
-    [ $(id -u) -gt 0 ] && _print '' '' ${MESSAGE[6]} && exit 1
+    # ROOT_DIR = directory attuale
+    ROOT_DIR=$PWD
+
+    # Directory, relativa alla root directory attuale, in cui si trova questo script.
+    # Si ricordi che quando l'ati-installer.sh esegue questo script, la root directory
+    # non è quella in cui si trova questo script.
+    SCRIPT_DIR=packages/Slackware
+
+    export TEXTDOMAIN=ATI_SlackBuild
+    export TEXTDOMAINDIR=${ROOT_DIR}/${SCRIPT_DIR}/locale
+    . gettext.sh
+
+    [ $(id -u) -gt 0 ] && _print '' '' "`gettext 'Only root can do it!'`" && exit 1
 
     BUILD_VER=1.4.2
 
-    # ROOT_DIR = directory attuale
-    ROOT_DIR=$PWD
-    echo "$ROOT_DIR" | grep -q ' ' && _print '' '' ${MESSAGE[7]} && exit 1
+    echo "$ROOT_DIR" | grep -q ' ' && _print '' '' "`gettext 'The name of the current directory should not contain any spaces'`" && exit 1
 
     # Comandi interni alla bash da cui il builder dipende
     BUILTIN_DEPS=(\[ cd echo exit local return set source)
@@ -75,11 +68,6 @@ function _init_env
     KNL_MAJOR=$(echo $KNL_RELEASE | cut -d '.' -f2)
     KNL_MINOR=$(echo $KNL_RELEASE | cut -d '.' -f3)
     KNL_BUILD=$(echo $KNL_RELEASE | cut -d '.' -f4)
-
-    # Directory, relativa alla root directory attuale, in cui si trova questo script.
-    # Si ricordi che quando l'ati-installer.sh esegue questo script, la root directory
-    # non è quella in cui si trova questo script.
-    SCRIPT_DIR=packages/Slackware
 
     ATI_DRIVER_VER=$(./ati-packager-helper.sh --version)
     ATI_DRIVER_REL=$(./ati-packager-helper.sh --release)
@@ -132,12 +120,6 @@ function _check_external_command
     local DRYRUN=0
     [ "x$2" = 'x--dryrun' ] && DRYRUN=1
 
-    # Se non ho il comando which e neanche il comando grep, errore
-    if (( ! $USE_WHICH )) && ! grep -V &> /dev/null; then
-	_print '1;31' '' "${MESSAGE[4]} grep"
-	return 1
-    fi
-
     case $1 in
 	build)
 	    local DEPS=(${BUILD_DEPS[@]})
@@ -149,25 +131,29 @@ function _check_external_command
 
     while [ $i -lt ${#DEPS[@]} ]
     do
+	local command=${DEPS[$i]}
 	if (( $DRYRUN )); then
-	    _print '' 'n' "${MESSAGE[5]} ${DEPS[$i]}"
-	    (( $USE_TPUT )) && tput hpa 35
-	    echo -n '[ '
+	    _print '' 'n' "`eval_gettext \"Check for command: \\\${command}\"`"
+	    (( $USE_TPUT )) && tput hpa 45
+	    echo -n '   [ '
 	fi
 
 	if (( $USE_WHICH )); then
-	    which ${DEPS[$i]} &> /dev/null
+	    which ${command} &> /dev/null
 	else
-	    grep "bin/${DEPS[$i]}\$" ${DIR_PACKAGE}/* &> /dev/null
+	    grep "bin/${command}\$" ${DIR_PACKAGE}/* &> /dev/null
 	fi
 
 	if [ $? != 0 ]; then
 	    local OPT=''
-	    (( $DRYRUN )) && OPT='n'
-	    _print '1;31' "${OPT}" "${MESSAGE[4]} ${DEPS[$i]}"
+	    if (( $DRYRUN )); then
+		_print '1;31' 'n' "`gettext 'NOT FOUND'`"
+	    else
+		_print '1;31' '' "`eval_gettext \"You have to install \\\${command}\"`"
+	    fi
 	    DEPS_OK=1
 	elif (( $DRYRUN )); then
-	    _print '1;32' 'n' 'OK'
+	    _print '1;32' 'n' "`gettext 'OK'`"
 	fi
 
 	(( $DRYRUN )) && echo ' ]'
@@ -221,13 +207,14 @@ function _print
 #             ritorna 0 se lo è, 1 altrimenti
 function _buildpkg
 {
-    [ ! -e ${SCRIPT_DIR}/make_module.sh ] && _print '1;31' '' "${MESSAGE[11]}\n" && return 1
-    [ ! -e ${SCRIPT_DIR}/make_x.sh ] && _print '1;31' '' "${MESSAGE[12]}\n" && return 1
+    [ ! -e ${SCRIPT_DIR}/make_module.sh ] && _print '1;31' '' "`gettext 'make_module.sh script missing!'`\n" && return 1
+    [ ! -e ${SCRIPT_DIR}/make_x.sh ] && _print '1;31' '' "`gettext 'make_x.sh script missing!'`\n" && return 1
 
     local DRYRUN=0
     [ "x$2" != 'x' ] && DRYRUN=1
 
-    case "$1" in
+    local version=$1
+    case $version in
 	Only_Module)
 	    (( $DRYRUN )) && return 0
 	    source ${SCRIPT_DIR}/make_module.sh
@@ -245,7 +232,7 @@ function _buildpkg
 	    source ${SCRIPT_DIR}/make_x.sh
 	    _make_x
 	    ;;
-	*) _print '' '' "$1 ${MESSAGE[10]}"
+	*) _print '' '' "`eval_gettext \"\\\$version unsupported.\"`"
             return 1
 	    ;;
     esac
@@ -256,20 +243,20 @@ function _buildpkg
 # Implemente l'opzione --installpkg dello script
 function _installpkg
 {
-    _print '1;32' '' "${MESSAGE[19]}"
+    _print '1;32' '' "`gettext 'Install/Upgrade package/s'`"
 
-  # Controllo l'esistenza del file temporaneo in cui sono scritti i nomi dei pacchetti
-  # da installare
-    [ ! -f ${TMP_FILE} ] && _print '1;31' '' "${MESSAGE[16]} ${TMP_FILE}, ${MESSAGE[17]}" && return 1
+    # Controllo l'esistenza del file temporaneo in cui sono scritti i nomi dei pacchetti
+    # da installare
+    [ ! -f ${TMP_FILE} ] && _print '1;31' '' "`eval_gettext \"ERROR: \\\${TMP_FILE}, file not found\"`" && return 1
 
-  # Controllo che il server X non sia attivo
-    ps -C X >/dev/null && _print '1;31' '' "${MESSAGE[16]} ${MESSAGE[20]}" && return 1
+    # Controllo che il server X non sia attivo
+    ps -C X >/dev/null && _print '1;31' '' "`gettext 'ERROR: you must kill server X'`" && return 1
 
-  # Se MODULE_IN_MEMORY == 1 il modulo è già presente in memoria
+    # Se MODULE_IN_MEMORY == 1 il modulo è già presente in memoria
     local MODULE_IN_MEMORY=0
     lsmod | grep -q ${MODULE_NAME%.ko.gz} && MODULE_IN_MEMORY=1
 
-  # Installo i pacchetti
+    # Installo i pacchetti
     for pkg in $(<${TMP_FILE})
     do
 	if [ -f ${DIR_PACKAGE}${pkg%.tgz} ]; then
@@ -281,12 +268,13 @@ function _installpkg
 	fi
     done
 
-  # Se il modulo è già in memoria, scarico il vecchio e
-  # ricarico il nuovo
+    # Se il modulo è già in memoria, scarico il vecchio e
+    # ricarico il nuovo
     if [ $MODULE_IN_MEMORY -eq 1 ]; then
-	_print '' '' "${MESSAGE[21]} ${MODULE_NAME%.ko.gz};"
-	modprobe -r ${MODULE_NAME%.ko.gz}
-	modprobe ${MODULE_NAME%.ko.gz}
+	local module=${MODULE_NAME%.ko.gz}
+	_print '' '' "`eval_gettext \"Reload module \\\$module\"`"
+	modprobe -r $module
+	modprobe $module
     fi
 
     return 0
@@ -329,23 +317,24 @@ case $1 in
 	;;
 esac
 
-_set_builder_language
 _init_env
 case $1 in
     # Controllo che tutto il necessario alla costruzione dei pacchetti
     # sia correttamente installato
     --buildprep)
-	_print '' '' "\n${MESSAGE[0]} $BUILD_VER"\
-                     "\n--------------------------------------------"\
-                     "\n${MESSAGE[1]}\n"
+	echo -e "\nATI SlackBuild Version $BUILD_VER"\
+                "\n--------------------------------------------"\
+                "\nby: Emanuele Tomasi <tomasi@cli.di.unipi.it>\n"
 
 	EXIT_STATUS=0
 
 	# Controllo che $3 sia un blank oppure --dryrun
-	if [ "x$3" != 'x' ] && [ "x$3" != 'x--dryrun' ]; then
-	    _print '1;31' '' "${MESSAGE[16]} $3 ${MESSAGE[18]}"
+	opt=$3
+	if [ "x${opt}" != 'x' ] && [ "x${opt}" != 'x--dryrun' ]; then
+	    _print '1;31' '' "`eval_gettext \"ERROR: \\\${opt} is not a valid parameter\"`"
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 	fi
+	unset opt
 
 	# Controllo che il parametro $2 sia un nome di pacchetto da costruire, valido
 	! _buildpkg $2 '--dryrun' && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
@@ -378,20 +367,20 @@ case $1 in
 	# Controllo che la versione del server Xorg sia maggiore o uguale a 6.7
 	source ./check.sh --noprint
 	if [ -z ${X_VERSION} ]; then
-	    (( $DRYRUN )) && _print '1;31' '' "${MESSAGE[13]} >= 6.7"
+	    (( $DRYRUN )) && _print '1;31' '' "`gettext 'ERROR: the version of Xorg server must be >= 6.7'`"
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 	fi
 
 	# Controllo che la versione del kernel sia maggiore o uguale a 2.6
 	if [ $KNL_VERSION -lt 2 ] || [ $KNL_MAJOR -lt 6 ]; then
-	    (( $DRYRUN )) && _print '1;31' '' "${MESSAGE[14]} >= 2.6"
+	    (( $DRYRUN )) && _print '1;31' '' "`gettext 'ERROR: the version of kernel must be >= 2.6'`"
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 	fi
 
 	# Controllo la versione delle librerie glibc
 	GLIBC_VER=$(ldconfig --version| head -n1 | grep -o [[:digit:]]\.[[:digit:]])
 	if [ $(echo $GLIBC_VER | cut -d'.' -f1) -lt 2 ] || [ $(echo $GLIBC_VER | cut -d'.' -f2) -lt 2 ]; then
-	    (( $DRYRUN )) && _print '1;31' '' "${MESSAGE[15]} >= 2.2"
+	    (( $DRYRUN )) && _print '1;31' '' "`gettext 'ERROR: the version of glibc must be >= 2.2'`"
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 	fi
 
@@ -405,11 +394,12 @@ case $1 in
         VALUE=$?
 
 	rm -f ${TMP_FILE}
-	exit $VALUE
-	;;
+    	exit $VALUE
+    	;;
 
     *)
-	echo "${1}: unsupported option passed by ati-installer.sh"
+	command=$1
+	_print '' '' "`eval_gettext \"\\\${command}: unsupported option passed by ati-installer.sh\"`"
 	exit 1
 	;;
 esac
