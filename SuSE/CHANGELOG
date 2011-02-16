@@ -1,4 +1,47 @@
 -------------------------------------------------------------------
+Wed Feb 16 13:00:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- update all scripts the year 2011 in the copyright
+- add a new config file 'fglrxconfig' for the sysconfig-Editor to
+  configure the behaviour of the scripts in boot.fglrxrebuild and
+  fglrx-kernel-build.sh
+  supported configuration (* = standard value):
+    - AUTO_REBUILD (yes*|no)
+    - AUTO_LOAD (yes*|no)
+    - FGLRX_BUILD_LOG (/var/log/fglrx-build.log)
+    - BUILD_FOR_ALL_KERNELS (yes|no*)
+    - FORCE_BUILD (yes|no*)
+  template located at /var/adm/fillup-templates/sysconfig.fglrxconfig
+- change in ati-packager.sh and fglrx.spec:
+  - add fglrxconfig to /etc/sysconfig to configure the behaviour
+    of the scripts
+- retrofit the boot.fglrxrebuild:
+  - add variable AUTO_REBUILD to enabled rebuilding the fglrx
+    kernel module (/etc/sysconfig/fglrxconfig)
+  - add variable AUTO_LOAD to enabled loading the fglrx kernel
+    module (/etc/sysconfig/fglrxconfig)
+  - if AUTO_REBUILD and AUTO_LOAD are disabled, the init script
+    does nothing
+  - auto detection of the full path to the binaries
+  - the option "status" was completely removed because the option
+    "start" have the same functionality
+  - rebuild the fglrx kernel module if kernel versions is not equal
+    with the built-in kernel version of fglrx
+  - additional log entry: build date
+  - remove the control character in the log
+- retrofit the fglrx-kernel-build.sh:
+  - add parameter --all to build the fglrx kernel module for all
+    supported kernels (Variable: BUILD_FOR_ALL_KERNELS)
+  - add parameter --force to force building the fglrx kernel module
+    (Variable: FORCE_BUILD)
+  - auto detection of the fullpath to the binaries
+  - fix call of depmod to execute for every kernel version
+- fix a build failure with SLE10
+  - use rpm instead of zypper (ati-packager.sh)
+  - linux-kernel-headers is no longer required (fglrx.spec)
+  - add kernel-smp to kernel list (fglrx-kernel-build.sh)
+
+-------------------------------------------------------------------
 Sun Jan 30 00:25:42 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - add 'aticonfig --initial' in spec file to create an initial configuration,

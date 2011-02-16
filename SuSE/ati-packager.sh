@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2010, Sebastian Siebert (freespacer@gmx.de)
+# Copyright (c) 2010-2011, Sebastian Siebert (freespacer@gmx.de)
 # All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person
@@ -169,6 +169,8 @@ buildPackage()
                 || checkReturnOutput $?
         fi
     fi
+    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/var/adm/fillup-templates \
+        || checkReturnOutput $?
     print_okay
 
     # copy all needed files into $TMP_BUILD_PATH
@@ -277,6 +279,8 @@ buildPackage()
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} ${DISTRO_PATH}/fglrx.png ${TMP_BUILD_PATH}/usr/share/pixmaps \
         || checkReturnOutput $?
+    cp ${VERBOSE_OPTION} ${DISTRO_PATH}/sysconfig.fglrxconfig ${TMP_BUILD_PATH}/var/adm/fillup-templates \
+        || checkReturnOutput $?
     echo "blacklist radeon" >${TMP_BUILD_PATH}/etc/modprobe.d/fglrx.conf \
         || checkReturnOutput $?
     print_okay
@@ -352,7 +356,12 @@ END_SED_SCRIPT
     INSTALLER_PARENT_PATH=`cd ${INSTALLER_PATH}/.. 2>/dev/null && pwd`  # Absolute path to the installer parent directory
     cp ${PACKAGE_FILE_WITH_PATH} ${INSTALLER_PARENT_PATH}               # Copy the created package to the directory where the self-extracting driver archive is located
     echo -n -e "\nPackage ${INSTALLER_PARENT_PATH}/${PACKAGE_FILE} has been successfully generated\n"
-    echo -n -e "\nInstall or update the RPM package as follows:\n\n   zypper install ${PACKAGE_FILE}\n\n"
+    echo -n -e "\nInstall or update the RPM package as follows:\n\n   "
+    if [ -n "`zypper --version 2>&1 | grep '0.6'`" ]; then
+        echo -n -e "rpm -i ${PACKAGE_FILE}\n\n"
+    else
+        echo -n -e "zypper install ${PACKAGE_FILE}\n\n"
+    fi
     print_okay
 
     # clean-up

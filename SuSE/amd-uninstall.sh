@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2010, Sebastian Siebert (freespacer@gmx.de)
+# Copyright (c) 2010-2011, Sebastian Siebert (freespacer@gmx.de)
 # All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person
@@ -86,7 +86,7 @@ if [ "${DO_DRY_RUN}" = "yes" ]; then
 elif [ "${USE_FORCE}" = "yes" ]; then
     RPM_OPTION="${RPM_OPTION} --nodeps"
 
-    echo "Forcing uninstall of ATI Catalysst(TM) Proprietary Driver."
+    echo "Forcing uninstall of ATI Catalyst(TM) Proprietary Driver."
     echo "No integrity verification is done."
 fi
 

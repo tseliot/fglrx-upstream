@@ -12,7 +12,9 @@ Group:          Servers
 PreReq:         %insserv_prereq %fillup_prereq
 Requires:       gcc make patch kernel-source kernel-syms
 %if %suse_version < 1130
+%if %suse_version > 1010
 Requires:       linux-kernel-headers
+%endif
 %else
 Requires:       kernel-devel kernel-default-devel kernel-desktop-devel
 %endif
@@ -82,7 +84,8 @@ mkdir -p $RPM_BUILD_ROOT/etc/ati \
          $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx/{articles,patches,user-manual} \
          $RPM_BUILD_ROOT/usr/share/man/man8 \
          $RPM_BUILD_ROOT/usr/share/pixmaps \
-         $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx/2.6.x
+         $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx/2.6.x \
+         $RPM_BUILD_ROOT/var/adm/fillup-templates \
 #         $RPM_BUILD_ROOT/usr/%{_lib}/fglrx/lib \
 pushd $tmpdir/fglrx
     install -m 644 etc/ati/* \
@@ -97,6 +100,8 @@ pushd $tmpdir/fglrx
     ln -s su $RPM_BUILD_ROOT/etc/pam.d/amdcccle-su
     install -m 755 etc/security/console.apps/amdcccle-su \
                    $RPM_BUILD_ROOT/etc/security/console.apps
+    install -m 644 var/adm/fillup-templates/sysconfig.fglrxconfig \
+                   $RPM_BUILD_ROOT/var/adm/fillup-templates/sysconfig.fglrxconfig
     install -m 755 usr/X11R6/%{_lib}/fglrx/* \
                    $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/fglrx
     rm -rf usr/X11R6/%{_lib}/fglrx
@@ -210,6 +215,7 @@ export NO_BRP_CHECK_RPATH=true
 
 %post
 %run_ldconfig
+%{fillup_only -n fglrxconfig}
 CURRENT_PATH=`pwd`
 pushd /usr/src/kernel-modules/fglrx
 # add kernel patches here
@@ -253,7 +259,7 @@ fi
 %endif
 if [ -x etc/init.d/boot.fglrxrebuild ]; then
     # Create symbolic run level links for boot.fglrxrebuild start script:
-    %{fillup_and_insserv -y boot.fglrxrebuild}
+    %{fillup_and_insserv -Y boot.fglrxrebuild}
 fi
 if [ -f etc/X11/xorg.conf ]; then
     test -f etc/X11/xorg.conf.fglrx-post || \
@@ -274,7 +280,7 @@ test -d usr/X11R6/lib/modules/dri && \
 ln -snf %{DRI_DRIVERS32_DIR} usr/X11R6/lib/modules/dri
 %endif
 %endif
-usr/bin/fglrx-kernel-build.sh
+usr/bin/fglrx-kernel-build.sh -f -a
 if [ $? -ne 0 ]; then
     echo 
     echo "**************************************************************"
@@ -315,10 +321,10 @@ fi
 exit 0
 
 %postun
-if [ -x etc/init.d/atieventsd ]; then
+#if [ -x etc/init.d/atieventsd ]; then
     # Rearrange run level symlinks after removing the atieventsd init script
     %{insserv_cleanup}
-fi
+#fi
 if [ "$1" -eq 0 ]; then
     test -f etc/X11/xorg.conf && \
         cp etc/X11/xorg.conf etc/X11/xorg.conf.fglrx-postun
@@ -389,3 +395,4 @@ exit 0
 %else
 /usr/%{_lib}/powersave/scripts/*
 %endif
+/var/adm/fillup-templates/*
