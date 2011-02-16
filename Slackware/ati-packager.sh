@@ -30,10 +30,10 @@ function _init_env
     # Mi assicuro che tutti i comandi interni alla bash necessari, siano abilitati
     enable cd echo exit export local return set source test
 
-    # Controllo i comandi esterni, essenziali!
+    # Controllo i comandi esterni essenziali!
     if ! grep --version >& /dev/null || ! id --version >& /dev/null\
 	|| ! gettext --version >& /dev/null; then
-	_print '1;31' '' 'You have to install at least one these commands:'\
+	_print '1;31' '' 'You need to install at least one these commands:'\
                          '\n\t- grep\n\t- id\n\t- gettext'
 	exit 1
     fi
@@ -41,9 +41,9 @@ function _init_env
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD
 
-    # Directory, relativa alla root directory attuale, in cui si trova questo script.
-    # Si ricordi che quando l'ati-installer.sh esegue questo script, la root directory
-    # non è quella in cui si trova questo script.
+    # Directory, relativa a ROOT_DIR, in cui si trova questo script.
+    # Si ricordi che quando l'ati-installer.sh esegue questo script la root directory
+    # è ROOT_DIR
     SCRIPT_DIR=packages/Slackware
 
     # Settaggi per gettext. Inclusione della funzione eval_gettext().
@@ -56,12 +56,10 @@ function _init_env
 
     [ $(id -u) -gt 0 ] && _print '' '' "`gettext 'Only root can do it!'`" && exit 1
 
-    echo "$ROOT_DIR" | grep -q ' ' && _print '' '' "`gettext 'The name of the current directory should not contain any spaces'`" && exit 1
-
-    BUILD_VER=1.4.3
+    echo "$ROOT_DIR" | grep -q ' ' && _print '' '' "`gettext "The name of the current directory mustn't contain any spaces"`" && exit 1
 
     # Comandi esterni da cui il builder dipende nella fase di creazione dei pacchetti
-    BUILD_DEPS=(chmod cp cut file find gzip ln makepkg mkdir modinfo mv rm sed sh strip tar tr xargs)
+    BUILD_DEPS=(chmod cp cut file find gzip ln makepkg mkdir mv rm sed sh strip tar xargs)
 
     # Comandi esterni da cui il builder dipende nella fase di installazione dei pacchetti
     INSTALL_DEPS=(basename dirname depmod installpkg lsmod md5sum modprobe ps upgradepkg)
@@ -70,31 +68,12 @@ function _init_env
     ARCH=$(arch)
     [[ $ARCH != x86_64 ]] && ARCH='x86'
 
-    # Informazioni sul kernel in uso
+    # Release del kernel in uso
     KNL_RELEASE=$(uname -r)
-    KNL_VERSION=$(echo $KNL_RELEASE | cut -d '.' -f1)
-    KNL_MAJOR=$(echo $KNL_RELEASE | cut -d '.' -f2)
-    KNL_MINOR=$(echo $KNL_RELEASE | cut -d '.' -f3)
-    KNL_BUILD=$(echo $KNL_RELEASE | cut -d '.' -f4)
 
+    ATI_DRIVER_NAME=fglrx
     ATI_DRIVER_VER=$(./ati-packager-helper.sh --version)
     ATI_DRIVER_REL=$(./ati-packager-helper.sh --release)
-
-    # Nome del modulo del kernel
-    MODULE_NAME=fglrx.ko.gz
-
-    # Directory in cui verranno messi i file per la creazione del pacchetto del modulo
-    # del kernel
-    MODULE_PKG_DIR=${SCRIPT_DIR}/module_pkg
-
-    # Nome del pacchetto del modulo del kernel
-    MODULE_PACK_NAME=fglrx-module-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}
-
-    # Directory in cui verranno messi i file per la creazione del pacchetto per il server X
-    X_PKG_DIR=${SCRIPT_DIR}/x_pkg
-
-    # Nome parziale (verrà poi integrato) del pacchetto per il server X
-    X_PACK_PARTIAL_NAME=fglrx-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}
 
     # Directory in cui verranno spostati i pacchetti creati e altri file
     DEST_DIR=${PWD%/*}
@@ -116,16 +95,18 @@ function _init_env
 
 # Controlla l'esistenza dei comandi necessari, ma esterni al build
 # $1 può essere:
-# 'build': controlla l'esistenza dei comandi necessari alla costruzione dei pacchetti
-# 'install': controlla l'esistenza dei comandi necessari all'installazione dei pacchetti
-# $2 può essere:
-# '': stampa a video solo il nome dei comandi non trovati
-# '--dryrun': stampa a video il nome del comando che sta controllando
+#   'build': per i comandi necessari alla costruzione dei pacchetti
+#   'install': per i comandi necessari all'installazione dei pacchetti
+#   nessuno dei precedenti: allora $* è un elenco di comandi separati da uno spazio
+# $2 può essere (nel caso $1 sia o 'build' o 'install'):
+#   '': stampa a video solo il nome dei comandi non trovati
+#   '--dryrun': stampa a video il nome del comando che sta controllando
 function _check_external_command
 {
     local i=0
     local DEPS_OK=0
     local DRYRUN=0
+
     [ "x$2" = 'x--dryrun' ] && DRYRUN=1
 
     case $1 in
@@ -159,7 +140,7 @@ function _check_external_command
 	    if (( $DRYRUN )); then
 		_print '1;31' 'n' "`gettext 'NOT FOUND'`"
 	    else
-		_print '1;31' '' "`eval_gettext \"You have to install \\\${_command}\"`"
+		_print '1;31' '' "`eval_gettext \"You must install \\\${_command}\"`"
 	    fi
 	    DEPS_OK=1
 	elif (( $DRYRUN )); then
@@ -255,23 +236,15 @@ function _installpkg
 {
     _print '1;32' '' "`gettext 'Install/Upgrade package/s'`"
 
-    # Controllo l'esistenza del file temporaneo in cui sono scritti i nomi dei pacchetti
-    # da installare
+    # Controllo l'esistenza del file temporaneo in cui sono scritti i nomi dei pacchetti da installare
     [ ! -f ${TMP_FILE} ] && _print '1;31' '' "`eval_gettext \"ERROR: \\\${TMP_FILE}, file not found\"`" && return 1
-
-    # Controllo che il server X non sia attivo
-    ps -C X >/dev/null && _print '1;31' '' "`gettext 'ERROR: you must kill server X'`" && return 1
-
-    # Se MODULE_IN_MEMORY == 1 il modulo è già presente in memoria
-    local MODULE_IN_MEMORY=0
-    lsmod | grep -q ${MODULE_NAME%.ko.gz} && MODULE_IN_MEMORY=1
 
     # Installo i pacchetti
     for pkg in $(<${TMP_FILE})
     do
-	if [ -f ${DIR_PACKAGE}${pkg%.tgz} ]; then
+	if [ -f ${DIR_PACKAGE}/${pkg%.tgz} ]; then
             upgradepkg --reinstall "${DEST_DIR}/$pkg"; # Il pacchetto era già installato
-	elif [ -f ${DIR_PACKAGE}$(echo $pkg | cut -d'-' -f-2)* ]; then
+	elif [ -f ${DIR_PACKAGE}/$(echo $pkg | cut -d'-' -f-2)* ]; then
 	    upgradepkg "${DEST_DIR}/$pkg"; # Il pacchetto era installato ad una versione diversa
 	else
 	    installpkg "${DEST_DIR}/$pkg"; # Il pacchetto non era installato
@@ -280,11 +253,16 @@ function _installpkg
 
     # Se il modulo è già in memoria, scarico il vecchio e
     # ricarico il nuovo
-    if [ $MODULE_IN_MEMORY -eq 1 ]; then
-	local module=${MODULE_NAME%.ko.gz}
-	_print '' '' "`eval_gettext \"Reload module \\\$module\"`"
+    if lsmod | grep -q ${ATI_DRIVER_NAME}; then
+	local module=${ATI_DRIVER_NAME}
+	_print '1;33' '' "`eval_gettext \"Reloading module \\\$module\"`"
 	modprobe -r $module
 	modprobe $module
+    fi
+
+    # Controllo se il server X è attivo
+    if ps -C X >/dev/null; then
+	_print '1;33' '' "`gettext 'Warning: you must rerun the X server'`"
     fi
 
     return 0
@@ -292,7 +270,13 @@ function _installpkg
 
 # Directory che contiene l'elenco dei pacchetti installati nelle distribuzioni
 # basate su Slackware
-DIR_PACKAGE=/var/log/packages/
+DIR_PACKAGE=/var/log/packages
+
+# L'elenco dei maintaners dell'ATI SlackBuild (è una lista separata da ';')
+MAINTAINERS='Emanuele Tomasi <tomasi@cli.di.unipi.it>'
+
+# Versione dell'ATI SlackBuild
+BUILD_VER=1.4.4
 
 # Per queste opzioni, non c'è bisogno dell'inizializzazione
 case $1 in
@@ -310,9 +294,9 @@ case $1 in
     --identify)
 	[ $2 != 'All' ] && exit ${ATI_INSTALLER_ERR_VERS}
 
-	[ -d ${DIR_PACKAGE} ] && exit 0
+	[ ! -d ${DIR_PACKAGE} ] && exit ${ATI_INSTALLER_ERR_VERS}
 
-	exit ${ATI_INSTALLER_ERR_VERS}
+	exit 0
 	;;
 
     # Questo script onora le API versione 2 dell'ati-installer.sh
@@ -322,7 +306,7 @@ case $1 in
 
     # Lista dei maintainer (separata da ';')
     --get-maintainer)
-	echo "Emanuele Tomasi <tomasi@cli.di.unipi.it>"
+	echo ${MAINTAINERS}
 	exit 0
 	;;
 esac
@@ -332,9 +316,10 @@ case $1 in
     # Controllo che tutto il necessario alla costruzione dei pacchetti
     # sia correttamente installato
     --buildprep)
-	echo -e "\nATI SlackBuild Version $BUILD_VER"\
+	echo -en "\nATI SlackBuild Version $BUILD_VER"\
                 "\n--------------------------------------------"\
-                "\nby: Emanuele Tomasi <tomasi@cli.di.unipi.it>\n"
+                "\nby: "
+	echo -e ${MAINTAINERS//;/\\n} "\n"
 
 	EXIT_STATUS=0
 
@@ -346,11 +331,11 @@ case $1 in
 	fi
 	unset opt
 
-	# Controllo che il parametro $2 sia un nome di pacchetto da costruire, valido
-	! _buildpkg $2 '--dryrun' && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
-
 	# Controllo l'esistenza dei comandi esterni necessari alla costruzione del pacchetto
         ! _check_external_command 'build' $3 && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
+
+	# Controllo che il parametro $2 sia un nome di pacchetto da costruire, valido
+	! _buildpkg $2 '--dryrun' && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 
 	# Elimino, se esiste, il file temporaneo creato/modificato da --buildpkg
 	rm -f ${TMP_FILE}
@@ -373,26 +358,6 @@ case $1 in
 
 	# Controllo l'esistenza dei comandi esterni necessari
 	! _check_external_command 'install' $3 && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
-
-	# Controllo che la versione del server Xorg sia maggiore o uguale a 6.7
-	source ./check.sh --noprint
-	if [ -z ${X_VERSION} ]; then
-	    (( $DRYRUN )) && _print '1;31' '' "`gettext 'ERROR: the version of Xorg server must be >= 6.7'`"
-	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
-	fi
-
-	# Controllo che la versione del kernel sia maggiore o uguale a 2.6
-	if [ $KNL_VERSION -lt 2 ] || [ $KNL_MAJOR -lt 6 ]; then
-	    (( $DRYRUN )) && _print '1;31' '' "`gettext 'ERROR: the version of kernel must be >= 2.6'`"
-	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
-	fi
-
-	# Controllo la versione delle librerie glibc
-	GLIBC_VER=$(ldconfig --version| head -n1 | grep -o [[:digit:]]\.[[:digit:]]*)
-	if [ $(echo $GLIBC_VER | cut -d'.' -f1) -lt 2 ] || [ $(echo $GLIBC_VER | cut -d'.' -f2) -lt 2 ]; then
-	    (( $DRYRUN )) && _print '1;31' '' "`gettext 'ERROR: the version of glibc must be >= 2.2'`"
-	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
-	fi
 
 	exit $EXIT_STATUS
 	;;

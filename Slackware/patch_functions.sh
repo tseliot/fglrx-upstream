@@ -39,7 +39,6 @@ function _apply_the_patch
 # Un insieme di patch interne allo SlackBuild. Viene invocata solo se non sono già state trovate patch locali in /etc/ati/patch
 function _internal_patch
 {
-    local ATI_DRIVER_MAJOR_VER=${ATI_DRIVER_VER:0:4}     # Primi 4 caratteri (Es: 8.732 -> 8.73)
     local INT_PATCH_DIR=${ROOT_DIR}/${SCRIPT_DIR}/patch  # Directory che contiene le patch interne
     local file=none                                      # Nome della patch da applicare
 
@@ -84,16 +83,16 @@ function _module_patch
     	    fi
     	done
 
-    	# Applico la ati_to_gpl.patch, se la trovo e se l'md5sum corrisponde
-    	if [ -f ${DIR_PATCH}/ati_to_gpl.patch ]; then
+        # Applico la ati_to_gpl.patch, se la trovo e se l'md5sum corrisponde
+	if [ -f ${DIR_PATCH}/ati_to_gpl.patch ]; then
     	    _print '1;33' '' "`gettext 'Found the ati_to_gpl.patch, checking md5sum'`"
     	    if md5sum -c ${ROOT_DIR}/${SCRIPT_DIR}/atg.md5sum; then
     		_print '1;32' '' "`gettext 'applied'`\n"
-    	    	sh ${DIR_PATCH}/ati_to_gpl.patch
+    		sh ${DIR_PATCH}/ati_to_gpl.patch
     	    else
     		_print '1;31' '' "`gettext 'md5sum failed, it not seem the original ati_to_gpl.patch'`\n"
     	    fi
-    	fi
+	fi
     fi
 
     # Se non ho trovato patch locali, provo quelle interne allo SlackBuild

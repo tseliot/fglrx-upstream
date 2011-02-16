@@ -3,13 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Emanuele Tomasi <tomasi@cli.di.unipi.it>, 2011.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: ATI_SlackBuild\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-06 18:58+0100\n"
-"PO-Revision-Date: 2011-02-06 18:59+0100\n"
+"POT-Creation-Date: 2011-02-16 19:45+0100\n"
+"PO-Revision-Date: 2011-02-16 19:46+0100\n"
 "Last-Translator: Emanuele Tomasi <tomasi@cli.di.unipi.it>\n"
 "Language-Team:\n"
 "Language: it\n"
@@ -17,109 +16,109 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ati-packager.sh:42
+#: ati-packager.sh:57
 msgid "Only root can do it!"
 msgstr "Devi essere root!"
 
-#: ati-packager.sh:46
-msgid "The name of the current directory should not contain any spaces"
+#: ati-packager.sh:59
+msgid "The name of the current directory mustn't contain any spaces"
 msgstr "Il nome della directory corrente non deve contenere nessuno spazio"
 
-#: ati-packager.sh:136
+#: ati-packager.sh:128
 #, sh-format
-msgid "Check for command: ${command}"
+msgid "Check for command: ${_command}"
 msgstr "Controllo se esiste il comando: ${command}"
 
-#: ati-packager.sh:150
+#: ati-packager.sh:141
 msgid "NOT FOUND"
 msgstr "NON TROVATO"
 
-#: ati-packager.sh:152
+#: ati-packager.sh:143
 #, sh-format
-msgid "You have to install ${command}"
+msgid "You must install ${_command}"
 msgstr "ERRORE: devi installare il comando grep"
 
-#: ati-packager.sh:156
+#: ati-packager.sh:147
 msgid "OK"
 msgstr "OK"
 
-#: ati-packager.sh:210
+#: ati-packager.sh:201
 msgid "make_module.sh script missing!"
 msgstr "Manca lo script make_module.sh!"
 
-#: ati-packager.sh:211
+#: ati-packager.sh:202
 msgid "make_x.sh script missing!"
 msgstr "Manca lo script make_x.sh!"
 
-#: ati-packager.sh:235
+#: ati-packager.sh:226
 #, sh-format
 msgid "$version unsupported."
 msgstr "$version non è supportata."
 
-#: ati-packager.sh:246
+#: ati-packager.sh:237
 msgid "Install/Upgrade package/s"
 msgstr "Installo/Aggiorno il/i pacchetto/i"
 
-#: ati-packager.sh:250
+#: ati-packager.sh:240
 #, sh-format
 msgid "ERROR: ${TMP_FILE}, file not found"
 msgstr "ERRORE: file ${TMP_FILE} non trovato"
 
-#: ati-packager.sh:253
-msgid "ERROR: you must kill server X"
-msgstr "ERRORE: devi fermare il server X"
-
-#: ati-packager.sh:275
+#: ati-packager.sh:258
 #, sh-format
-msgid "Reload module $module"
+msgid "Reloading module $module"
 msgstr "Ricarico il modulo $module"
 
-#: ati-packager.sh:334
+#: ati-packager.sh:265
+msgid "Warning: you must rerun the X server"
+msgstr "Attenzione: devi rilanciare il server X"
+
+#: ati-packager.sh:329
 #, sh-format
 msgid "ERROR: ${opt} is not a valid parameter"
 msgstr "ERRORE: ${opt} non è un parametro valido"
 
-#: ati-packager.sh:370
-msgid "ERROR: the version of Xorg server must be >= 6.7"
-msgstr "ERRORE: la versione del server X deve essere >= 6.7"
-
-#: ati-packager.sh:376
-msgid "ERROR: the version of kernel must be >= 2.6"
-msgstr "ERRORE: la versione del kernel deve essere >= 2.6"
-
-#: ati-packager.sh:383
-msgid "ERROR: the version of glibc must be >= 2.2"
-msgstr "ERRORE: la versione delle glibc deve essere >= 2.2"
-
-#: ati-packager.sh:402
+#: ati-packager.sh:377
 #, sh-format
 msgid "${command}: unsupported option passed by ati-installer.sh"
 msgstr "${command}: opzione sbagliata passata dallo script ati-installer.sh"
 
-#: make_module.sh:64
+#: make_module.sh:41
+msgid ""
+"Warning: I can't apply the patches because I haven't found patch_functions."
+"sh script!"
+msgstr ""
+"Attenzione: non posso applicare le patch perché non ho trovato lo script "
+"patch_functions.sh!"
+
+#: make_module.sh:49
 msgid "ERROR: I didn't make module"
 msgstr "ERRORE: non sono riuscito a creare il modulo"
+
+#: make_x.sh:34
+msgid "ERROR: your X server isn't supported"
+msgstr "ERRORE: il tuo server X non è supportato"
 
 #: patch_functions.sh:30
 msgid "I can't apply the patch: program patch not found"
 msgstr "Non posso applicare la patch: non ho trovato il comando patch"
 
-#: patch_functions.sh:32 patch_functions.sh:91
+#: patch_functions.sh:32 patch_functions.sh:90
 msgid "applied"
 msgstr "applicata"
 
-#: patch_functions.sh:48
+#: patch_functions.sh:47
 msgid "Found internal patch:"
 msgstr "Trovata la patch interna:"
 
-#: patch_functions.sh:79
+#: patch_functions.sh:78
 msgid "Found patch:"
 msgstr "Trovata la patch:"
 
-#: patch_functions.sh:89
+#: patch_functions.sh:88
 msgid "Found the ati_to_gpl.patch, checking md5sum"
 msgstr "Trovata la patch ati_to_gpl.patch, controllo l'md5sum"
 
-#: patch_functions.sh:94
+#: patch_functions.sh:93
 msgid "md5sum failed, it not seem the original ati_to_gpl.patch"
 msgstr "md5sum fallito, non sembra esssere la patch originale ati_to_gpl.patch"
