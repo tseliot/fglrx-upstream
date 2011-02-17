@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Feb 17 11:49:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- change in fglrx.spec
+  - remove required packages like kernel-syms, kernel-*-devel
+    because we have already a package kernel-devel with the
+    necessary dependencies
+
+-------------------------------------------------------------------
 Wed Feb 16 13:00:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - update all scripts the year 2011 in the copyright

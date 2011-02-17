@@ -10,13 +10,13 @@ License:        %ATI_DRIVER_VENDOR
 URL:            %ATI_DRIVER_URL
 Group:          Servers
 PreReq:         %insserv_prereq %fillup_prereq
-Requires:       gcc make patch kernel-source kernel-syms
+Requires:       gcc make patch kernel-source
 %if %suse_version < 1130
 %if %suse_version > 1010
 Requires:       linux-kernel-headers
 %endif
 %else
-Requires:       kernel-devel kernel-default-devel kernel-desktop-devel
+Requires:       kernel-devel
 %endif
 Provides:       fglrx km_fglrx
 Obsoletes:      fglrx km_fglrx ati-fglrxG02 x11-video-fglrxG02
