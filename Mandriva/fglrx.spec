@@ -187,11 +187,6 @@ Source2:	atieventsd.init
 # (for manual use)
 Source10:	generate-fglrx-spec-from-svn.sh
 %endif
-%if !%{atibuild}
-# Patches that only affect tools (not built in atibuild mode)
-Patch1:		ati-8.19.10-fglrx_gamma-extutil-include.patch
-Patch4:		fglrx_gamma-fix-underlinking.patch
-%endif
 Patch3:		fglrx-authfile-locations.patch
 Patch9:		fglrx-make_sh-custom-kernel-dir.patch
 # do not probe /proc for kernel info as we may be building for a
@@ -360,7 +355,6 @@ cd fglrx_tools # ensure patch does not touch outside
 %patch1 -p1
 %patch4 -p1
 cd -
-cmp common/usr/X11R6/include/X11/extensions/fglrx_gamma.h fglrx_tools/lib/fglrx_gamma/fglrx_gamma.h
 %if %ubuntu_prerelease
 [ -d "%xverdir" ] || (echo This driver version does not support your X.org server. Please wait for a new release from ATI. >&2; false)
 %else
@@ -448,18 +442,9 @@ EOF
 %build
 %if !%{atibuild}
 # %atibuild is done with minimal buildrequires
-cd fglrx_tools/lib/fglrx_gamma
-xmkmf
-# parallel make broken (2007-09-18)
-make CC="%__cc %optflags" SHLIBGLOBALSFLAGS="%{?ldflags} -L%{_prefix}/X11R6/%{_lib}"
-cd -
 cd fglrx_tools/fgl_glxgears
 xmkmf
 %make RMAN=/bin/true CC="%__cc %optflags -I../../common/usr/include" EXTRA_LDOPTIONS="%{?ldflags}"
-cd -
-cd fglrx_tools/programs/fglrx_gamma
-xmkmf
-%make INSTALLED_LIBS=-L../../lib/fglrx_gamma INCLUDES=-I../../../common/usr/X11R6/include CC="%__cc %optflags" RMAN=/bin/true EXTRA_LDOPTIONS="%{?ldflags}"
 cd -
 %endif
 
@@ -491,9 +476,6 @@ install -d -m755		%{buildroot}%{_includedir}
 cp -a common/usr/include/*	%{buildroot}%{_includedir}
 chmod 0644 %{buildroot}%{_includedir}/*/*.h
 
-install -d -m755 %{buildroot}%{_includedir}/X11/extensions
-install -m644 common/usr/X11R6/include/X11/extensions/*.h  %{buildroot}%{_includedir}/X11/extensions
-
 # install binaries
 install -d -m755					%{buildroot}%{_sbindir}
 install -m755 %{archdir}/usr/sbin/*			%{buildroot}%{_sbindir}
@@ -504,7 +486,6 @@ install -m755 common/usr/X11R6/bin/*			%{buildroot}%{_bindir}
 %if !%{atibuild}
 # install self-built binaries
 install -m755 fglrx_tools/fgl_glxgears/fgl_glxgears	%{buildroot}%{_bindir}
-install -m755 fglrx_tools/programs/fglrx_gamma/fglrx_xgamma %{buildroot}%{_bindir}
 %endif
 
 # atieventsd initscript
@@ -530,9 +511,6 @@ ln -s su %{buildroot}%{_sysconfdir}/pam.d/amdcccle-su
 
 # man pages
 install -d -m755 %{buildroot}%{_mandir}/man1 %{buildroot}%{_mandir}/man8
-%if !%{atibuild}
-install -m644 fglrx_tools/programs/fglrx_gamma/fglrx_xgamma.man %{buildroot}%{_mandir}/man1/fglrx_xgamma.1
-%endif
 install -m644 common/usr/share/man/man8/* %{buildroot}%{_mandir}/man8
 
 # menu entry
@@ -579,11 +557,6 @@ install -m755 %{archdir}/usr/share/ati/%{_lib}/*	%{buildroot}%{_libdir}/%{driver
 # RPATH of amdcccle points to datadir, we create a symlink there:
 install -d -m755				%{buildroot}/usr/share/ati
 ln -s %{_libdir}/%{drivername}-qt4		%{buildroot}/usr/share/ati/%{_lib}
-%endif
-
-%if !%{atibuild}
-install -m755 fglrx_tools/lib/fglrx_gamma/libfglrx_gamma.so.1.0 %{buildroot}%{_libdir}/%{drivername}
-install -m644 fglrx_tools/lib/fglrx_gamma/libfglrx_gamma.a %{buildroot}%{_libdir}/%{drivername}
 %endif
 
 # install X.org files
@@ -644,6 +617,34 @@ sed -ne 's|^\s*FGL_ASIC_ID(\(0x....\)).*|\1|gp' common/lib/modules/fglrx/build_m
 install -d -m755 %{buildroot}%{_datadir}/ldetect-lst/pcitable.d
 gzip -c pcitable.fglrx.lst > %{buildroot}%{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
 %endif
+
+install -d -m755 %{buildroot}%{_datadir}/ati
+cat > %{buildroot}%{_datadir}/ati/amd-uninstall.sh <<EOF
+#!/bin/bash
+# parameters as per AMD: [--force | --dry-run]
+dryrun=
+while [ -n "\$*" ]; do
+	case "\$1" in
+	--dryrun)	dryrun="--test" ;;
+	--force)	;;
+	*)		echo "Unknown option for \$0." >&2 ;;
+	esac
+	shift
+done
+
+# AMD documentation suggests doing rpm -V and use --force to override it,
+# but it doesn't make sense with the update-alternatives setup, so we just
+# check package presence.
+pkgs=
+rpm -q --quiet %{driverpkgname}             && pkgs="\$pkgs %{driverpkgname}"
+rpm -q --quiet dkms-%{drivername}           && pkgs="\$pkgs dkms-%{drivername}"
+rpm -q --quiet %{drivername}-control-center && pkgs="\$pkgs %{drivername}-control-center"
+rpm -q --quiet %{drivername}-devel          && pkgs="\$pkgs %{drivername}-devel"
+[ -n "\$pkgs" ] || { echo "The AMD proprietary driver is not installed." >&2; exit 1; }
+urpme --auto \$dryrun \$pkgs || { echo "Failed to uninstall the AMD proprietary driver." >&2; exit 1; }
+[ -n "\$dryrun" ] || echo "The AMD proprietary driver has been uninstalled."
+EOF
+chmod 0755 %{buildroot}%{_datadir}/ati/amd-uninstall.sh
 
 %if %{mdkversion} >= 200800
 %pre -n %{driverpkgname}
@@ -835,7 +836,6 @@ rm -rf %{buildroot}
 %{_bindir}/atiode
 %{_bindir}/fgl_glxgears
 %{_bindir}/fglrxinfo
-%{_bindir}/fglrx_xgamma
 
 %{xorg_libdir}/modules/drivers/fglrx_drv.so
 %{xorg_libdir}/modules/linux/libfglrxdrm.so
@@ -873,16 +873,15 @@ rm -rf %{buildroot}
 %{_prefix}/lib/%{drivername}/libatiuki.so.1*
 %endif
 
-%{_libdir}/%{drivername}/libfglrx_gamma.so.1*
 %{_libdir}/%{drivername}/libfglrx_dm.so.1*
 %{_libdir}/%{drivername}/libatiadlxx.so
 %{_libdir}/%{drivername}/libAMDXvBA.cap
 %{_libdir}/%{drivername}/libAMDXvBA.so.1*
 %{_libdir}/%{drivername}/libXvBAW.so.1*
 
-%if !%{atibuild}
-%{_mandir}/man1/fglrx_xgamma.1*
-%endif
+%dir %{_datadir}/ati
+%{_datadir}/ati/amd-uninstall.sh
+
 %{_mandir}/man8/atieventsd.8*
 
 %files -n %{drivername}-control-center -f amdcccle.langs
@@ -891,7 +890,6 @@ rm -rf %{buildroot}
 %{_sysconfdir}/security/console.apps/amdcccle-su
 %{_sysconfdir}/pam.d/amdcccle-su
 %{_bindir}/amdcccle
-%dir %{_datadir}/ati
 %dir %{_datadir}/ati/amdcccle
 %if %{atibuild}
 %{_iconsdir}/%{drivername}-amdcccle.xpm
@@ -911,13 +909,10 @@ rm -rf %{buildroot}
 
 %files -n %{drivername}-devel
 %defattr(-,root,root)
-%{_libdir}/%{drivername}/libfglrx_gamma.a
 %{_libdir}/%{drivername}/libfglrx_dm.a
-%{_libdir}/%{drivername}/libfglrx_gamma.so
 %{_libdir}/%{drivername}/libfglrx_dm.so
 %{_libdir}/%{drivername}/libAMDXvBA.so
 %{_libdir}/%{drivername}/libXvBAW.so
-%{_includedir}/X11/extensions/fglrx_gamma.h
 %dir %{_includedir}/GL
 %{_includedir}/GL/*ATI.h
 %dir %{_includedir}/ATI
