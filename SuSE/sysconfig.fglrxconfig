@@ -40,6 +40,15 @@ AUTO_REBUILD="yes"
 #
 AUTO_LOAD="yes"
 
+## Type:        yesno
+## Default:     no
+#
+# Build the fglrx kernel module for all kernel versions and flavors (yes)
+# otherwise build only for the current kernel (no)
+# (It applies only to the fglrx-kernel-build.sh)
+#
+BUILD_FOR_ALL_KERNELS="no"
+
 ## Type:        string
 ## Default:     "/var/log/fglrx-build.log"
 #
@@ -49,12 +58,12 @@ AUTO_LOAD="yes"
 FGLRX_BUILD_LOG="/var/log/fglrx-build.log"
 
 ## Type:        yesno
-## Default:     no
+## Default:     yes
 #
-# build the fglrx kernel module for all kernel versions and flavors
-# (It applies only to the fglrx-kernel-build.sh)
+# Allowed to append the fglrx build log at the existing log file
+# (It applies only to the rebuild script)
 #
-BUILD_FOR_ALL_KERNELS="no"
+FGLRX_BUILD_LOG_APPEND="yes"
 
 ## Type:        yesno
 ## Default:     no
@@ -63,3 +72,17 @@ BUILD_FOR_ALL_KERNELS="no"
 # fglrx-kernel-build.sh)
 #
 FORCE_BUILD="no"
+
+## Type:        yesno
+## Default:     no
+#
+# Enable or disable the vanilla kernel support
+#
+# Important:
+# The file /usr/src/linux-(kernel-version)/include/generated/utsrelease.h
+# of the vanilla kernel should be available to use the build functionality
+# of the fglrx kernel module. If the file does not exist, type in the related
+# vanilla kernel source path as follows to create the file 'utsrelease.h':
+# # make modules_prepare
+#
+USE_VANILLA_KERNELS="no"

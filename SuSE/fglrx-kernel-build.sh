@@ -48,6 +48,7 @@ ERROR_CODE=0
 FGLRX_CONFIG="/etc/sysconfig/fglrxconfig"
 FORCE_BUILD="no"
 SUMMARY_REPORT=""
+USE_VANILLA_KERNELS="no"
 
 MSG_OKAY="[\033[1;32m OK \033[0m]"
 MSG_FAILURE="[\033[1;31m FAILURE \033[0m]"
@@ -73,6 +74,34 @@ Options:
 
 USAGE
 
+}
+
+function box_filling()
+{
+    if [ "$1" = "first" ]; then
+        ${PRINTF_BIN} "\n\n\n"
+    fi
+    ${PRINTF_BIN} '*%.0s' $(${SEQ_BIN} 1 80) && ${ECHO_BIN} -n -e "\n"
+    if [ "$1" = "last" ]; then
+        ${PRINTF_BIN} "\n\n\n"
+    fi
+}
+
+function box_content()
+{
+    ${PRINTF_BIN} "*"
+    if [ $# -eq 0 ]; then
+        ${PRINTF_BIN} ' %.0s' $(${SEQ_BIN} 1 78)
+    elif [ $# -eq 2 ]; then
+        LEFT="$1"
+        RIGHT="$2"
+        ${PRINTF_BIN} ' %.0s' $(${SEQ_BIN} 1 3)
+        ${PRINTF_BIN} "${LEFT}"
+        ${PRINTF_BIN} ' %.0s' $(${SEQ_BIN} 1 $[11-${#LEFT}])
+        ${PRINTF_BIN} "${RIGHT}"
+        ${PRINTF_BIN} ' %.0s' $(${SEQ_BIN} 1 $[64-${#RIGHT}])
+    fi
+    ${PRINTF_BIN} "*\n"
 }
 
 # Handle arguments/parameters
@@ -114,20 +143,50 @@ ${PRINTF_BIN} "\nUsed CPUs/Cores for compilation  =>  [\033[1;32m ${NUM_CORES} \
 KERNEL_LIST="`${RPM_BIN} -q kernel kernel-desktop kernel-default kernel-pae kernel-smp | \
                 ${GREP_BIN} -v 'not installed' | ${SORT_BIN}`"
 
+# Get list of installed vanilla kernels
+if [ "${USE_VANILLA_KERNELS}" = "yes" ]; then
+    LINUX_SOURCE_DIRS="`find /usr/src \
+                        -maxdepth 1 \
+                        -mindepth 1 \
+                        -type d \
+                        -iname "linux*" | grep -v 'obj' | sort`"
+    # Iterate over all available kernel directories
+    for KERNEL_DIR in ${LINUX_SOURCE_DIRS}
+    do
+        # Detecting of a vanilla kernel
+        if [ -f "${KERNEL_DIR}/include/generated/utsrelease.h" ]; then
+            pushd ${KERNEL_DIR} >/dev/null
+                # Push it to the kernel list
+                VANILLA_KERNEL="fglrxvanilla-`make kernelrelease`"
+                KERNEL_LIST="${KERNEL_LIST} ${VANILLA_KERNEL}"
+            popd >/dev/null
+        fi
+    done
+fi
+
 # Get current kernel version
 CURRENT_KERNEL_VERSION="`${UNAME_BIN} -r`"
 
 # Iterate over all installed kernels to build the fglrx kernel modul
 for KERNEL in ${KERNEL_LIST}
 do
-    # Get the library of the iterated kernel
-    KERNEL_LIBRARY="`${RPM_BIN} --list -q ${KERNEL} | ${SORT_BIN} | \
-                        ${GREP_BIN} -m 1 '/lib/modules/'`"
-    # Get the version of the iterated kernel
-    KERNEL_VERSION="`${ECHO_BIN} "${KERNEL_LIBRARY}" | \
-                        ${SED_BIN} -e 's|/lib/modules/||g'`"
-    LINUX_SOURCE="${KERNEL_LIBRARY}/build"
-    LINUX_INCLUDE="${KERNEL_LIBRARY}/source/include"
+    # Test if we build for rpm installed kernel or vanilla kernel
+    if [ -z "`echo "${KERNEL}" | grep 'fglrxvanilla'`" ]; then
+        # Get the library of the iterated kernel
+        KERNEL_LIBRARY="`${RPM_BIN} --list -q ${KERNEL} | ${SORT_BIN} | \
+                            ${GREP_BIN} -m 1 '/lib/modules/'`"
+        # Get the version of the iterated kernel
+        KERNEL_VERSION="`${ECHO_BIN} "${KERNEL_LIBRARY}" | \
+                            ${SED_BIN} -e 's|/lib/modules/||g'`"
+        LINUX_SOURCE="${KERNEL_LIBRARY}/build"
+        LINUX_INCLUDE="${KERNEL_LIBRARY}/source/include"
+        KERNEL_DETECTED="RPM package"
+    else
+        KERNEL_VERSION="`echo "${KERNEL}" | sed -e 's/fglrxvanilla-//g'`"
+        LINUX_SOURCE="/lib/modules/${KERNEL_VERSION}/build"
+        LINUX_INCLUDE="/lib/modules/${KERNEL_VERSION}/source/include"
+        KERNEL_DETECTED="Vanilla kernel"
+    fi
 
     # Test if we build for all kernels
     if [ "${BUILD_FOR_ALL_KERNELS}" = "no" ]; then
@@ -150,16 +209,13 @@ do
     fi
 
     # Display important information about the iterated kernel
-    ${ECHO_BIN} -e "\n\n"
-    ${PRINTF_BIN} '*%.0s' $(${SEQ_BIN} 1 80) && ${ECHO_BIN} -n -e "\n"
-    ${ECHO_BIN} "*   Kernel:  ${KERNEL}`${PRINTF_BIN} ' %.0s' \
-                            $(${SEQ_BIN} 1 $[66-${#KERNEL}])`*"
-    ${ECHO_BIN} "*   Source:  ${LINUX_SOURCE}`${PRINTF_BIN} ' %.0s' \
-                            $(${SEQ_BIN} 1 $[66-${#LINUX_SOURCE}])`*"
-    ${ECHO_BIN} "*   Include: ${LINUX_INCLUDE}`${PRINTF_BIN} ' %.0s' \
-                            $(${SEQ_BIN} 1 $[66-${#LINUX_INCLUDE}])`*"
-    ${PRINTF_BIN} '*%.0s' $(${SEQ_BIN} 1 80) && ${ECHO_BIN} -n -e "\n"
-    ${ECHO_BIN} -e "\n\n"
+    box_filling "first"
+    box_content
+    box_content "Kernel:" "${KERNEL_VERSION}"
+    box_content "Source:" "${LINUX_SOURCE}"
+    box_content "Include:" "${LINUX_INCLUDE}"
+    box_content
+    box_filling "last"
 
     # Resolve if we are building for a kernel with a fix for CVE-2010-3081
     # On kernels with the fix, use arch_compat_alloc_user_space instead
@@ -194,7 +250,8 @@ do
         ${CP_BIN} ../{*.h,*.c,*.a} .
 
         # Create our report
-        SUMMARY_REPORT="${SUMMARY_REPORT}\n   Kernel   => ${KERNEL}\n"
+        SUMMARY_REPORT="${SUMMARY_REPORT}\n   Kernel     => ${KERNEL_VERSION}"
+        SUMMARY_REPORT="${SUMMARY_REPORT}\n   Detected   => ${KERNEL_DETECTED}\n"
 
         # Build the module
         MODFLAGS="-DMODULE -DATI -DFGL"
@@ -212,11 +269,11 @@ do
             ${ECHO_BIN} "Build of kernel module failed!"
             ${ECHO_BIN} "******************************"
             ${ECHO_BIN} -n -e "\n"
-            SUMMARY_REPORT="${SUMMARY_REPORT}   Build    => ${MSG_FAILURE}\n"
-            SUMMARY_REPORT="${SUMMARY_REPORT}   Install  => ${MSG_FAILURE}\n"
+            SUMMARY_REPORT="${SUMMARY_REPORT}   Build      => ${MSG_FAILURE}\n"
+            SUMMARY_REPORT="${SUMMARY_REPORT}   Install    => ${MSG_FAILURE}\n"
             ERROR_CODE=1
         else
-            SUMMARY_REPORT="${SUMMARY_REPORT}   Build    => ${MSG_OKAY}\n"
+            SUMMARY_REPORT="${SUMMARY_REPORT}   Build      => ${MSG_OKAY}\n"
 
             # Install the module
             ${MAKE_BIN} \
@@ -232,10 +289,10 @@ do
                 ${ECHO_BIN} "Installation of kernel module failed!"
                 ${ECHO_BIN} "*************************************"
                 ${ECHO_BIN} -n -e "\n"
-                SUMMARY_REPORT="${SUMMARY_REPORT}   Install  => ${MSG_FAILURE}\n"
+                SUMMARY_REPORT="${SUMMARY_REPORT}   Install    => ${MSG_FAILURE}\n"
                 ERROR_CODE=1
             else
-                SUMMARY_REPORT="${SUMMARY_REPORT}   Install  => ${MSG_OKAY}\n"
+                SUMMARY_REPORT="${SUMMARY_REPORT}   Install    => ${MSG_OKAY}\n"
             fi
         fi
 

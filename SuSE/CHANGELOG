@@ -1,4 +1,41 @@
 -------------------------------------------------------------------
+Fri Feb 19 09:07:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- add KERNEL_DEVEL variable to overwrite or deactivate the requirements
+  of kernel development packages
+  Usage:
+  # KERNEL_DEVEL="kernel-source kernel-devel kernel-desktop-devel" ...
+  or deactivate it (only use for a vanilla kernel):
+  # KERNEL_DEVEL="no" ...
+- add support for vanilla kernel in fglrx-kernel-build.sh
+- add USE_VANILLA_KERNELS (yes|no*) variable in the fglrxconfig to
+  activate the build of an fglrx kernel module for the vanilla kernel
+- add FGLRX_BUILD_LOG_APPEND (yes*|no) variable in the fglrxconfig and
+  boot.fglrxrebuild to append to the log file or remove it
+
+-------------------------------------------------------------------
+Fri Feb 18 06:12:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- fix an issue with spaces in the extracted full path to the ati installer
+
+-------------------------------------------------------------------
+Thu Feb 17 18:40:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- add RELEASE to overwrite the release number for the RPM package
+  Usage:
+  # RELEASE="2.1" ./ati-driver-installer-(version)-(arch).sh --buildpkg ...
+
+-------------------------------------------------------------------
+Thu Feb 17 17:21:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- change in fglrx.spec: add only kernel-syms as dependency
+
+-------------------------------------------------------------------
+Thu Feb 17 16:44:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- add a patch for kernel 2.6.38 to prevents a build failure
+
+-------------------------------------------------------------------
 Thu Feb 17 11:49:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - change in fglrx.spec

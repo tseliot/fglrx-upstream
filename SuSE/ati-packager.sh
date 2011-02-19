@@ -58,6 +58,31 @@ buildPackage()
         VERBOSE_2_LINE_BREAK='\n'
     fi
 
+    if [ -n "`echo "${RELEASE}" | grep -E '^[0-9\.]+$'`" ]; then
+        debugMsg "Release: ${RELEASE}" && print_okay
+    else
+        RELEASE="`./ati-packager-helper.sh --release`"
+    fi
+
+    if [ -n "${KERNEL_DEVEL}" ]; then
+        if [ "${KERNEL_DEVEL}" = "no" ]; then
+            KERNEL_DEVEL=""
+            debugMsg "Kernel requirements: (deactivated)" && print_okay
+        else
+            KERNEL_DEVEL="${KERNEL_DEVEL}"
+            debugMsg "Kernel requirements: ${KERNEL_DEVEL}" && print_okay
+        fi
+    else
+        KERNEL_DEVEL="kernel-source kernel-syms\n\
+%if %suse_version < 1130\n\
+%if %suse_version > 1010\n\
+Requires:       linux-kernel-headers\n\
+%endif\n\
+%else\n\
+Requires:       kernel-devel\n\
+%endif"
+    fi
+
     debugMsg "Get information about the machine architecture and the version of SUSE and XOrg ...\n"
     for CURRENT_SUSE in ${SUSE_LIST}
     do
@@ -175,111 +200,111 @@ buildPackage()
 
     # copy all needed files into $TMP_BUILD_PATH
     debugMsg "Copy all needed files into temporary build path ...${VERBOSE_2_LINE_BREAK}"
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/etc ${TMP_BUILD_PATH} \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/etc ${TMP_BUILD_PATH} \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/lib/modules/fglrx/build_mod/* ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/lib/modules/fglrx/build_mod/* ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/X11R6/bin/* ${TMP_BUILD_PATH}/usr/bin \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/X11R6/bin/* ${TMP_BUILD_PATH}/usr/bin \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/include/* ${TMP_BUILD_PATH}/usr/include \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/include/* ${TMP_BUILD_PATH}/usr/include \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/sbin/* ${TMP_BUILD_PATH}/usr/sbin \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/sbin/* ${TMP_BUILD_PATH}/usr/sbin \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/share/applications/* ${TMP_BUILD_PATH}/usr/share/applications \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/applications/* ${TMP_BUILD_PATH}/usr/share/applications \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/share/ati/* ${TMP_BUILD_PATH}/usr/share/ati \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/ati/* ${TMP_BUILD_PATH}/usr/share/ati \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/share/doc/amdcccle/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/doc/amdcccle/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/share/doc/fglrx/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/doc/fglrx/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/share/icons/* ${TMP_BUILD_PATH}/usr/share/pixmaps \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/icons/* ${TMP_BUILD_PATH}/usr/share/pixmaps \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/share/man/* ${TMP_BUILD_PATH}/usr/share/man \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/man/* ${TMP_BUILD_PATH}/usr/share/man \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/common/usr/src/ati/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/src/ati/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/lib/modules/fglrx/build_mod/* ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/lib/modules/fglrx/build_mod/* ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/bin/* ${TMP_BUILD_PATH}/usr/bin \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/bin/* ${TMP_BUILD_PATH}/usr/bin \
         || checkReturnOutput $?
     if [ "${ARCH}" = "IA32" ]; then
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib/modules/dri/* ${TMP_BUILD_PATH}/usr/lib/dri \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/modules/dri/* ${TMP_BUILD_PATH}/usr/lib/dri \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/${XORG}/usr/X11R6/lib/modules/* ${TMP_BUILD_PATH}/usr/lib/xorg/modules \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/${XORG}/usr/X11R6/lib/modules/* ${TMP_BUILD_PATH}/usr/lib/xorg/modules \
             || checkReturnOutput $?
         mv ${VERBOSE_OPTION} ${TMP_BUILD_PATH}/usr/lib/xorg/modules/extensions ${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/ \
             || checkReturnOutput $?
         if [ "${SUSE_VERSION}" != "SLE10" ]; then
-            cp ${VERBOSE_OPTION} ${DISTRO_PATH}/ati-powermode.sh ${TMP_BUILD_PATH}/usr/lib/pm-utils/power.d/ \
+            cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/ati-powermode.sh ${TMP_BUILD_PATH}/usr/lib/pm-utils/power.d/ \
                 || checkReturnOutput $?
         else
-            cp ${VERBOSE_OPTION} ${DISTRO_PATH}/{ati-powermode.sh,toggle-lvds.sh} ${TMP_BUILD_PATH}/usr/lib/powersave/scripts/ \
+            cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/{ati-powermode.sh,toggle-lvds.sh} ${TMP_BUILD_PATH}/usr/lib/powersave/scripts/ \
                 || checkReturnOutput $?
         fi
     elif [ "${ARCH}" = "AMD64" ]; then
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib64/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib64 \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib64 \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib64/modules/dri/* ${TMP_BUILD_PATH}/usr/lib64/dri \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/modules/dri/* ${TMP_BUILD_PATH}/usr/lib64/dri \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib64/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64 \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64 \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/X11R6/lib64/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/lib64/* ${TMP_BUILD_PATH}/usr/lib64 \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/lib64/* ${TMP_BUILD_PATH}/usr/lib64 \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/x86/usr/X11R6/lib/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/x86/usr/X11R6/lib/modules/dri/* ${TMP_BUILD_PATH}/usr/lib/dri \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/modules/dri/* ${TMP_BUILD_PATH}/usr/lib/dri \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/x86/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/x86/usr/X11R6/lib/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/x86/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/${XORG}/usr/X11R6/lib64/modules/* ${TMP_BUILD_PATH}/usr/lib64/xorg/modules \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/${XORG}/usr/X11R6/lib64/modules/* ${TMP_BUILD_PATH}/usr/lib64/xorg/modules \
             || checkReturnOutput $?
         mv ${VERBOSE_OPTION} ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/extensions ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/ \
             || checkReturnOutput $?
         if [ "${SUSE_VERSION}" != "SLE10" ]; then
-            cp ${VERBOSE_OPTION} ${DISTRO_PATH}/ati-powermode.sh ${TMP_BUILD_PATH}/usr/lib64/pm-utils/power.d/ \
+            cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/ati-powermode.sh ${TMP_BUILD_PATH}/usr/lib64/pm-utils/power.d/ \
                 || checkReturnOutput $?
         else
-            cp ${VERBOSE_OPTION} ${DISTRO_PATH}/{ati-powermode.sh,toggle-lvds.sh} ${TMP_BUILD_PATH}/usr/lib64/powersave/scripts/ \
+            cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/{ati-powermode.sh,toggle-lvds.sh} ${TMP_BUILD_PATH}/usr/lib64/powersave/scripts/ \
                 || checkReturnOutput $?
         fi
     fi
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/sbin/* ${TMP_BUILD_PATH}/usr/sbin \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/sbin/* ${TMP_BUILD_PATH}/usr/sbin \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R ${INSTALLER_PATH}/arch/${ATI_ARCH}/usr/share/ati/* ${TMP_BUILD_PATH}/usr/share/ati \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/share/ati/* ${TMP_BUILD_PATH}/usr/share/ati \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} ${DISTRO_PATH}/amd-uninstall.sh ${TMP_BUILD_PATH}/usr/share/ati \
+    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/amd-uninstall.sh ${TMP_BUILD_PATH}/usr/share/ati \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} ${DISTRO_PATH}/atieventsd.sh ${TMP_BUILD_PATH}/etc/init.d/atieventsd \
+    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/atieventsd.sh ${TMP_BUILD_PATH}/etc/init.d/atieventsd \
         || checkReturnOutput $?
     # replace authatieventsd.sh
     rm ${VERBOSE_OPTION} -f ${TMP_BUILD_PATH}/etc/ati/authatieventsd.sh \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} ${DISTRO_PATH}/authatieventsd.sh ${TMP_BUILD_PATH}/etc/ati/authatieventsd.sh \
+    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/authatieventsd.sh ${TMP_BUILD_PATH}/etc/ati/authatieventsd.sh \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} ${DISTRO_PATH}/fglrx-kernel-build.sh ${TMP_BUILD_PATH}/usr/bin \
+    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/fglrx-kernel-build.sh ${TMP_BUILD_PATH}/usr/bin \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} ${DISTRO_PATH}/boot.fglrxrebuild ${TMP_BUILD_PATH}/etc/init.d \
+    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/boot.fglrxrebuild ${TMP_BUILD_PATH}/etc/init.d \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} ${DISTRO_PATH}/README.SuSE ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
+    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/README.SuSE ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} ${DISTRO_PATH}/fglrx.png ${TMP_BUILD_PATH}/usr/share/pixmaps \
+    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/fglrx.png ${TMP_BUILD_PATH}/usr/share/pixmaps \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} ${DISTRO_PATH}/sysconfig.fglrxconfig ${TMP_BUILD_PATH}/var/adm/fillup-templates \
+    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/sysconfig.fglrxconfig ${TMP_BUILD_PATH}/var/adm/fillup-templates \
         || checkReturnOutput $?
     echo "blacklist radeon" >${TMP_BUILD_PATH}/etc/modprobe.d/fglrx.conf \
         || checkReturnOutput $?
@@ -287,7 +312,7 @@ buildPackage()
 
     # copy patch files to the $TMP_BUILD_PATH
     debugMsg "Copy patch files to the temporary build path ...${VERBOSE_2_LINE_BREAK}"
-    cp ${VERBOSE_OPTION} -R ${DISTRO_PATH}/*.patch ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx/patches
+    cp ${VERBOSE_OPTION} -R "${DISTRO_PATH}"/*.patch ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx/patches
     checkReturnOutput $?
 
     # clean up temp dir
@@ -300,14 +325,15 @@ buildPackage()
 
     # substitute variables in the specfile
     debugMsg "Substitute variables in the temporary spec file ...${VERBOSE_2_LINE_BREAK}"
-    sed -f - ${DISTRO_PATH}/fglrx.spec > ${TMP_SPEC_FILE} <<END_SED_SCRIPT
+    sed -f - "${DISTRO_PATH}/fglrx.spec" > ${TMP_SPEC_FILE} <<END_SED_SCRIPT
 s!%PACKAGE_NAME!${PACKAGE_NAME}!
 s!%ATI_DRIVER_VERSION!`./ati-packager-helper.sh --version`!
-s!%ATI_DRIVER_RELEASE!`./ati-packager-helper.sh --release`!
+s!%ATI_DRIVER_RELEASE!${RELEASE}!
 s!%ATI_DRIVER_DESCRIPTION!`./ati-packager-helper.sh --description`!
 s!%ATI_DRIVER_URL!`./ati-packager-helper.sh --url`!
 s!%ATI_DRIVER_VENDOR!`./ati-packager-helper.sh --vendor`!
 s!%ATI_DRIVER_SUMMARY!`./ati-packager-helper.sh --summary`!
+s!%ATI_DRIVER_KERNEL_DEVEL!${KERNEL_DEVEL}!
 s!%ATI_DRIVER_BUILD_ROOT!${TMP_BUILD_PATH}!
 END_SED_SCRIPT
     if [ $? -ne 0 ]; then
@@ -353,8 +379,8 @@ END_SED_SCRIPT
 
     # after-build diagnostics and processing
     debugMsg "After-build diagnostics and processing ...\n"
-    INSTALLER_PARENT_PATH=`cd ${INSTALLER_PATH}/.. 2>/dev/null && pwd`  # Absolute path to the installer parent directory
-    cp ${PACKAGE_FILE_WITH_PATH} ${INSTALLER_PARENT_PATH}               # Copy the created package to the directory where the self-extracting driver archive is located
+    INSTALLER_PARENT_PATH=`cd "${INSTALLER_PATH}/.." 2>/dev/null && pwd`  # Absolute path to the installer parent directory
+    cp ${PACKAGE_FILE_WITH_PATH} "${INSTALLER_PARENT_PATH}"               # Copy the created package to the directory where the self-extracting driver archive is located
     echo -n -e "\nPackage ${INSTALLER_PARENT_PATH}/${PACKAGE_FILE} has been successfully generated\n"
     echo -n -e "\nInstall or update the RPM package as follows:\n\n   "
     if [ -n "`zypper --version 2>&1 | grep '0.6'`" ]; then

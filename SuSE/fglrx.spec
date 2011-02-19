@@ -10,14 +10,7 @@ License:        %ATI_DRIVER_VENDOR
 URL:            %ATI_DRIVER_URL
 Group:          Servers
 PreReq:         %insserv_prereq %fillup_prereq
-Requires:       gcc make patch kernel-source
-%if %suse_version < 1130
-%if %suse_version > 1010
-Requires:       linux-kernel-headers
-%endif
-%else
-Requires:       kernel-devel
-%endif
+Requires:       gcc make patch %ATI_DRIVER_KERNEL_DEVEL
 Provides:       fglrx km_fglrx
 Obsoletes:      fglrx km_fglrx ati-fglrxG02 x11-video-fglrxG02
 Obsoletes:      fglrx_6_9_0_SLE10 fglrx64_6_9_0_SLE10 fglrx_7_4_0_SLE11 fglrx64_7_4_0_SLE11
@@ -100,8 +93,6 @@ pushd $tmpdir/fglrx
     ln -s su $RPM_BUILD_ROOT/etc/pam.d/amdcccle-su
     install -m 755 etc/security/console.apps/amdcccle-su \
                    $RPM_BUILD_ROOT/etc/security/console.apps
-    install -m 644 var/adm/fillup-templates/sysconfig.fglrxconfig \
-                   $RPM_BUILD_ROOT/var/adm/fillup-templates/sysconfig.fglrxconfig
     install -m 755 usr/X11R6/%{_lib}/fglrx/* \
                    $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/fglrx
     rm -rf usr/X11R6/%{_lib}/fglrx
@@ -209,6 +200,8 @@ pushd $tmpdir/fglrx
     rm -rf usr/src/kernel-modules/fglrx/2.6.x
     install -m 644 usr/src/kernel-modules/fglrx/* \
                    $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx
+    install -m 644 var/adm/fillup-templates/sysconfig.fglrxconfig \
+                   $RPM_BUILD_ROOT/var/adm/fillup-templates/sysconfig.fglrxconfig
 popd
 rm -rf $tmpdir
 export NO_BRP_CHECK_RPATH=true
@@ -242,6 +235,14 @@ echo "Apply some patches ..."
         echo "ati-2.6.36-compat_alloc_user_space.patch applied successfully."
     else
         echo "ati-2.6.36-compat_alloc_user_space.patch could not applied! Please report this bug to Sebastian Siebert <freespacer@gmx.de>. Thank you."
+    fi
+%endif
+%if %suse_version > 1100
+    patch -p0 -s < /usr/share/doc/packages/fglrx/patches/ati-2.6.38-missing_functions.patch
+    if [ $? -eq 0 ]; then
+        echo "ati-2.6.38-missing_functions.patch applied successfully."
+    else
+        echo "ati-2.6.38-missing_functions.patch could not applied! Please report this bug to Sebastian Siebert <freespacer@gmx.de>. Thank you."
     fi
 %endif
 # placeholder_for_additional_patches_for_fglrx_sources

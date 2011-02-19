@@ -92,6 +92,7 @@ FGLRX_KERNEL_BUILD_SH="`which fglrx-kernel-build.sh`"
 FGLRX_CONFIG="/etc/sysconfig/fglrxconfig"
 FORCE_REBUILD="no"
 FGLRX_BUILD_LOG="/var/log/fglrx-build.log"
+FGLRX_BUILD_LOG_APPEND="yes"
 AUTO_REBUILD="yes"
 AUTO_LOAD="yes"
 
@@ -133,6 +134,11 @@ case "$1" in
                 else
                     ${ECHO_BIN} -n "   The fglrx kernel module does not exist!"
                     ${ECHO_BIN} " I build it NOW. Please wait ..."
+                fi
+
+                # If do not append at the log file then remove it
+                if [ "${FGLRX_BUILD_LOG_APPEND}" = "no" ]; then
+                    rm -f ${FGLRX_BUILD_LOG}
                 fi
 
                 # Prepare the log file to add current date
