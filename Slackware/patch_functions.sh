@@ -1,4 +1,4 @@
-# Copyright (c) 2009 Emanuele Tomasi
+# Copyright (c) 2009-2011 Emanuele Tomasi
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -24,20 +24,20 @@
 # Usata da _module_patch e da _internal_patch
 #
 # Applica la patch $1, se e solo se, esiste il programma 'patch'
-function _apply_the_patch
+function _apply_the_patch()
 {
-    if ! _check_external_command 'grep'; then
-	_print '1;31' '' "`gettext "I can't apply the patch: program patch not found"`\n"
-    else
-	_print '1;32' '' "`gettext 'applied'`\n"
-	patch -p0 < $1
-    fi
+    ! _check_external_resource 'x' '_commands' 'patch' && return 1
+
+    patch -p0 < $1
+    _print '1;32' '' "`gettext 'applied'`\n"
+
+    return 0
 }
 
 # Usata da _module_patch
 #
 # Un insieme di patch interne allo SlackBuild. Viene invocata solo se non sono già state trovate patch locali in /etc/ati/patch
-function _internal_patch
+function _internal_patch()
 {
     local INT_PATCH_DIR=${ROOT_DIR}/${SCRIPT_DIR}/patch  # Directory che contiene le patch interne
     local file=none                                      # Nome della patch da applicare
@@ -63,7 +63,7 @@ function _internal_patch
 # Se non esiste un file di patch utente, allora si testano le eventuali
 # patch interne invocando la funzione:
 #    _internal_patch
-function _module_patch
+function _module_patch()
 {
     local DIR_PATCH=/etc/ati/patch
     local EXT_PATCH_FOUND=0

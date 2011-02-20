@@ -7,5 +7,3 @@
    - gcc
    - mesa-libGL
    durante la fase di installprep. Si è scelto per ora di ignorare questa richiesta.
-
-*) Internazionalizzare i messaggi dei doinst.sh

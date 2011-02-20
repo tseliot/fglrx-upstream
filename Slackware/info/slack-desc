@@ -6,16 +6,15 @@
 # customary to leave one space after the ':'.
 
      |-----handy-ruler----------------------------------------------------|
-fglrx: fglrx (Server X Driver for ATI proprietary driver)
+fglrx: fglrx (ATI proprietary drivers)
 fglrx:
-fglrx: This package contains the X Server driver, software and the
-fglrx: documentation of ATI proprietary driver.
-fglrx: You need also the module of kernel package to complete the
-fglrx: installation.
-fglrx: If you change X Server you can run the ati installer with:
-fglrx:    --buildpkg Slackware/Only_X
+fglrx: This package contains software and the documentation of ATI
+fglrx: proprietary drivers.
 fglrx:
 fglrx: ATI web site:
-fglrx:     http://ati.amd.com
+fglrx:     http://www.amd.com
+fglrx:
+fglrx: ATI proprietary drivers:
+fglrx:     http://support.amd.com/it/gpudownload/Pages/index.aspx
 fglrx:
 

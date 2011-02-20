@@ -1,4 +1,4 @@
-# Copyright (c) 2009 Emanuele Tomasi
+# Copyright (c) 2009-2011 Emanuele Tomasi
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -22,7 +22,7 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 # Crea il modulo per il kernel
-function _make_module
+function _make_module()
 {
     local MODULE_DIR=lib/modules/fglrx/build_mod
 
@@ -32,7 +32,7 @@ function _make_module
     # Compilo il modulo del kernel
 
     # 1.1) Copy arch-depend files
-    mv arch/${ARCH}/${MODULE_DIR}/* common/${MODULE_DIR}
+    cp arch/${ARCH}/${MODULE_DIR}/* common/${MODULE_DIR}
 
     cd common/${MODULE_DIR}
 
@@ -47,23 +47,14 @@ function _make_module
     # 1.3) Make modules with ati's script
     if ! sh make.sh; then
 	_print '' '' "`gettext "ERROR: I didn't make module"`"
-	exit 1
+	return 1
     fi
 
     # 2)
-    # MAKE PACKAGE
-    mkdir -p ${ROOT_DIR}/${SCRIPT_DIR}/module_pkg/lib/modules/${KNL_RELEASE}/external
-    cat ../fglrx*.ko | gzip -c >> ${ROOT_DIR}/${SCRIPT_DIR}/module_pkg/lib/modules/${KNL_RELEASE}/external/${ATI_DRIVER_NAME}.ko.gz
-
-    cd ${ROOT_DIR}/${SCRIPT_DIR}/module_pkg
-
-    local MODULE_PACK_NAME=${ATI_DRIVER_NAME}-module-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}_kernel_${KNL_RELEASE//-/_}.tgz
-
-    makepkg -l y -c n ${DEST_DIR}/${MODULE_PACK_NAME}
-
-    [ "x${TMP_FILE}" != "x" ] && echo ${MODULE_PACK_NAME} >> ${TMP_FILE}
+    # Copio il modulo
+    mkdir -p ${WORKING_DIRECTORY}/lib/modules/${KNL_RELEASE}/external
+    cat ../fglrx*.ko | gzip -c >> ${WORKING_DIRECTORY}/lib/modules/${KNL_RELEASE}/external/${ATI_DRIVER_NAME}.ko.gz
 
     cd ${ROOT_DIR}
-
     return 0
 }

@@ -1,14 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# ATI SlackBuild
+# Copyright (C) 2011
+# This file is distributed under the same license as the ATI SlackBuild package.
 # Emanuele Tomasi <tomasi@cli.di.unipi.it>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: ATI_SlackBuild\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-16 19:45+0100\n"
-"PO-Revision-Date: 2011-02-16 19:46+0100\n"
+"POT-Creation-Date: 2011-02-20 16:42+0100\n"
+"PO-Revision-Date: 2011-02-20 16:47+0100\n"
 "Last-Translator: Emanuele Tomasi <tomasi@cli.di.unipi.it>\n"
 "Language-Team:\n"
 "Language: it\n"
@@ -16,72 +16,49 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ati-packager.sh:57
-msgid "Only root can do it!"
-msgstr "Devi essere root!"
-
-#: ati-packager.sh:59
+#: ati-packager.sh:53
 msgid "The name of the current directory mustn't contain any spaces"
 msgstr "Il nome della directory corrente non deve contenere nessuno spazio"
 
-#: ati-packager.sh:128
-#, sh-format
-msgid "Check for command: ${_command}"
-msgstr "Controllo se esiste il comando: ${command}"
+#: ati-packager.sh:106
+msgid "Check for "
+msgstr "Controllo il "
 
-#: ati-packager.sh:141
+#: ati-packager.sh:124
 msgid "NOT FOUND"
 msgstr "NON TROVATO"
 
-#: ati-packager.sh:143
-#, sh-format
-msgid "You must install ${_command}"
-msgstr "ERRORE: devi installare il comando grep"
+#: ati-packager.sh:127
+msgid "You must install command:"
+msgstr "Devi installare il comando:"
 
-#: ati-packager.sh:147
+#: ati-packager.sh:131
+msgid "file not found, internal error. Please contact the maintaners."
+msgstr "file non trovato, errore interno. Contattare i maintainers."
+
+#: ati-packager.sh:136
 msgid "OK"
 msgstr "OK"
 
-#: ati-packager.sh:201
-msgid "make_module.sh script missing!"
-msgstr "Manca lo script make_module.sh!"
+#: ati-packager.sh:149
+msgid "Only root can do it!"
+msgstr "Devi essere root!"
 
-#: ati-packager.sh:202
-msgid "make_x.sh script missing!"
-msgstr "Manca lo script make_x.sh!"
+#: ati-packager.sh:248
+msgid "unsupported."
+msgstr "non supportato."
 
-#: ati-packager.sh:226
-#, sh-format
-msgid "$version unsupported."
-msgstr "$version non è supportata."
+#: ati-packager.sh:259
+msgid "Install/Upgrade package"
+msgstr "Installo/Aggiorno il pacchetto"
 
-#: ati-packager.sh:237
-msgid "Install/Upgrade package/s"
-msgstr "Installo/Aggiorno il/i pacchetto/i"
+#: ati-packager.sh:326
+msgid "Not a valid parameter: "
+msgstr "Parametro non valido: "
 
-#: ati-packager.sh:240
-#, sh-format
-msgid "ERROR: ${TMP_FILE}, file not found"
-msgstr "ERRORE: file ${TMP_FILE} non trovato"
-
-#: ati-packager.sh:258
-#, sh-format
-msgid "Reloading module $module"
-msgstr "Ricarico il modulo $module"
-
-#: ati-packager.sh:265
-msgid "Warning: you must rerun the X server"
-msgstr "Attenzione: devi rilanciare il server X"
-
-#: ati-packager.sh:329
-#, sh-format
-msgid "ERROR: ${opt} is not a valid parameter"
-msgstr "ERRORE: ${opt} non è un parametro valido"
-
-#: ati-packager.sh:377
-#, sh-format
-msgid "${command}: unsupported option passed by ati-installer.sh"
-msgstr "${command}: opzione sbagliata passata dallo script ati-installer.sh"
+#: ati-packager.sh:379
+msgid "unsupported option passed by ati-installer.sh"
+msgstr "opzione errata passata dallo script ati-installer.sh"
 
 #: make_module.sh:41
 msgid ""
@@ -95,13 +72,9 @@ msgstr ""
 msgid "ERROR: I didn't make module"
 msgstr "ERRORE: non sono riuscito a creare il modulo"
 
-#: make_x.sh:34
+#: make_x.sh:35
 msgid "ERROR: your X server isn't supported"
 msgstr "ERRORE: il tuo server X non è supportato"
-
-#: patch_functions.sh:30
-msgid "I can't apply the patch: program patch not found"
-msgstr "Non posso applicare la patch: non ho trovato il comando patch"
 
 #: patch_functions.sh:32 patch_functions.sh:90
 msgid "applied"

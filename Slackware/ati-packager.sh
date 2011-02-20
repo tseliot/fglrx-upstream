@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2009 Emanuele Tomasi
+# Copyright (c) 2009-2011 Emanuele Tomasi
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -25,7 +25,7 @@
 
 # Inizializzazione: esegue alcuni controlli di base e imposta delle variabili
 # d'ambiente utitli per le altre funzioni.
-function _init_env
+function _init_env()
 {
     # Mi assicuro che tutti i comandi interni alla bash necessari, siano abilitati
     enable cd echo exit export local return set source test
@@ -46,23 +46,11 @@ function _init_env
     # è ROOT_DIR
     SCRIPT_DIR=packages/Slackware
 
-    # Settaggi per gettext. Inclusione della funzione eval_gettext().
+    # Settaggi per gettext
     export TEXTDOMAIN=ATI_SlackBuild
     export TEXTDOMAINDIR=${ROOT_DIR}/${SCRIPT_DIR}/locale
-    if ! source gettext.sh; then
-	_print '1;31' '' 'gettext.sh: file not found or not executable'
-	exit 1
-    fi
-
-    [ $(id -u) -gt 0 ] && _print '' '' "`gettext 'Only root can do it!'`" && exit 1
 
     echo "$ROOT_DIR" | grep -q ' ' && _print '' '' "`gettext "The name of the current directory mustn't contain any spaces"`" && exit 1
-
-    # Comandi esterni da cui il builder dipende nella fase di creazione dei pacchetti
-    BUILD_DEPS=(chmod cp cut file find gzip ln makepkg mkdir mv rm sed sh strip tar xargs)
-
-    # Comandi esterni da cui il builder dipende nella fase di installazione dei pacchetti
-    INSTALL_DEPS=(basename dirname depmod installpkg lsmod md5sum modprobe ps upgradepkg)
 
     # Architettura, può essere 'x86' o 'x86_64'
     ARCH=$(arch)
@@ -75,88 +63,92 @@ function _init_env
     ATI_DRIVER_VER=$(./ati-packager-helper.sh --version)
     ATI_DRIVER_REL=$(./ati-packager-helper.sh --release)
 
-    # Directory in cui verranno spostati i pacchetti creati e altri file
+    # Directory in cui verrà spostato il pacchetto creato
     DEST_DIR=${PWD%/*}
 
-    # File temporaneo che contiene l'elenco dei pacchetti creati.
-    # Questo file è creato/modificato dalle funzioni che creano i pacchetti
-    # se, e solo se, l'installer ($PPID) viene invocato con l'opzione --buildandinstallpkg,
-    # e viene cancellato quando questo script viene invocato con il paramentro
-    # --installpkg
-    TMP_FILE=''
-    if grep -q -- '--buildandinstallpkg' /proc/${PPID}/cmdline; then
-	TMP_FILE=${DEST_DIR}/tmpSlackwarePkg.txt
-    fi
+    # Nome del pacchetto che verrà creato
+    PKG_NAME=${ATI_DRIVER_NAME}-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}.tgz
 
     # Controllo l'esistenza di alcuni comandi utili ma non necessari
     which -V &> /dev/null && USE_WHICH=1 || USE_WHICH=0
     tput -V &> /dev/null && USE_TPUT=1 || USE_TPUT=0
 }
 
-# Controlla l'esistenza dei comandi necessari, ma esterni al build
+# Controlla l'esistenza di file o comandi esterni
 # $1 può essere:
-#   'build': per i comandi necessari alla costruzione dei pacchetti
-#   'install': per i comandi necessari all'installazione dei pacchetti
-#   nessuno dei precedenti: allora $* è un elenco di comandi separati da uno spazio
-# $2 può essere (nel caso $1 sia o 'build' o 'install'):
-#   '': stampa a video solo il nome dei comandi non trovati
-#   '--dryrun': stampa a video il nome del comando che sta controllando
-function _check_external_command
+#   'x': stampa a video solo il nome dei file o comando non trovato.
+#   'x--dryrun': stampa a video il nome del file o comando che sta controllando
+#                e se lo trova.
+# $2 può essere:
+#   '_commands': per controllare l'esistenza di comandi.
+#   '_files': per controllare l'esistenza di file.
+# $3,$4,...,$n: i file o i comandi da controllare.
+function _check_external_resource()
 {
-    local i=0
-    local DEPS_OK=0
     local DRYRUN=0
+    [ $1 = 'x--dryrun' ] && DRYRUN=1
 
-    [ "x$2" = 'x--dryrun' ] && DRYRUN=1
-
-    case $1 in
-	build)
-	    local DEPS=(${BUILD_DEPS[@]})
+    local CHECK_FOR=''
+    case $2 in
+	_commands)
+	    CHECK_FOR='command'
 	    ;;
-	install)
-	    local DEPS=(${INSTALL_DEPS[@]})
-	    ;;
-	*)
-	    local DEPS=($*)
+	_files)
+	    CHECK_FOR='file'
 	    ;;
     esac
+    shift 2
 
-    while [ $i -lt ${#DEPS[@]} ]
+    local DEPS_OK=0
+    for WHAT in $*
     do
-	local _command=${DEPS[$i]}
-	if (( $DRYRUN )); then
-	    _print '' 'n' "`eval_gettext \"Check for command: \\\${_command}\"`"
-	    (( $USE_TPUT )) && tput hpa 45
+	if [ $DRYRUN -eq 1 ]; then
+	    _print '' 'n' "`gettext 'Check for '`"
+	    echo -n "${CHECK_FOR}: ${WHAT}"
+	    [ $USE_TPUT -eq 1 ] && tput hpa 45
 	    echo -n '   [ '
 	fi
 
-	if (( $USE_WHICH )); then
-	    which ${_command} &> /dev/null
+	if [ $CHECK_FOR = 'command' ]; then
+	    if [ $USE_WHICH -eq 1 ]; then
+		which ${WHAT} &> /dev/null
+	    else
+		grep "bin/${WHAT}\$" ${DIR_PACKAGE}/* &> /dev/null
+	    fi
 	else
-	    grep "bin/${_command}\$" ${DIR_PACKAGE}/* &> /dev/null
+	    [ -f ${WHAT} ] > /dev/null
 	fi
 
 	if [ $? != 0 ]; then
-	    if (( $DRYRUN )); then
+	    if [ $DRYRUN -eq 1 ]; then
 		_print '1;31' 'n' "`gettext 'NOT FOUND'`"
 	    else
-		_print '1;31' '' "`eval_gettext \"You must install \\\${_command}\"`"
+		if [ $CHECK_FOR = 'command' ]; then
+		    _print '1;31' 'n' "`gettext 'You must install command:'`"
+		    _print '1;31' '' " ${WHAT}"
+		else
+		    _print '1;31' 'n' "${WHAT}: "
+		    _print '1;31' '' "`gettext 'file not found, internal error. Please contact the maintaners.'`"
+		fi
 	    fi
 	    DEPS_OK=1
-	elif (( $DRYRUN )); then
+	elif [ $DRYRUN -eq 1 ]; then
 	    _print '1;32' 'n' "`gettext 'OK'`"
 	fi
 
-	(( $DRYRUN )) && echo ' ]'
-	let i++
+	[ $DRYRUN -eq 1 ] && echo ' ]'
     done
+    unset WATH
 
-    if [ $DEPS_OK != 0 ]
-    then
-	return 1
+    return $DEPS_OK
+}
+
+function _check_if_root()
+{
+    if [ $(id -u) -gt 0 ]; then
+	_print '' '' "`gettext 'Only root can do it!'`"
+	exit 1
     fi
-
-    return 0
 }
 
 # Stampa a video i parametri $[2-*]
@@ -174,7 +166,7 @@ function _check_external_command
 #
 # $2 può essere una stringa nulla ('') oppure il carattere 'n'. Se vale 'n',
 #    allora dopo la stampa non va a capo.
-function _print
+function _print()
 {
     local color=$1
     local new_line=$2
@@ -196,34 +188,64 @@ function _print
 # '' : costruisce il pacchetto
 # '--dryrun': controlla solo che il parametro $1 sia corretto
 #             ritorna 0 se lo è, 1 altrimenti
-function _buildpkg
+function _buildpkg()
 {
-    [ ! -e ${SCRIPT_DIR}/make_module.sh ] && _print '1;31' '' "`gettext 'make_module.sh script missing!'`\n" && return 1
-    [ ! -e ${SCRIPT_DIR}/make_x.sh ] && _print '1;31' '' "`gettext 'make_x.sh script missing!'`\n" && return 1
+    ! _check_external_resource 'x' '_files' "${SCRIPT_DIR}/make_module.sh ${SCRIPT_DIR}/make_x.sh"\
+                                            "${SCRIPT_DIR}/info/slack-desc ${SCRIPT_DIR}/info/doinst.sh"\
+                                            "${SCRIPT_DIR}/info/amd-uninstall.sh" && return 1
 
     local DRYRUN=0
     [ "x$2" != 'x' ] && DRYRUN=1
 
-    local version=$1
-    case $version in
-	Only_Module)
-	    (( $DRYRUN )) && return 0
+    case $1 in
+	Slackware)
+	    [ $DRYRUN -eq 1 ] && return 0
+
+	    local WORKING_DIRECTORY=${ROOT_DIR}/${SCRIPT_DIR}/_working_directory_
+
+	    mkdir ${WORKING_DIRECTORY} || return 1
+
+	    # Compilo il modulo del kernel
 	    source ${SCRIPT_DIR}/make_module.sh
-	    _make_module
-	    ;;
-	Only_X)
-	    (( $DRYRUN )) && return 0
+	    ! _make_module && return 1
+
+	    # Sposto i file per il server X
 	    source ${SCRIPT_DIR}/make_x.sh
-	    _make_x
+	    ! _make_x && return 1
+
+	    # Creo il pacchetto
+	    ###
+	    cd ${WORKING_DIRECTORY}
+
+	    # Creo la directory '/install/'
+	    mkdir install
+	    cp ${ROOT_DIR}/${SCRIPT_DIR}/info/slack-desc install
+	    cp ${ROOT_DIR}/${SCRIPT_DIR}/info/doinst.sh install
+
+	    # Copio l'uninstaller e i file per la localizzazione
+	    mkdir -p usr/share/ati/ATI_SlackBuild
+	    cp ${ROOT_DIR}/${SCRIPT_DIR}/info/amd-uninstall.sh usr/share/ati
+	    cp -r ${ROOT_DIR}/${SCRIPT_DIR}/info/locale usr/share/ati/ATI_SlackBuild 2> /dev/null
+
+	    # Setto la variabile PKG_NAME nell'amd-uninstall.sh
+	    for file in usr/share/ati/amd-uninstall.sh
+	    do
+		sed -i "/PKG_NAME=/s/=.*/=${PKG_NAME%.*}/" $file
+	    done
+
+            # Strip binaries and libraries
+	    find . | xargs file | sed -n "/ELF.*executable/b PRINT;/ELF.*shared object/b PRINT;d;:PRINT s/\(.*\):.*/\1/;p;"\
+                   | xargs strip --strip-unneeded 2> /dev/null
+
+	    # Mi assicuro che il proprietario sia root
+	    chown root.root -R *
+
+	    # Creo il pacchetto
+	    makepkg -l y -c n ${DEST_DIR}/${PKG_NAME}
 	    ;;
-	All)
-	    (( $DRYRUN )) && return 0
-	    source ${SCRIPT_DIR}/make_module.sh
-	    _make_module
-	    source ${SCRIPT_DIR}/make_x.sh
-	    _make_x
-	    ;;
-	*) _print '' '' "`eval_gettext \"\\\$version unsupported.\"`"
+	*)
+	    echo -n "$1 "
+	    _print '' '' "`gettext 'unsupported.'`"
             return 1
 	    ;;
     esac
@@ -232,38 +254,17 @@ function _buildpkg
 }
 
 # Implemente l'opzione --installpkg dello script
-function _installpkg
+function _installpkg()
 {
-    _print '1;32' '' "`gettext 'Install/Upgrade package/s'`"
+    _print '1;32' '' "`gettext 'Install/Upgrade package'`"
 
-    # Controllo l'esistenza del file temporaneo in cui sono scritti i nomi dei pacchetti da installare
-    [ ! -f ${TMP_FILE} ] && _print '1;31' '' "`eval_gettext \"ERROR: \\\${TMP_FILE}, file not found\"`" && return 1
-
-    # Installo i pacchetti
-    for pkg in $(<${TMP_FILE})
-    do
-	if [ -f ${DIR_PACKAGE}/${pkg%.tgz} ]; then
-            upgradepkg --reinstall "${DEST_DIR}/$pkg"; # Il pacchetto era già installato
-	elif [ -f ${DIR_PACKAGE}/$(echo $pkg | cut -d'-' -f-2)* ]; then
-	    upgradepkg "${DEST_DIR}/$pkg"; # Il pacchetto era installato ad una versione diversa
-	else
-	    installpkg "${DEST_DIR}/$pkg"; # Il pacchetto non era installato
-	fi
-    done
-
-    # Se il modulo è già in memoria, scarico il vecchio e
-    # ricarico il nuovo
-    if lsmod | grep -q ${ATI_DRIVER_NAME}; then
-	local module=${ATI_DRIVER_NAME}
-	_print '1;33' '' "`eval_gettext \"Reloading module \\\$module\"`"
-	modprobe -r $module
-	modprobe $module
+    # Se c'è l'uninstaller, lo uso per rimuovere il vecchio pacchetto
+    if [ -f /usr/share/ati/amd-uninstall.sh ]; then
+	/usr/share/ati/amd-uninstall.sh
     fi
 
-    # Controllo se il server X è attivo
-    if ps -C X >/dev/null; then
-	_print '1;33' '' "`gettext 'Warning: you must rerun the X server'`"
-    fi
+    # Installo il pacchetto
+    installpkg ${DEST_DIR}/${PKG_NAME}
 
     return 0
 }
@@ -275,14 +276,11 @@ DIR_PACKAGE=/var/log/packages
 # L'elenco dei maintaners dell'ATI SlackBuild (è una lista separata da ';')
 MAINTAINERS='Emanuele Tomasi <tomasi@cli.di.unipi.it>'
 
-# Versione dell'ATI SlackBuild
-BUILD_VER=1.4.4
-
 # Per queste opzioni, non c'è bisogno dell'inizializzazione
 case $1 in
-    # Stampa l'elenco dei nomi di pacchetto che è possibile costruire
+    # Stampa l'elenco dei nomi di pacchetto che è possibile costruire (lista separata da '\t)
     --get-supported)
-	echo -e 'All\tOnly_Module\tOnly_X'
+	echo -e 'Slackware'
 	exit 0
 	;;
 
@@ -290,9 +288,9 @@ case $1 in
     # ${ATI_INSTALLER_ERR_VERS}: se la distribuzione su cui si sta tentando di eseguire lo script
     #                            non è basata su Slackware
     # 0: Se la distribuzione su cui si sta tentando di eseguire lo script è basata su Slackware
-    #    e se il pacchetto che si vuole creare è 'All'.
+    #    e se il pacchetto che si vuole creare è 'Slackware'.
     --identify)
-	[ $2 != 'All' ] && exit ${ATI_INSTALLER_ERR_VERS}
+	[ $2 != 'Slackware' ] && exit ${ATI_INSTALLER_ERR_VERS}
 
 	[ ! -d ${DIR_PACKAGE} ] && exit ${ATI_INSTALLER_ERR_VERS}
 
@@ -316,7 +314,7 @@ case $1 in
     # Controllo che tutto il necessario alla costruzione dei pacchetti
     # sia correttamente installato
     --buildprep)
-	echo -en "\nATI SlackBuild Version $BUILD_VER"\
+	echo -en "\nATI SlackBuild"\
                 "\n--------------------------------------------"\
                 "\nby: "
 	echo -e ${MAINTAINERS//;/\\n} "\n"
@@ -324,26 +322,28 @@ case $1 in
 	EXIT_STATUS=0
 
 	# Controllo che $3 sia un blank oppure --dryrun
-	opt=$3
-	if [ "x${opt}" != 'x' ] && [ "x${opt}" != 'x--dryrun' ]; then
-	    _print '1;31' '' "`eval_gettext \"ERROR: \\\${opt} is not a valid parameter\"`"
+	if [ "x${3}" != 'x' ] && [ "x${3}" != 'x--dryrun' ]; then
+	    _print '1;31' 'n' "`gettext 'Not a valid parameter: '`"
+	    _print '1;31' '' "$3"
 	    EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 	fi
-	unset opt
 
 	# Controllo l'esistenza dei comandi esterni necessari alla costruzione del pacchetto
-        ! _check_external_command 'build' $3 && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
+        ! _check_external_resource "x${3}" '_commands'\
+            'chmod cp cut file find gzip ln makepkg mkdir mv rm sed sh strip tar xargs'\
+            && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 
 	# Controllo che il parametro $2 sia un nome di pacchetto da costruire, valido
 	! _buildpkg $2 '--dryrun' && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 
 	# Elimino, se esiste, il file temporaneo creato/modificato da --buildpkg
-	rm -f ${TMP_FILE}
+	[ x${TMP_FILE} != x ] && rm ${TMP_FILE}
 
 	exit $EXIT_STATUS
 	;;
     # Creo il/i pacchetto/i
     --buildpkg)
+	_check_if_root
 	_buildpkg $2
 	exit $?
 	;;
@@ -357,7 +357,9 @@ case $1 in
 	EXIT_STATUS=0
 
 	# Controllo l'esistenza dei comandi esterni necessari
-	! _check_external_command 'install' $3 && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
+	! _check_external_resource "x${3}" '_commands'\
+          'basename cut dirname depmod gettext installpkg lsmod md5sum modprobe ps sed upgradepkg'\
+          && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 
 	exit $EXIT_STATUS
 	;;
@@ -365,16 +367,15 @@ case $1 in
     # Installo i pacchetti creati dall'opzione --buildpkg, il nome dei pacchetti creati
     # si trova nel file ${TMP_FILE}. Alla fine elimino suddetto file.
     --installpkg)
+	_check_if_root
         _installpkg
-        VALUE=$?
 
-	rm -f ${TMP_FILE}
-    	exit $VALUE
+    	exit $?
     	;;
 
     *)
-	command=$1
-	_print '' '' "`eval_gettext \"\\\${command}: unsupported option passed by ati-installer.sh\"`"
+	echo -n "$1: "
+	_print '' '' "`gettext 'unsupported option passed by ati-installer.sh'`"
 	exit 1
 	;;
 esac
