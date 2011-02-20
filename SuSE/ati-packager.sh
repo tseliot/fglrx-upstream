@@ -306,7 +306,7 @@ Requires:       kernel-devel\n\
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/sysconfig.fglrxconfig ${TMP_BUILD_PATH}/var/adm/fillup-templates \
         || checkReturnOutput $?
-    echo "blacklist radeon" >${TMP_BUILD_PATH}/etc/modprobe.d/fglrx.conf \
+    echo "blacklist radeon" >${TMP_BUILD_PATH}/etc/modprobe.d/50-fglrx.conf \
         || checkReturnOutput $?
     print_okay
 

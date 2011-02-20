@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sun Feb 20 05:31:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- change /etc/modprobe.d/fglrx.conf to /etc/modprobe.d/50-fglrx.conf
+
+-------------------------------------------------------------------
 Sun Feb 20 04:41:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - fix to set the local language to LANG=C and LC_ALL=C
