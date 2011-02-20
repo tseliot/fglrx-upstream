@@ -180,7 +180,7 @@ case "${action}" in
     ;;
 --identify)
     package=$2
-    if [ -f /etc/mandriva-release -a "${package}" = "$(cat /etc/version | cut -d. -f1,2)" ]; then
+    if [ -f /etc/mandriva-release ] && [ "${package}" = "$(cat /etc/version | cut -d. -f1,2)" ]; then
         exit 0
     fi
     exit ${ATI_INSTALLER_ERR_VERS}

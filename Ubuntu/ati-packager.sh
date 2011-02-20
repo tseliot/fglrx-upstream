@@ -335,7 +335,7 @@ lsb()
 
 identify()
 {
-    if [ `lsb` = "$1" ]
+    if [ x`lsb` = x"$1" ]
     then
         exit 0
     fi
