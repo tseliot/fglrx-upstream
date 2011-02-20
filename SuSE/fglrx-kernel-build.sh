@@ -24,6 +24,10 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
+# Set local language always to C
+export LC_ALL=C
+export LANG=C
+
 # Detected some important binaries or scripts with full path
 BASENAME_BIN="`which basename`"
 CAT_BIN="`which cat`"

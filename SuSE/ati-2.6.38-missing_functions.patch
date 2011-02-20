@@ -1,0 +1,51 @@
+--- firegl_public.c.orig	2011-02-17 15:03:11.000000000 +0100
++++ firegl_public.c	2011-02-17 15:23:51.403881904 +0100
+@@ -815,6 +815,12 @@ static int fglrx_pci_probe(struct pci_de
+     return 0;
+ }
+ 
++/* In 2.6.38 acquire/release_console_sem was renamed to console_lock/unlock */
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
++#define console_lock() acquire_console_sem()
++#define console_unlock() release_console_sem()
++#endif
++
+ /* Starting from 2.6.14, kernel has new struct defined for pm_message_t,
+    we have to handle this case separately.
+    2.6.11/12/13 kernels have pm_message_t defined as int and older kernels
+@@ -848,7 +854,7 @@ static int fglrx_pci_suspend(struct pci_
+      * happen much less frequent then without this workaround.
+      */
+     if (state == PM_EVENT_SUSPEND)
+-        acquire_console_sem();
++        console_lock();
+ 
+     if (firegl_cail_powerdown(privdev, state))
+         ret = -EIO;
+@@ -870,7 +876,7 @@ static int fglrx_pci_suspend(struct pci_
+     }
+ 
+     if (state == PM_EVENT_SUSPEND)
+-        release_console_sem();
++        console_unlock();
+ 
+     KCL_DEBUG_TRACEOUT(FN_FIREGL_ACPI, ret, NULL);  
+     
+@@ -894,7 +900,7 @@ static int fglrx_pci_resume(struct pci_d
+     if (PMSG_EVENT(pdev->dev.power.power_state) == 0) return 0;
+ 
+     if (PMSG_EVENT(pdev->dev.power.power_state) == PM_EVENT_SUSPEND)
+-        acquire_console_sem();
++        console_lock();
+ 
+ #ifdef FIREGL_USWC_SUPPORT
+     // Restore the PAT after resuming from S3 or S4.
+@@ -919,7 +925,7 @@ static int fglrx_pci_resume(struct pci_d
+     firegl_cail_powerup(privdev);
+ 
+     if (PMSG_EVENT(pdev->dev.power.power_state) == PM_EVENT_SUSPEND)
+-        release_console_sem();
++        console_unlock();
+ 
+     PMSG_EVENT(pdev->dev.power.power_state) = 0;
+     KCL_DEBUG_TRACEOUT(FN_FIREGL_ACPI, 0, NULL);  

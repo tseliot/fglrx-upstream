@@ -1,5 +1,11 @@
 -------------------------------------------------------------------
-Fri Feb 19 09:07:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+Sun Feb 20 04:41:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- fix to set the local language to LANG=C and LC_ALL=C
+- add a patch file for Kernel 2.6.38
+
+-------------------------------------------------------------------
+Sat Feb 19 09:07:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - add KERNEL_DEVEL variable to overwrite or deactivate the requirements
   of kernel development packages

@@ -143,7 +143,7 @@ case "$1" in
 
                 # Prepare the log file to add current date
                 ${PRINTF_BIN} '*%.0s' $(${SEQ_BIN} 1 80) >>${FGLRX_BUILD_LOG}
-                TODAY="`LANG="" ${DATE_BIN}`"
+                TODAY="`LANG=C ${DATE_BIN}`"
                 PADDING="`${PRINTF_BIN} ' %.0s' \
                             $(${SEQ_BIN} 1 $[63-${#TODAY}])`"
                 ${ECHO_BIN} -n -e "\n*   Build date: ${TODAY}${PADDING}*\n" \
