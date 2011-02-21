@@ -167,10 +167,11 @@ function _make_x()
     for dir in $(find usr -type d -wholename "*/lib*/fglrx")
     do
     	( cd $dir
-    	    for file in *
+    	    for file in fglrx-*
     	    do
+		[ $file = 'fglrx-*' ] && break
     		[ ! -f $file ] && continue
-    		ln -sf fglrx/${file} ../${file}
+    		ln -sf fglrx/${file} ../${file#*-}
     	    done
     	)
     done
