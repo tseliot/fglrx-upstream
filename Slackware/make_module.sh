@@ -37,9 +37,7 @@ function _make_module()
     cd common/${MODULE_DIR}
 
     # 1.2) Se ci sono, applico le patch
-    if [ ! -f ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh ]; then
-	_print '1;33' '' "`gettext "Warning: I can't apply the patches because I haven't found patch_functions.sh script!"`"
-    else
+    if _check_external_resource 'x' '_files' ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh; then
 	source ${ROOT_DIR}/${SCRIPT_DIR}/patch_functions.sh
 	_module_patch
     fi
@@ -55,6 +53,5 @@ function _make_module()
     mkdir -p ${WORKING_DIRECTORY}/lib/modules/${KNL_RELEASE}/external
     cat ../fglrx*.ko | gzip -c >> ${WORKING_DIRECTORY}/lib/modules/${KNL_RELEASE}/external/${ATI_DRIVER_NAME}.ko.gz
 
-    cd ${ROOT_DIR}
     return 0
 }

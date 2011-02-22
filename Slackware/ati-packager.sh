@@ -25,18 +25,30 @@
 
 # Inizializzazione: esegue alcuni controlli di base e imposta delle variabili
 # d'ambiente utitli per le altre funzioni.
+# In caso di errore esce con il valore ${ATI_INSTALLER_ERR_PREP}
 function _init_env()
 {
     # Mi assicuro che tutti i comandi interni alla bash necessari, siano abilitati
     enable cd echo exit export local return set source test
 
-    # Controllo i comandi esterni essenziali!
-    if ! grep --version >& /dev/null || ! id --version >& /dev/null\
-	|| ! gettext --version >& /dev/null; then
-	_print '1;31' '' 'You need to install at least one these commands:'\
-                         '\n\t- grep\n\t- id\n\t- gettext'
-	exit 1
-    fi
+    # Controllo l'esistenza dei comandi esterni essenziali
+    # (eseguiti in questa funzione)!
+    local ESSENTIAL_PGR=0
+    for pgr in gettext grep uname
+    do
+	if ! $pgr --version &> /dev/null; then
+	    _print '1;31' '' "$pgr: command not found!"
+	    ESSENTIAL_PGR=1
+	fi
+
+	if [ $ESSENTIAL_PGR -eq 1 ]; then
+	    exit ${ATI_INSTALLER_ERR_PREP}
+	fi
+    done
+
+    # Controllo l'esistenza di alcuni comandi utili ma non necessari
+    which -V &> /dev/null && USE_WHICH=1 || USE_WHICH=0
+    tput -V &> /dev/null && USE_TPUT=1 || USE_TPUT=0
 
     # ROOT_DIR = directory attuale
     ROOT_DIR=$PWD
@@ -50,15 +62,17 @@ function _init_env()
     export TEXTDOMAIN=ATI_SlackBuild
     export TEXTDOMAINDIR=${ROOT_DIR}/${SCRIPT_DIR}/locale
 
-    echo "$ROOT_DIR" | grep -q ' ' && _print '' '' "`gettext "The name of the current directory mustn't contain any spaces"`" && exit 1
+    echo "$ROOT_DIR" | grep -q ' ' && _print '' '' "`gettext "The name of the current directory mustn't contain any spaces"`" && exit ${ATI_INSTALLER_ERR_PREP}
 
     # Architettura, può essere 'x86' o 'x86_64'
-    ARCH=`uname -m`
+    ARCH=$(uname -m)
     [[ $ARCH != x86_64 ]] && ARCH='x86'
 
     # Release del kernel in uso
     KNL_RELEASE=$(uname -r)
 
+    # Info sui driver
+    ! _check_external_resource 'x' '_files' './ati-packager-helper.sh' && exit ${ATI_INSTALLER_ERR_PREP}
     ATI_DRIVER_NAME=fglrx
     ATI_DRIVER_VER=$(./ati-packager-helper.sh --version)
     ATI_DRIVER_REL=$(./ati-packager-helper.sh --release)
@@ -68,10 +82,6 @@ function _init_env()
 
     # Nome del pacchetto che verrà creato
     PKG_NAME=${ATI_DRIVER_NAME}-${ATI_DRIVER_VER}-${ARCH}-${ATI_DRIVER_REL}.tgz
-
-    # Controllo l'esistenza di alcuni comandi utili ma non necessari
-    which -V &> /dev/null && USE_WHICH=1 || USE_WHICH=0
-    tput -V &> /dev/null && USE_TPUT=1 || USE_TPUT=0
 }
 
 # Controlla l'esistenza di file o comandi esterni
@@ -143,6 +153,7 @@ function _check_external_resource()
     return $DEPS_OK
 }
 
+# Controlla che l'utente sia root
 function _check_if_root()
 {
     if [ $(id -u) -gt 0 ]; then
@@ -206,11 +217,11 @@ function _buildpkg()
 	    mkdir ${WORKING_DIRECTORY} || return 1
 
 	    # Compilo il modulo del kernel
-	    source ${SCRIPT_DIR}/make_module.sh
+	    source ${ROOT_DIR}/${SCRIPT_DIR}/make_module.sh
 	    ! _make_module && return 1
 
 	    # Sposto i file per il server X
-	    source ${SCRIPT_DIR}/make_x.sh
+	    source ${ROOT_DIR}/${SCRIPT_DIR}/make_x.sh
 	    ! _make_x && return 1
 
 	    # Creo il pacchetto
@@ -228,10 +239,7 @@ function _buildpkg()
 	    cp -r ${ROOT_DIR}/${SCRIPT_DIR}/info/locale usr/share/ati/ATI_SlackBuild 2> /dev/null
 
 	    # Setto la variabile PKG_NAME nell'amd-uninstall.sh
-	    for file in usr/share/ati/amd-uninstall.sh
-	    do
-		sed -i "/PKG_NAME=/s/=.*/=${PKG_NAME%.*}/" $file
-	    done
+	    sed -i "/PKG_NAME=/s/=.*/=${PKG_NAME%.*}/" usr/share/ati/amd-uninstall.sh
 
             # Strip binaries and libraries
 	    find . | xargs file | sed -n "/ELF.*executable/b PRINT;/ELF.*shared object/b PRINT;d;:PRINT s/\(.*\):.*/\1/;p;"\
@@ -244,8 +252,8 @@ function _buildpkg()
 	    makepkg -l y -c n ${DEST_DIR}/${PKG_NAME}
 	    ;;
 	*)
-	    echo -n "$1 "
-	    _print '' '' "`gettext 'unsupported.'`"
+            # Il formato di questa stringa è definito nel file README.distro (non la traduco)
+	    echo -n "$1: unsupported option passed by ati-installer.sh"
             return 1
 	    ;;
     esac
@@ -329,7 +337,7 @@ case $1 in
 
 	# Controllo l'esistenza dei comandi esterni necessari alla costruzione del pacchetto
         ! _check_external_resource "x${3}" '_commands'\
-            'chmod cp cut file find gzip ln makepkg mkdir mv rm sed sh strip tar xargs'\
+            'chmod cp file find gzip id ln makepkg mkdir mv rm sed sh strip tar xargs'\
             && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 
 	# Controllo che il parametro $2 sia un nome di pacchetto da costruire, valido
@@ -346,14 +354,11 @@ case $1 in
 
     # Controllo che tutto il necessario alla corretta installazione del pacchetto sia correttamente installato
     --installprep)
-	DRYRUN=0
-	[ "x$3" = 'x--dryrun' ] && DRYRUN=1
-
 	EXIT_STATUS=0
 
-	# Controllo l'esistenza dei comandi esterni necessari
+	# Controllo l'esistenza dei comandi esterni necessari all'installazione del pacchetto
 	! _check_external_resource "x${3}" '_commands'\
-          'basename cut dirname depmod gettext installpkg lsmod md5sum modprobe ps sed upgradepkg'\
+          'basename dirname depmod gettext id installpkg md5sum modprobe ps sed'\
           && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 
 	exit $EXIT_STATUS
@@ -363,13 +368,12 @@ case $1 in
     --installpkg)
 	_check_if_root
         _installpkg
-
     	exit $?
     	;;
 
     *)
-	echo -n "$1: "
-	_print '' '' "`gettext 'unsupported option passed by ati-installer.sh'`"
+	# Il formato di questa stringa è definito nel file README.distro (non la traduco)
+	echo -n "$1: unsupported option passed by ati-installer.sh"
 	exit 1
 	;;
 esac

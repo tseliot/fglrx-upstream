@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ATI_SlackBuild\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-20 20:36+0100\n"
+"POT-Creation-Date: 2011-02-27 17:58+0100\n"
 "PO-Revision-Date: 2011-02-20 20:39+0100\n"
 "Last-Translator: Emanuele Tomasi <tomasi@cli.di.unipi.it>\n"
 "Language-Team:\n"
@@ -32,11 +32,11 @@ msgstr "opzione non valida."
 msgid "Only root can do it!"
 msgstr "Devi essere root!"
 
-#: amd-uninstall.sh:95
+#: amd-uninstall.sh:96
 msgid "Removing pakage: "
 msgstr "Rimozione del pacchetto: "
 
-#: amd-uninstall.sh:114
+#: amd-uninstall.sh:115
 msgid "Restoring library: "
 msgstr "Ripristino della libreria: "
 

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ATI_SlackBuild\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-20 16:42+0100\n"
-"PO-Revision-Date: 2011-02-20 16:47+0100\n"
+"POT-Creation-Date: 2011-02-27 17:56+0100\n"
+"PO-Revision-Date: 2011-02-27 17:57+0100\n"
 "Last-Translator: Emanuele Tomasi <tomasi@cli.di.unipi.it>\n"
 "Language-Team:\n"
 "Language: it\n"
@@ -16,59 +16,43 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ati-packager.sh:53
+#: ati-packager.sh:65
 msgid "The name of the current directory mustn't contain any spaces"
 msgstr "Il nome della directory corrente non deve contenere nessuno spazio"
 
-#: ati-packager.sh:106
+#: ati-packager.sh:116
 msgid "Check for "
 msgstr "Controllo il "
 
-#: ati-packager.sh:124
+#: ati-packager.sh:134
 msgid "NOT FOUND"
 msgstr "NON TROVATO"
 
-#: ati-packager.sh:127
+#: ati-packager.sh:137
 msgid "You must install command:"
 msgstr "Devi installare il comando:"
 
-#: ati-packager.sh:131
+#: ati-packager.sh:141
 msgid "file not found, internal error. Please contact the maintaners."
 msgstr "file non trovato, errore interno. Contattare i maintainers."
 
-#: ati-packager.sh:136
+#: ati-packager.sh:146
 msgid "OK"
 msgstr "OK"
 
-#: ati-packager.sh:149
+#: ati-packager.sh:160
 msgid "Only root can do it!"
 msgstr "Devi essere root!"
 
-#: ati-packager.sh:248
-msgid "unsupported."
-msgstr "non supportato."
-
-#: ati-packager.sh:259
+#: ati-packager.sh:267
 msgid "Install/Upgrade package"
 msgstr "Installo/Aggiorno il pacchetto"
 
-#: ati-packager.sh:326
+#: ati-packager.sh:333
 msgid "Not a valid parameter: "
 msgstr "Parametro non valido: "
 
-#: ati-packager.sh:379
-msgid "unsupported option passed by ati-installer.sh"
-msgstr "opzione errata passata dallo script ati-installer.sh"
-
-#: make_module.sh:41
-msgid ""
-"Warning: I can't apply the patches because I haven't found patch_functions."
-"sh script!"
-msgstr ""
-"Attenzione: non posso applicare le patch perché non ho trovato lo script "
-"patch_functions.sh!"
-
-#: make_module.sh:49
+#: make_module.sh:47
 msgid "ERROR: I didn't make module"
 msgstr "ERRORE: non sono riuscito a creare il modulo"
 
@@ -76,7 +60,7 @@ msgstr "ERRORE: non sono riuscito a creare il modulo"
 msgid "ERROR: your X server isn't supported"
 msgstr "ERRORE: il tuo server X non è supportato"
 
-#: patch_functions.sh:32 patch_functions.sh:90
+#: patch_functions.sh:32 patch_functions.sh:91
 msgid "applied"
 msgstr "applicata"
 

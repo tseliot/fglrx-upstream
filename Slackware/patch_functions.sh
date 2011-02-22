@@ -58,11 +58,11 @@ function _internal_patch()
 # un file chiamato:
 #     /etc/ati/patch/patch-${ATI_DRIVER_VER}-${KNL_RELEASE}
 # allora la funzione esegue:
-#     patch < /etc/ati/patch/patch-${ATI_DRIVER_VER}-${KNL_RELEASE}
+#     patch -p0 < /etc/ati/patch/patch-${ATI_DRIVER_VER}-${KNL_RELEASE}
 #
 # Se non esiste un file di patch utente, allora si testano le eventuali
 # patch interne invocando la funzione:
-#    _internal_patch
+#    _internal_patch()
 function _module_patch()
 {
     local DIR_PATCH=/etc/ati/patch
@@ -87,8 +87,8 @@ function _module_patch()
 	if [ -f ${DIR_PATCH}/ati_to_gpl.patch ]; then
     	    _print '1;33' '' "`gettext 'Found the ati_to_gpl.patch, checking md5sum'`"
     	    if md5sum -c ${ROOT_DIR}/${SCRIPT_DIR}/atg.md5sum; then
-    		_print '1;32' '' "`gettext 'applied'`\n"
     		sh ${DIR_PATCH}/ati_to_gpl.patch
+    		_print '1;32' '' "`gettext 'applied'`\n"
     	    else
     		_print '1;31' '' "`gettext 'md5sum failed, it not seem the original ati_to_gpl.patch'`\n"
     	    fi

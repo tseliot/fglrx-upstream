@@ -1,4 +1,4 @@
-*) Le nuove API chiedono di verificare anche la presenza di:
+*) Le nuove API chiedono di verificare anche la presenza di (vedi README.distro sezione 4f):
    - libstdc++
    - libgcc
    - fontconfig

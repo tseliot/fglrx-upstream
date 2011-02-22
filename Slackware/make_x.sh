@@ -26,7 +26,7 @@ function _make_x()
 {
     cd ${ROOT_DIR}
 
-    # set X_VERSION && X_LAYOUT
+    # setta X_VERSION e X_LAYOUT
     ! _check_external_resource 'x' '_files' './check.sh' && return 1
 
     source ./check.sh --noprint
@@ -187,6 +187,5 @@ function _make_x()
 	)
     done
 
-    cd ${ROOT_DIR}
     return 0
 }
