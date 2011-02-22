@@ -311,8 +311,7 @@ esac
 
 _init_env
 case $1 in
-    # Controllo che tutto il necessario alla costruzione dei pacchetti
-    # sia correttamente installato
+    # Controllo che tutto il necessario alla costruzione del pacchetto sia correttamente installato
     --buildprep)
 	echo -en "\nATI SlackBuild"\
                 "\n--------------------------------------------"\
@@ -338,15 +337,14 @@ case $1 in
 
 	exit $EXIT_STATUS
 	;;
-    # Creo il/i pacchetto/i
+    # Creo il pacchetto
     --buildpkg)
 	_check_if_root
 	_buildpkg $2
 	exit $?
 	;;
 
-    # Controllo che tutto il necessario alla corretta installazione del/i pacchetto/i
-    # sia correttamente installato
+    # Controllo che tutto il necessario alla corretta installazione del pacchetto sia correttamente installato
     --installprep)
 	DRYRUN=0
 	[ "x$3" = 'x--dryrun' ] && DRYRUN=1
