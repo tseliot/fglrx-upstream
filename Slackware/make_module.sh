@@ -21,7 +21,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-# Crea il modulo per il kernel
+# Compila il modulo per il kernel
 function _make_module()
 {
     local MODULE_DIR=lib/modules/fglrx/build_mod

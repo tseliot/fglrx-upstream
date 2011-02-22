@@ -336,9 +336,6 @@ case $1 in
 	# Controllo che il parametro $2 sia un nome di pacchetto da costruire, valido
 	! _buildpkg $2 '--dryrun' && EXIT_STATUS=${ATI_INSTALLER_ERR_PREP}
 
-	# Elimino, se esiste, il file temporaneo creato/modificato da --buildpkg
-	[ x${TMP_FILE} != x ] && rm ${TMP_FILE}
-
 	exit $EXIT_STATUS
 	;;
     # Creo il/i pacchetto/i
@@ -364,8 +361,7 @@ case $1 in
 	exit $EXIT_STATUS
 	;;
 
-    # Installo i pacchetti creati dall'opzione --buildpkg, il nome dei pacchetti creati
-    # si trova nel file ${TMP_FILE}. Alla fine elimino suddetto file.
+    # Installo il pacchetto creato dall'opzione --buildpk.
     --installpkg)
 	_check_if_root
         _installpkg

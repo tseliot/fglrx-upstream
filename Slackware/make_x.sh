@@ -21,7 +21,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-# Crea il pacchetto per il server X
+# Sposta i file necessari al server X.
 function _make_x()
 {
     cd ${ROOT_DIR}
