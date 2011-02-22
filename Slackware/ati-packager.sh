@@ -53,7 +53,7 @@ function _init_env()
     echo "$ROOT_DIR" | grep -q ' ' && _print '' '' "`gettext "The name of the current directory mustn't contain any spaces"`" && exit 1
 
     # Architettura, può essere 'x86' o 'x86_64'
-    ARCH=$(arch)
+    ARCH=`uname -m`
     [[ $ARCH != x86_64 ]] && ARCH='x86'
 
     # Release del kernel in uso
