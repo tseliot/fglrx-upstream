@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sun Feb 27 23:54:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- remove patch file for Kernel 2.6.38 because is no longer required for 8.84
+
+-------------------------------------------------------------------
 Sun Feb 20 05:31:00 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - change /etc/modprobe.d/fglrx.conf to /etc/modprobe.d/50-fglrx.conf
