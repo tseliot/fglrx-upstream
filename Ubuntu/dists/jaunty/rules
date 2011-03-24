@@ -115,6 +115,10 @@ binary-install/$(PKG_driver)::
 		mv $$lib $$new_name; \
 	done
 
+	# Remove any libraries that may be caught by shell expansion
+	find . -name libGLE* | xargs rm -f
+	find . -name libEGL* | xargs rm -f
+
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	#driver package
 	dh_install -XlibAMD -p$(PKG_driver) "arch/x86/usr/X11R6/lib/*.so*"           "usr/lib32"
