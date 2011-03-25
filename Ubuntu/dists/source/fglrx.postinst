@@ -121,6 +121,30 @@ if [ "$1" = "configure" ]; then
         --slave /usr/lib/libaticalrt.so libaticalrt.so /usr/lib/fglrx/libaticalrt.so \
         --slave /usr/lib32/libaticalrt.so libaticalrt.so_lib32 /usr/lib32/fglrx/libaticalrt.so \
         --slave /usr/share/grub-gfxpayload-lists/blacklist/10_$PACKAGE_NAME grub_fb_blacklist /usr/share/fglrx/fglrx.grub-gfxpayload
+
+    # This is for switchable graphics
+    # Note: the radeon kernel module is still blacklisted
+    update-alternatives --force \
+        --install /etc/ld.so.conf.d/GL.conf gl_conf /usr/lib/pxpress/ld.so.conf 900 \
+        --slave /usr/bin/aticonfig aticonfig /usr/lib/fglrx/bin/aticonfig \
+        --slave /usr/bin/atiode atiode /usr/lib/fglrx/bin/atiode \
+        --slave /usr/bin/amdnotifyui amdnotifyui /usr/lib/fglrx/bin/amdnotifyui \
+        --slave /usr/bin/amdcccle amdcccle /usr/lib/fglrx/bin/amdcccle \
+        --slave /usr/bin/amdxdg-su amdxdg_su /usr/lib/fglrx/bin/amdxdg-su \
+        --slave /usr/share/applications/ubuntu-amdcccle.desktop amdcccle_desktop /usr/share/fglrx/amdcccle.desktop \
+        --slave /usr/share/applications/ubuntu-amdccclesu.desktop amdccclesu_desktop /usr/share/fglrx/amdccclesu.desktop \
+        --slave /usr/bin/fgl_glxgears fgl_glxgears /usr/lib/fglrx/bin/fgl_glxgears \
+        --slave /usr/bin/fglrxinfo fglrxinfo /usr/lib/fglrx/bin/fglrxinfo \
+        --slave /usr/bin/atiodcli atiodcli  /usr/lib/fglrx/bin/atiodcli \
+        --slave /usr/bin/atieventsd atieventsd  /usr/lib/fglrx/bin/atieventsd \
+        --slave /etc/modprobe.d/fglrx.conf fglrx_modconf /lib/fglrx/modprobe.conf \
+        --slave /etc/ati ati_conf /usr/lib/fglrx/etc/ati \
+        --slave /usr/lib/libaticalcl.so libaticalcl.so /usr/lib/fglrx/libaticalcl.so \
+        --slave /usr/lib32/libaticalcl.so libaticalcl.so_lib32 /usr/lib32/fglrx/libaticalcl.so \
+        --slave /usr/lib/libaticalrt.so libaticalrt.so /usr/lib/fglrx/libaticalrt.so \
+        --slave /usr/lib32/libaticalrt.so libaticalrt.so_lib32 /usr/lib32/fglrx/libaticalrt.so \
+
+
     # ldconfig needs to be run immediately as we're changing /etc/ld.so.conf.d/ with
     # alternatives.
     LDCONFIG_NOTRIGGER=y ldconfig

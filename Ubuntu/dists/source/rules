@@ -17,6 +17,7 @@ PKG_control     := fglrx-amdcccle
 DRIDIR   := usr/lib/$(PKG_driver)
 DRIDIR32 := usr/lib32/$(PKG_driver)
 XMODDIR  := $(DRIDIR)/xorg/modules
+PXPRESSDIR := usr/lib/pxpress
 LIBDIR   := lib
 ARCH     := x86
 XARCH    := xpic
@@ -98,6 +99,7 @@ build:
 			-e "s|#DRIDIR32#|$(DRIDIR32)|"   \
 			-e "s|#LIBDIR#|$(LIBDIR)|"       \
 			-e "s|#DRIDIR#|$(DRIDIR)|"       \
+			-e "s|#PXPRESSDIR#|$(PXPRESSDIR)|" \
 			-e "s|#CVERSION#|$(CVERSION)|"   \
 			-e "s|#XARCH#|$(XARCH)|"   \
 			-e "s|#ARCH#|$(ARCH)|"   \
@@ -172,6 +174,12 @@ endif
 	echo "/$(DRIDIR)" >	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
 ifeq ($(DEB_HOST_ARCH),amd64)
 	echo "/$(DRIDIR32)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
+endif
+
+	# ld.so.conf for PowerXpress
+	echo "/usr/lib/mesa" >		"$(CURDIR)/debian/$(PKG_driver)/$(PXPRESSDIR)/ld.so.conf"
+ifeq ($(DEB_HOST_ARCH),amd64)
+	echo "/usr/lib32/mesa" >>	"$(CURDIR)/debian/$(PKG_driver)/$(PXPRESSDIR)/ld.so.conf"
 endif
 
 	# Generate modaliases
