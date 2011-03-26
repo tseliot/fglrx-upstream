@@ -168,7 +168,7 @@ case "$1" in
                             -e 's/\x1B\[0m//g' \
                             -i ${FGLRX_BUILD_LOG}
             else
-                ${ECHO_BIN} "   The fglrx kernel module was already builded."
+                ${ECHO_BIN} "   The fglrx kernel module was already built."
             fi
         fi
 

@@ -235,7 +235,7 @@ Requires:       kernel-devel\n\
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/fglrx/{fglrx*,libGL*,libEGL*} ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
@@ -257,7 +257,7 @@ Requires:       kernel-devel\n\
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64 \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/fglrx/{fglrx*,libGL*,libEGL*} ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/lib64/* ${TMP_BUILD_PATH}/usr/lib64 \
             || checkReturnOutput $?
@@ -267,7 +267,7 @@ Requires:       kernel-devel\n\
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/fglrx/libGL* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/fglrx/{fglrx*,libGL*,libEGL*} ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
@@ -296,10 +296,24 @@ Requires:       kernel-devel\n\
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/authatieventsd.sh ${TMP_BUILD_PATH}/etc/ati/authatieventsd.sh \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/fglrx-kernel-build.sh ${TMP_BUILD_PATH}/usr/bin \
-        || checkReturnOutput $?
     cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/boot.fglrxrebuild ${TMP_BUILD_PATH}/etc/init.d \
         || checkReturnOutput $?
+    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/fglrx-kernel-build.sh ${TMP_BUILD_PATH}/usr/bin \
+        || checkReturnOutput $?
+    if [ "${ARCH}" = "IA32" ]; then
+        cp ${VERBOSE_OPTION} -f "${DISTRO_PATH}"/switchlibGL ${TMP_BUILD_PATH}/usr/lib/fglrx \
+            || checkReturnOutput $?
+    elif [ "${ARCH}" = "AMD64" ]; then
+        cp ${VERBOSE_OPTION} -f "${DISTRO_PATH}"/switchlibGL ${TMP_BUILD_PATH}/usr/lib64/fglrx \
+            || checkReturnOutput $?
+    fi
+    if [ "${ARCH}" = "IA32" ]; then
+        cp ${VERBOSE_OPTION} -f "${DISTRO_PATH}"/switchlibglx ${TMP_BUILD_PATH}/usr/lib/fglrx \
+            || checkReturnOutput $?
+    elif [ "${ARCH}" = "AMD64" ]; then
+        cp ${VERBOSE_OPTION} -f "${DISTRO_PATH}"/switchlibglx ${TMP_BUILD_PATH}/usr/lib64/fglrx \
+            || checkReturnOutput $?
+    fi
     cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/README.SuSE ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/fglrx.png ${TMP_BUILD_PATH}/usr/share/pixmaps \
@@ -317,10 +331,36 @@ Requires:       kernel-devel\n\
 
     # clean up temp dir
     debugMsg "Remove unneeded files in the temporary build path ...${VERBOSE_2_LINE_BREAK}"
-    rm ${VERBOSE_OPTION} ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx/make.sh \
-        || checkReturnOutput $?
-    rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx/examples \
-        || checkReturnOutput $?
+    if [ -f "${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx/make.sh" ]; then
+        rm ${VERBOSE_OPTION} ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx/make.sh \
+            || checkReturnOutput $?
+    fi
+    if [ -d "${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx/examples" ]; then
+        rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx/examples \
+            || checkReturnOutput $?
+    fi
+    if [ -f "${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/extensions/fglrx-libglx.so" ]; then
+        rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/extensions/fglrx-libglx.so \
+            || checkReturnOutput $?
+    fi
+    if [ -f "${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/extensions/libglx.so" ]; then
+        rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/extensions/libglx.so \
+            || checkReturnOutput $?
+    fi
+    if [ -f "${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions/fglrx-libglx.so" ]; then
+        rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions/fglrx-libglx.so \
+            || checkReturnOutput $?
+    fi
+    if [ -f "${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions/libglx.so" ]; then
+        rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions/libglx.so \
+            || checkReturnOutput $?
+    fi
+    if [ -d "${TMP_BUILD_PATH}/usr/lib/fglrx" ]; then
+        if [ "${ARCH}" = "AMD64" ]; then
+            rm ${VERBOSE_OPTION} -rf ${TMP_BUILD_PATH}/usr/lib/fglrx \
+                || checkReturnOutput $?
+        fi
+    fi
     print_okay
 
     # substitute variables in the specfile
@@ -343,20 +383,67 @@ END_SED_SCRIPT
     print_okay
 
     # build the package
-    debugMsg "Build the rpm package now ..."
+    debugMsg "Build the RPM package now ...${VERBOSE_2_LINE_BREAK}"
     if [ "${ARCH}" = "IA32" ]; then
         if [ "${VERBOSE_LEVEL}" = "2" ]; then
             rpmbuild -bb --target i586 ${TMP_SPEC_FILE} 2>&1 | tee ${TMP_BUILD_OUTPUT}
+            RPMBUILD_PID=$!
         else
-            rpmbuild -bb --target i586 ${TMP_SPEC_FILE} > ${TMP_BUILD_OUTPUT} 2>&1
+            rpmbuild -bb --target i586 ${TMP_SPEC_FILE} > ${TMP_BUILD_OUTPUT} 2>&1 &
+            RPMBUILD_PID=$!
         fi
     elif [ "${ARCH}" = "AMD64" ]; then
         if [ "${VERBOSE_LEVEL}" = "2" ]; then
             rpmbuild -bb --target x86_64 ${TMP_SPEC_FILE} 2>&1 | tee ${TMP_BUILD_OUTPUT}
+            RPMBUILD_PID=$!
         else
-            rpmbuild -bb --target x86_64 ${TMP_SPEC_FILE} > ${TMP_BUILD_OUTPUT} 2>&1
+            rpmbuild -bb --target x86_64 ${TMP_SPEC_FILE} > ${TMP_BUILD_OUTPUT} 2>&1 &
+            RPMBUILD_PID=$!
         fi
     fi
+
+    # RPMBUILD_PID=$(`which pidof` `which rpmbuild`)
+    # check for running rpmbuild and display a rotated line
+    if [ -z "${VERBOSE}" ]; then
+        echo -n -e "Build the RPM package now ... |"
+    else
+        if [ "${VERBOSE_LEVEL}" != "2" ]; then
+            debugMsg " |"
+        fi
+    fi
+    while [ -n "`kill -0 ${RPMBUILD_PID} 2>/dev/null && echo 'running'`" ]
+    do
+        if [ -z "${VERBOSE}" ]; then
+            echo -n -e "\b/"
+        else
+            debugMsg "\b/"
+        fi
+        sleep 0.25s
+        if [ -z "${VERBOSE}" ]; then
+            echo -n -e "\b-"
+        else
+            debugMsg "\b-"
+        fi
+        sleep 0.25s
+        if [ -z "${VERBOSE}" ]; then
+            echo -n -e "\b\\"
+        else
+            debugMsg "\b\\"
+        fi
+        sleep 0.25s
+        if [ -z "${VERBOSE}" ]; then
+            echo -n -e "\b|"
+        else
+            debugMsg "\b|"
+        fi
+        sleep 0.25s
+    done
+    if [ -z "${VERBOSE}" ]; then
+        echo -e "\b "
+    else
+        debugMsg "\b "
+    fi
+
     if [ -n "`grep 'RPM build errors' ${TMP_BUILD_OUTPUT}`" ]; then
         echo -n -e "\n"
         tail -n 20 ${TMP_BUILD_OUTPUT}

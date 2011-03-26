@@ -64,6 +64,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/ati \
          $RPM_BUILD_ROOT%{DRI_DRIVERS32_DIR} \
          $RPM_BUILD_ROOT/usr/lib \
 %endif
+         $RPM_BUILD_ROOT/usr/%{_lib}/fglrx \
 %if %suse_version > 1020
          $RPM_BUILD_ROOT/usr/%{_lib}/pm-utils/power.d \
 %else
@@ -98,7 +99,7 @@ pushd $tmpdir/fglrx
     rm -rf usr/X11R6/%{_lib}/fglrx
     install -m 755 usr/X11R6/%{_lib}/* \
                    $RPM_BUILD_ROOT/usr/X11R6/%{_lib}
-    ln -s fglrx/libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so.1.2
+    ln -snf /usr/X11R6/%{_lib}/fglrx/fglrx-libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so.1.2
     ln -s libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so.1
     ln -s libGL.so.1 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so
     ln -s libfglrx_dm.so.1.0 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_dm.so.1
@@ -109,7 +110,7 @@ pushd $tmpdir/fglrx
     rm -rf usr/X11R6/lib/fglrx
     install -m 755 usr/X11R6/lib/* \
                    $RPM_BUILD_ROOT/usr/X11R6/lib
-    ln -s fglrx/libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/lib/libGL.so.1.2
+    ln -snf /usr/X11R6/lib/fglrx/fglrx-libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/lib/libGL.so.1.2
     ln -s libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/lib/libGL.so.1
     ln -s libGL.so.1 $RPM_BUILD_ROOT/usr/X11R6/lib/libGL.so
     ln -s libfglrx_dm.so.1.0 $RPM_BUILD_ROOT/usr/X11R6/lib/libfglrx_dm.so.1
@@ -124,6 +125,9 @@ pushd $tmpdir/fglrx
     install -m 755 usr/%{_lib}/dri/* \
                    $RPM_BUILD_ROOT%{DRI_DRIVERS_DIR}
     rm -rf usr/%{_lib}/dri
+    install -m 744 usr/%{_lib}/fglrx/* \
+                   $RPM_BUILD_ROOT/usr/%{_lib}/fglrx
+    rm -rf usr/%{_lib}/fglrx
 %if %suse_version > 1020
     install -m 755 usr/%{_lib}/pm-utils/power.d/* \
                    $RPM_BUILD_ROOT/usr/%{_lib}/pm-utils/power.d
@@ -139,7 +143,7 @@ pushd $tmpdir/fglrx
                    $RPM_BUILD_ROOT%{MODULES_DIR}/linux
     install -m 755 usr/%{_lib}/xorg/modules/updates/extensions/fglrx/* \
                    $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/fglrx
-    ln -s fglrx/libglx.so $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/libglx.so
+    ln -snf %{MODULES_DIR}/updates/extensions/fglrx/fglrx-libglx.so $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/libglx.so
     rm -rf usr/%{_lib}/xorg/modules/{drivers,linux,updates}
     install -m 755 usr/%{_lib}/xorg/modules/* \
                    $RPM_BUILD_ROOT%{MODULES_DIR}
