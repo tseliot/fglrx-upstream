@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Mar 26 15:23:20 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- move out the creating of symlinks from the spec file into the
+  switchable scripts
+
+-------------------------------------------------------------------
 Sat Mar 26 00:34:18 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - add 2 switchable scripts for PowerXpress:

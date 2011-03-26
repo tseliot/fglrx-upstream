@@ -99,9 +99,6 @@ pushd $tmpdir/fglrx
     rm -rf usr/X11R6/%{_lib}/fglrx
     install -m 755 usr/X11R6/%{_lib}/* \
                    $RPM_BUILD_ROOT/usr/X11R6/%{_lib}
-    ln -snf /usr/X11R6/%{_lib}/fglrx/fglrx-libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so.1.2
-    ln -s libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so.1
-    ln -s libGL.so.1 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libGL.so
     ln -s libfglrx_dm.so.1.0 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_dm.so.1
     ln -s libfglrx_dm.so.1 $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/libfglrx_dm.so
 %ifarch x86_64
@@ -110,9 +107,6 @@ pushd $tmpdir/fglrx
     rm -rf usr/X11R6/lib/fglrx
     install -m 755 usr/X11R6/lib/* \
                    $RPM_BUILD_ROOT/usr/X11R6/lib
-    ln -snf /usr/X11R6/lib/fglrx/fglrx-libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/lib/libGL.so.1.2
-    ln -s libGL.so.1.2 $RPM_BUILD_ROOT/usr/X11R6/lib/libGL.so.1
-    ln -s libGL.so.1 $RPM_BUILD_ROOT/usr/X11R6/lib/libGL.so
     ln -s libfglrx_dm.so.1.0 $RPM_BUILD_ROOT/usr/X11R6/lib/libfglrx_dm.so.1
     ln -s libfglrx_dm.so.1 $RPM_BUILD_ROOT/usr/X11R6/lib/libfglrx_dm.so
 %endif
@@ -125,7 +119,7 @@ pushd $tmpdir/fglrx
     install -m 755 usr/%{_lib}/dri/* \
                    $RPM_BUILD_ROOT%{DRI_DRIVERS_DIR}
     rm -rf usr/%{_lib}/dri
-    install -m 744 usr/%{_lib}/fglrx/* \
+    install -m 755 usr/%{_lib}/fglrx/* \
                    $RPM_BUILD_ROOT/usr/%{_lib}/fglrx
     rm -rf usr/%{_lib}/fglrx
 %if %suse_version > 1020
@@ -143,7 +137,6 @@ pushd $tmpdir/fglrx
                    $RPM_BUILD_ROOT%{MODULES_DIR}/linux
     install -m 755 usr/%{_lib}/xorg/modules/updates/extensions/fglrx/* \
                    $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/fglrx
-    ln -snf %{MODULES_DIR}/updates/extensions/fglrx/fglrx-libglx.so $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/libglx.so
     rm -rf usr/%{_lib}/xorg/modules/{drivers,linux,updates}
     install -m 755 usr/%{_lib}/xorg/modules/* \
                    $RPM_BUILD_ROOT%{MODULES_DIR}
@@ -306,6 +299,14 @@ if [ -n "${ATICONFIG_BIN}" -a -x "${ATICONFIG_BIN}" ]; then
     ${ATICONFIG_BIN} --del-pcs-key=LDC,ReleaseVersion >/dev/null 2>&1
     ${ATICONFIG_BIN} --del-pcs-key=LDC,Catalyst_Version >/dev/null 2>&1
 fi
+if [ ! -L %{_libdir}/xorg/modules/updates/extensions/libglx.so ]; then
+    echo "Create symlink to fglrx-libglx.so"
+    %{_libdir}/fglrx/switchlibglx amd 2>/dev/null
+fi
+if [ ! -L /usr/X11R6/%{_lib}/libGL.so.1.2 ]; then
+    echo "Create symlink to fglrx-libGL.so.1.2"
+    %{_libdir}/fglrx/switchlibGL amd 2>/dev/null
+fi
 exit 0
 
 %preun
@@ -314,6 +315,11 @@ if [ -x etc/init.d/atieventsd ]; then
 fi
 if [ -x etc/init.d/boot.fglrxrebuild ]; then
     %stop_on_removal boot.fglrxrebuild
+fi
+# remove symlinks during uninstall (not during update)
+if [ "$1" -eq 0 ]; then
+    rm -f /usr/X11R6/lib*/libGL.so*
+    rm -f %{_libdir}/xorg/modules/updates/extensions/libglx.so
 fi
 exit 0
 

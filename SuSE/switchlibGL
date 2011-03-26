@@ -53,10 +53,14 @@ function switch_to_amd() {
 
     ln -snf /usr/X11R6/${LIB}/fglrx/fglrx-libGL.so.1.2 \
             /usr/X11R6/${LIB}/libGL.so.1.2
+    ln -snf libGL.so.1.2 /usr/X11R6/${LIB}/libGL.so.1
+    ln -snf libGL.so.1 /usr/X11R6/${LIB}/libGL.so
     ldconfig /usr/X11R6/${LIB}
     if [ "${LIB}" = "lib64" ]; then
         ln -snf /usr/X11R6/lib/fglrx/fglrx-libGL.so.1.2 \
                 /usr/X11R6/lib/libGL.so.1.2
+        ln -snf libGL.so.1.2 /usr/X11R6/lib/libGL.so.1
+        ln -snf libGL.so.1 /usr/X11R6/lib/libGL.so
         ldconfig /usr/X11R6/lib
     fi
 
@@ -66,10 +70,14 @@ function switch_to_intel() {
 
     ln -snf /usr/${LIB}/libGL.so.1.2 \
             /usr/X11R6/${LIB}/libGL.so.1.2
+    ln -snf libGL.so.1.2 /usr/X11R6/${LIB}/libGL.so.1
+    ln -snf libGL.so.1 /usr/X11R6/${LIB}/libGL.so
     ldconfig /usr/X11R6/${LIB}
     if [ "${LIB}" = "lib64" ]; then
         ln -snf /usr/lib/libGL.so.1.2 \
                 /usr/X11R6/lib/libGL.so.1.2
+        ln -snf libGL.so.1.2 /usr/X11R6/lib/libGL.so.1
+        ln -snf libGL.so.1 /usr/X11R6/lib/libGL.so
         ldconfig /usr/X11R6/lib
     fi
 
