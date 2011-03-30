@@ -143,6 +143,9 @@ endif
 		lib/modules/fglrx/build_mod/fglrxko_pci_ids.h > \
 		debian/modaliases/fglrx-modules.alias.override
 
+	# set the permissions on the pxpress scripts
+	chmod 744 debian/pxpress/switch*
+
 	dh build
 
 

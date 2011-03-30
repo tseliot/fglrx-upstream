@@ -132,6 +132,9 @@ build:
 	# set exec bit on scripts
 	find lib etc debian -name "*.sh" -type f | xargs chmod +x
 
+	# set the permissions on the pxpress scripts
+	chmod 744 debian/pxpress/switch*
+
 	dh build
 
 
