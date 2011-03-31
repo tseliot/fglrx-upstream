@@ -266,7 +266,6 @@ ifeq ($(DEB_HOST_ARCH),amd64)
 	echo "/$(PXPRESSLIBDIR32)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(PXPRESSDIR)/ld.so.conf"
 endif
 
-
 	# Generate modaliases
 	sh -e debian/modaliases/fglrx_supported \
 		lib/modules/fglrx/build_mod/fglrxko_pci_ids.h > \

@@ -259,12 +259,17 @@ endif
 
 	#ld.so.conf
 	echo "/$(DRIDIR)" >	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
-	echo "/$(PXPRESSLIBDIR)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(PXPRESSDIR)/ld.so.conf"
 ifeq ($(DEB_HOST_ARCH),amd64)
 	echo "/$(DRIDIR32)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(DRIDIR)/ld.so.conf"
-	echo "/$(PXPRESSLIBDIR32)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(PXPRESSDIR)/ld.so.conf"
 endif
 
+	# ld.so.conf for PowerXpress
+	echo "/usr/lib/mesa" >		"$(CURDIR)/debian/$(PKG_driver)/$(PXPRESSDIR)/ld.so.conf"
+	echo "/$(PXPRESSLIBDIR)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(PXPRESSDIR)/ld.so.conf"
+ifeq ($(DEB_HOST_ARCH),amd64)
+	echo "/usr/lib32/mesa" >>	"$(CURDIR)/debian/$(PKG_driver)/$(PXPRESSDIR)/ld.so.conf"
+	echo "/$(PXPRESSLIBDIR32)" >>	"$(CURDIR)/debian/$(PKG_driver)/$(PXPRESSDIR)/ld.so.conf"
+endif
 
 	#Run the normal stuff
 	dh binary-arch
