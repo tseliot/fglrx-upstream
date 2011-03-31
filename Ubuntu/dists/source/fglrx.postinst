@@ -132,18 +132,26 @@ if [ "$1" = "configure" ]; then
         --slave /usr/bin/amdnotifyui amdnotifyui /usr/lib/fglrx/bin/amdnotifyui \
         --slave /usr/bin/amdcccle amdcccle /usr/lib/fglrx/bin/amdcccle \
         --slave /usr/bin/amdxdg-su amdxdg_su /usr/lib/fglrx/bin/amdxdg-su \
+        --slave /usr/bin/amdupdaterandrconfig amdupdaterandrconfig /usr/lib/fglrx/bin/amdupdaterandrconfig \
         --slave /usr/share/applications/ubuntu-amdcccle.desktop amdcccle_desktop /usr/share/fglrx/amdcccle.desktop \
         --slave /usr/share/applications/ubuntu-amdccclesu.desktop amdccclesu_desktop /usr/share/fglrx/amdccclesu.desktop \
         --slave /usr/bin/fgl_glxgears fgl_glxgears /usr/lib/fglrx/bin/fgl_glxgears \
         --slave /usr/bin/fglrxinfo fglrxinfo /usr/lib/fglrx/bin/fglrxinfo \
         --slave /usr/bin/atiodcli atiodcli  /usr/lib/fglrx/bin/atiodcli \
         --slave /usr/bin/atieventsd atieventsd  /usr/lib/fglrx/bin/atieventsd \
+        --slave /usr/lib/xorg/modules/drivers/fglrx_drv.so fglrx_drv /usr/lib/fglrx/xorg/modules/drivers/fglrx_drv.so \
+        --slave /usr/lib/dri/fglrx_dri.so fglrx_dri /usr/lib/fglrx/dri/fglrx_dri.so \
+        --slave /usr/lib/libAMDXvBA.cap libAMDXvBA_cap /usr/lib/fglrx/libAMDXvBA.cap \
         --slave /etc/modprobe.d/fglrx.conf fglrx_modconf /lib/fglrx/modprobe.conf \
+        --slave /etc/X11/Xsession.d/10fglrx 10fglrx /usr/lib/fglrx/10fglrx \
         --slave /etc/ati ati_conf /usr/lib/fglrx/etc/ati \
+        --slave /usr/lib/xorg/extra-modules xorg_extra_modules /usr/lib/pxpress/xorg \
         --slave /usr/lib/libaticalcl.so libaticalcl.so /usr/lib/fglrx/libaticalcl.so \
         --slave /usr/lib32/libaticalcl.so libaticalcl.so_lib32 /usr/lib32/fglrx/libaticalcl.so \
         --slave /usr/lib/libaticalrt.so libaticalrt.so /usr/lib/fglrx/libaticalrt.so \
         --slave /usr/lib32/libaticalrt.so libaticalrt.so_lib32 /usr/lib32/fglrx/libaticalrt.so \
+        --slave /usr/share/grub-gfxpayload-lists/blacklist/10_$PACKAGE_NAME grub_fb_blacklist /usr/share/fglrx/fglrx.grub-gfxpayload
+
 
 
     # ldconfig needs to be run immediately as we're changing /etc/ld.so.conf.d/ with
