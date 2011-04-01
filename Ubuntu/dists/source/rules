@@ -184,7 +184,7 @@ endif
 			else \
 				# Here we only accept the dri directory \
 				dir_name=`echo $$orig_name | awk -F/ '{print $$NF}'`; \
-				if [ "$$dir_name" == "dri" ]; then \
+				if [ "$$dir_name" = "dri" ]; then \
 					link_name=$$orig_name ; \
 					link_name=`echo $$orig_name  | sed -e "s|$(DRIDIR)|$(PXPRESSLIBDIR)|"`; \
 					dh_link -p$(PKG_driver) $$orig_name $$link_name ; \
@@ -208,7 +208,7 @@ ifeq ($(DEB_HOST_ARCH),amd64)
 			else \
 				# Here we only accept the dri directory \
 				dir_name=`echo $$orig_name | awk -F/ '{print $$NF}'`; \
-				if [ "$$dir_name" == "dri" ]; then \
+				if [ "$$dir_name" = "dri" ]; then \
 					link_name=$$orig_name ; \
 					link_name=`echo $$orig_name  | sed -e "s|$(DRIDIR32)|$(PXPRESSLIBDIR32)|"`; \
 					dh_link -p$(PKG_driver) $$orig_name $$link_name ; \
