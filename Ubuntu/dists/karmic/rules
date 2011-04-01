@@ -54,50 +54,6 @@ PKG_UVD_library := libamdxvba1
 DEB_DH_SHLIBDEPS_ARGS_ALL="-Xlib32"
 DEB_DH_SHLIBDEPS_ARGS_$(PKG_UVD_library)="-XlibAMD"
 
-.PHONY: remove-fglrx-prefix
-remove-fglrx-prefix:
-	# Rename libraries which have fglrx- as a prefix
-	for lib in arch/x86/usr/X11R6/lib/fglrx/fglrx-libGL.so.1.2 \
-			arch/x86/usr/X11R6/lib/fglrx-libGL.so.1.2 \
-			arch/x86_64/usr/X11R6/lib64/fglrx/fglrx-libGL.so.1.2 \
-			arch/x86_64/usr/X11R6/lib64/fglrx-libGL.so.1.2 \
-			xpic/usr/X11R6/lib/modules/extensions/fglrx/fglrx-libglx.so \
-			xpic/usr/X11R6/lib/modules/extensions/fglrx-libglx.so \
-			xpic_64a/usr/X11R6/lib64/modules/extensions/fglrx/fglrx-libglx.so \
-			xpic_64a/usr/X11R6/lib64/modules/extensions/fglrx-libglx.so; do \
-		if [ -e $$lib ]; then \
-			file_name=`echo $$lib | awk -F/ '{print $$NF}'`; \
-			path=`echo $$lib | sed -e "s|\/$$file_name|\/|"`; \
-			# Remove fglrx prefix \
-			new_name=`echo $$file_name | sed -e "s|fglrx\-||"`; \
-			full_path=`echo "$$path$$new_name"`; \
-			mv -f $$lib $$full_path; \
-		fi \
-	done
-
-
-
-
-.PHONY: add-fglrx-prefix
-add-fglrx-prefix:
-	# Rename libraries which are supposed to have fglrx- as a prefix
-	for lib in arch/x86/usr/X11R6/lib/fglrx/libGL.so.1.2 \
-			arch/x86/usr/X11R6/lib/libGL.so.1.2 \
-			arch/x86_64/usr/X11R6/lib64/fglrx/libGL.so.1.2 \
-			arch/x86_64/usr/X11R6/lib64/libGL.so.1.2 \
-			xpic/usr/X11R6/lib/modules/extensions/fglrx/libglx.so \
-			xpic/usr/X11R6/lib/modules/extensions/libglx.so \
-			xpic_64a/usr/X11R6/lib64/modules/extensions/fglrx/libglx.so \
-			xpic_64a/usr/X11R6/lib64/modules/extensions/libglx.so; do \
-		if [ -e $$lib ]; then \
-			file_name=`echo $$lib | awk -F/ '{print $$NF}'`; \
-			path=`echo $$lib | sed -e "s|\/$$file_name|\/|"`; \
-			# Add fglrx prefix \
-			new_name=`echo "fglrx-$$file_name"`; \
-			full_path=`echo "$$path$$new_name"`; \
-			mv -f $$lib $$full_path; \
-		fi \
-	done
 
 configure/$(PKG_driver)::
 
@@ -142,7 +98,7 @@ configure/$(PKG_driver)::
 		lib/modules/fglrx/build_mod/fglrxko_pci_ids.h > \
 		debian/modaliases/fglrx-modules.alias.override
 
-clean:: add-fglrx-prefix ;
+clean::
 	rm -f debian/{10fglrx, \
 		dkms.conf, \
 		$(PKG_driver).install, \
@@ -158,7 +114,7 @@ ifeq ($(DEB_BUILD_ARCH),amd64)
 	dh_install -p$(PKG_UVD_library) "arch/x86/usr/X11R6/lib/libAMD*.so*"           "usr/lib32"
 endif
 
-binary-install/$(PKG_driver):: remove-fglrx-prefix ;
+binary-install/$(PKG_driver)::
 
 	# Remove any libraries that may be caught by shell expansion
 	find . -name libGLE* | xargs rm -f
@@ -167,13 +123,14 @@ binary-install/$(PKG_driver):: remove-fglrx-prefix ;
 ifeq ($(DEB_BUILD_ARCH),amd64)
 	#driver package
 	dh_install -XlibAMD -p$(PKG_driver) "arch/x86/usr/X11R6/lib/*.so*"           "usr/lib32"
+	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/fglrx/*.so*"     "$(DRIDIR32)"
 	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/modules/dri"     "$(DRIDIR32)"
 	dh_install -p$(PKG_driver) "arch/x86/usr/lib/*"                     "usr/lib32"
 	dh_installdirs -p$(PKG_driver) "usr/lib32/fglrx"
 
 	for i in \
 			debian/$(PKG_driver)/$(DRIDIR32)/dri/fglrx_dri.so \
-			debian/$(PKG_driver)/usr/lib32/libGL.so.* \
+			debian/$(PKG_driver)/usr/lib32/*libGL.so.*.* \
 			; do execstack -q $$i; execstack -c $$i; done
 
 	#they don't provide the symlink for us (starting at 8.699)
@@ -189,8 +146,33 @@ endif
 			debian/$(PKG_driver)/usr/bin/atiode \
 			debian/$(PKG_driver)/usr/sbin/amdnotifyui \
 			debian/$(PKG_driver)/usr/lib/dri/fglrx_dri.so \
-			debian/$(PKG_driver)/usr/lib/libGL.so.* \
+			debian/$(PKG_driver)/usr/lib/*libGL.so.*.* \
 			; do execstack -q $$i; execstack -c $$i; done
+
+	dh_install -p$(PKG_driver)
+
+	# Rename libraries which are supposed to have fglrx-libGL as a prefix
+	for lib in `find debian/$(PKG_driver)/ -name 'fglrx-libGL*'`; \
+		do \
+			file_name=`echo $$lib | awk -F/ '{print $$NF}'`; \
+			path=`echo $$lib | sed -e "s|\/$$file_name|\/|"`; \
+			# Remove fglrx prefix \
+			new_name=`echo $$file_name | sed -e "s|fglrx\-||"`; \
+			full_path=`echo "$$path$$new_name"`; \
+			mv -f $$lib $$full_path; \
+	done
+
+	# Rename libraries which are supposed to have fglrx-libglx as a prefix
+	for lib in `find debian/$(PKG_driver)/ -name 'fglrx-libglx*'`; \
+		do \
+			file_name=`echo $$lib | awk -F/ '{print $$NF}'`; \
+			path=`echo $$lib | sed -e "s|\/$$file_name|\/|"`; \
+			new_path=`echo $$path | sed -e 's/fglrx\/$$//'`; \
+			# Remove fglrx prefix \
+			new_name=`echo $$file_name | sed -e "s|fglrx\-||"`; \
+			full_path=`echo "$$new_path$$new_name"`; \
+			mv -f $$lib $$full_path; \
+	done
 
 binary-install/$(PKG_control)::
 	execstack -c debian/$(PKG_control)/usr/bin/amdcccle
