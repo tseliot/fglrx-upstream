@@ -347,12 +347,20 @@ Requires:       kernel-devel\n\
         rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/extensions/libglx.so \
             || checkReturnOutput $?
     fi
+    if [ -f "${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/extensions/fglrx/libglx.so" ]; then
+        rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/extensions/fglrx/libglx.so \
+            || checkReturnOutput $?
+    fi
     if [ -f "${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions/fglrx-libglx.so" ]; then
         rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions/fglrx-libglx.so \
             || checkReturnOutput $?
     fi
     if [ -f "${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions/libglx.so" ]; then
         rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions/libglx.so \
+            || checkReturnOutput $?
+    fi
+    if [ -f "${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions/fglrx/libglx.so" ]; then
+        rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions/fglrx/libglx.so \
             || checkReturnOutput $?
     fi
     if [ -d "${TMP_BUILD_PATH}/usr/lib/fglrx" ]; then
