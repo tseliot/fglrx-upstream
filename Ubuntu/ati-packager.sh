@@ -41,8 +41,8 @@ else
 fi
 
 #Top level directories used by multiple methods
-InstallerRootDir=`pwd`              # Absolute path of the <installer root> directory
-AbsInstallerParentDir=`cd ${InstallerRootDir}/.. 2>/dev/null && pwd`    # Absolute path to the installer parent directory
+InstallerRootDir="`pwd`"              # Absolute path of the <installer root> directory
+AbsInstallerParentDir="`cd "${InstallerRootDir}"/.. 2>/dev/null && pwd`"    # Absolute path to the installer parent directory
 
 #Function: getAPIVersion()
 #Purpose: return the current API compatibility level that we support
@@ -135,12 +135,12 @@ getSupportedPackages()
 makeChangelog()
 {
     printf "%b\n" "fglrx-installer (2:${PADDED_DRV_RELEASE}-0ubuntu${REVISION}) ${1}; urgency=low\n" \
-    > ${TmpDrvFilesDir}/debian/changelog
+    > "${TmpDrvFilesDir}/debian/changelog"
     printf "%b\n" "  * New upstream release.\n" \
-    >> ${TmpDrvFilesDir}/debian/changelog
+    >> "${TmpDrvFilesDir}/debian/changelog"
     printf "%b\n" " -- ${DEBEMAIL}  `date --rfc-822`\n" \
-    >> ${TmpDrvFilesDir}/debian/changelog
-    cat ${TmpDrvFilesDir}/debian/changelog.in >> ${TmpDrvFilesDir}/debian/changelog
+    >> "${TmpDrvFilesDir}/debian/changelog"
+    cat "${TmpDrvFilesDir}/debian/changelog.in" >> "${TmpDrvFilesDir}/debian/changelog"
 }
 
 installPrep()
@@ -180,7 +180,7 @@ installPackages()
         echo "Unable to find ${AbsInstallerParentDir}/$file.  Please manually install"
         exit 1
     fi
-    cd ${AbsInstallerParentDir}
+    cd "${AbsInstallerParentDir}"
     packages=$(cat $file | grep extra | awk '{print $5}' | grep -v dev | grep -v lib | tr "\n" " ")
     $ROOT "sh -c 'dpkg -i ${packages}'"
     echo ${packages}
@@ -210,8 +210,8 @@ buildPackage()
     fi
 
     export X_NAME=$1                    # Well known X or distro name (exported for dpkg rules)
-    RelDistroDir=`dirname $0`           # Relative path to the distro directory
-    AbsDistroDir=`cd ${RelDistroDir} 2>/dev/null && pwd` # Absolute path to the distro directory
+    RelDistroDir="`dirname $0`"           # Relative path to the distro directory
+    AbsDistroDir=`cd "${RelDistroDir}" 2>/dev/null && pwd` # Absolute path to the distro directory
     TmpPkgBuildOut="/tmp/pkg_build.out"         # Temporary file to output diagnostics of the package build utility
     TmpDrvFilesDir=`mktemp -d -t fglrx.XXXXXX`  # Temporary directory to merge files from the common and x* directories
 
@@ -262,25 +262,25 @@ buildPackage()
     fi
 
     #Merge files from different source directories
-    cp -f -R ${InstallerRootDir}/${X_DIR} ${TmpDrvFilesDir}
-    cp -f -R ${InstallerRootDir}/${X_DIR}_64a ${TmpDrvFilesDir}
-    cp -f -R ${InstallerRootDir}/arch ${TmpDrvFilesDir}
-    cp -f -R ${InstallerRootDir}/common/* ${TmpDrvFilesDir}
+    cp -f -R "${InstallerRootDir}/${X_DIR}" "${TmpDrvFilesDir}"
+    cp -f -R "${InstallerRootDir}/${X_DIR}_64a" "${TmpDrvFilesDir}"
+    cp -f -R "${InstallerRootDir}/arch" "${TmpDrvFilesDir}"
+    cp -f -R "${InstallerRootDir}/common/"* "${TmpDrvFilesDir}"
 
     # Merge package files from the appropriate directories
     # If this target doesn't "yet" exist, then copy from the source target
-    chmod -R u+w ${AbsDistroDir}
-    if [ -d ${AbsDistroDir}/dists/${X_NAME} ]; then
-        cp -f -R -H -L ${AbsDistroDir}/dists/${X_NAME} ${TmpDrvFilesDir}/debian
+    chmod -R u+w "${AbsDistroDir}"
+    if [ -d "${AbsDistroDir}/dists/${X_NAME}" ]; then
+        cp -f -R -H -L "${AbsDistroDir}/dists/${X_NAME}" "${TmpDrvFilesDir}/debian"
     else
-        cp -f -R -H -L ${AbsDistroDir}/dists/source ${TmpDrvFilesDir}/debian
+        cp -f -R -H -L "${AbsDistroDir}/dists/source" "${TmpDrvFilesDir}/debian"
     fi
 
     # generate a temporary changelog with version information
     makeChangelog ${X_NAME}
 
     #Build the package
-    cd ${TmpDrvFilesDir}
+    cd "${TmpDrvFilesDir}"
 
     #if we are a source package, make a .orig.tar.gz too
     if [ "$1" = "source" ]; then
@@ -302,14 +302,14 @@ buildPackage()
 
             # move the created package to the directory where the self-extracting driver archive is located
             if [ "$1" = "source" ]; then
-                mv ../$i ${AbsInstallerParentDir}
+                mv ../$i "${AbsInstallerParentDir}"
             else
-                mv $i ${AbsInstallerParentDir}
+                mv $i "${AbsInstallerParentDir}"
             fi
-            echo "Package ${AbsInstallerParentDir}/`basename ${i}` has been successfully generated"
+            echo "Package "${AbsInstallerParentDir}"/`basename ${i}` has been successfully generated"
         done
 
-        mv ../fglrx-installer*.changes ${AbsInstallerParentDir}
+        mv ../fglrx-installer*.changes "${AbsInstallerParentDir}"
 
     else
         echo "Package build failed!"
@@ -319,7 +319,7 @@ buildPackage()
     fi
 
     #Clean-up
-    rm -rf ${TmpDrvFilesDir} > /dev/null
+    rm -rf "${TmpDrvFilesDir}" > /dev/null
     rm -f ${TmpPkgBuildOut} > /dev/null
 }
 
