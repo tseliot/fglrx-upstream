@@ -288,6 +288,7 @@ buildPackage()
         echo "building fglrx-installer in fglrx-installer_${PADDED_DRV_RELEASE}.orig.tar.gz" > ${TmpPkgBuildOut}
     fi
 
+    debclean >> ${TmpPkgBuildOut} 2>&1
     ${PKG_BUILD_UTIL} ${PKG_BUILD_OPTIONS} >> ${TmpPkgBuildOut} 2>&1
 
     if [ $? -eq 0 ]; then

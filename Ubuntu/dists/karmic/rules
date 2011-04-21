@@ -100,6 +100,11 @@ configure/$(PKG_driver)::
 		debian/modaliases/fglrx-modules.alias.override
 
 clean::
+	# refresh copyright file
+	cat debian/copyright_stub_0 > debian/copyright
+	cat usr/share/doc/fglrx/ATI_LICENSE.TXT >> debian/copyright
+	cat debian/copyright_stub_1 >> debian/copyright
+
 	rm -f debian/{10fglrx, \
 		dkms.conf, \
 		$(PKG_driver).install, \
