@@ -2,7 +2,7 @@
 #
 #       switchlibglx
 #
-#       Copyright 2011 Canonical Ltd
+#       Copyright 2011 Canonical Ltd.
 #       Author: Alberto Milone <alberto.milone@canonical.com>
 #
 #       Script to switch between AMD and Intel graphics driver libraries.
