@@ -45,13 +45,13 @@
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl).
 
 # version in installer filename:
-%define oversion	10-12
+%define oversion	11-3
 # Advertised version, for description:
-%define mversion	10.12
+%define mversion	11.3
 # driver version from ati-packager-helper.sh:
-%define iversion	8.801
+%define iversion	8.831.2
 # release:
-%define rel		2
+%define rel		3
 # rpm version (adds 0 in order to not go backwards if iversion is two-decimal)
 %define version		%{iversion}%([ $(echo %iversion | wc -c) -le 5 ] && echo 0)
 %else
@@ -192,7 +192,6 @@ Patch9:		fglrx-make_sh-custom-kernel-dir.patch
 # do not probe /proc for kernel info as we may be building for a
 # different kernel
 Patch10:	fglrx-make_sh-no-proc-probe.patch
-
 License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
 Group:		System/Kernel and hardware
@@ -252,7 +251,8 @@ Requires:	x11-server-common >= 1.9
 # Conflict with the next videodrv ABI break.
 # The driver may support multiple ABI versions and therefore
 # a strict version-specific requirement would not be enough.
-Conflicts:	xserver-abi(videodrv-%(echo $((%{videodrv_abi} + 1))))
+### This is problematic as it can cause removal of xserver instead (Anssi 04/2011)
+###Conflicts:  xserver-abi(videodrv-%(echo $((%{videodrv_abi} + 1))))
 %endif
 %endif
 Provides:	atieventsd = %{version}-%{release}
@@ -351,10 +351,6 @@ sh %{SOURCE0} --extract .
 
 mkdir fglrx_tools
 tar -xzf common/usr/src/ati/fglrx_sample_source.tgz -C fglrx_tools
-cd fglrx_tools # ensure patch does not touch outside
-%patch1 -p1
-%patch4 -p1
-cd -
 %if %ubuntu_prerelease
 [ -d "%xverdir" ] || (echo This driver version does not support your X.org server. Please wait for a new release from ATI. >&2; false)
 %else
@@ -596,16 +592,19 @@ echo "%{_prefix}/lib/%{drivername}" >>	%{buildroot}%{_sysconfdir}/ld.so.conf.d/G
 %endif
 touch					%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL.conf
 
+install -d -m755			%{buildroot}%{_sysconfdir}/%{drivername}
+
+%if %{mdkversion} < 201100
 # modprobe.conf
 install -d -m755			%{buildroot}%{_sysconfdir}/modprobe.d
-touch					%{buildroot}%{_sysconfdir}/modprobe.d/display-driver
-install -d -m755			%{buildroot}%{_sysconfdir}/%{drivername}
+touch					%{buildroot}%{_sysconfdir}/modprobe.d/display-driver.conf
 echo "blacklist radeon"			> %{buildroot}%{_sysconfdir}/%{drivername}/modprobe.conf
 
 # modprobe.preload.d
 install -d -m755			%{buildroot}%{_sysconfdir}/modprobe.preload.d
 touch					%{buildroot}%{_sysconfdir}/modprobe.preload.d/display-driver
 echo "fglrx"				> %{buildroot}%{_sysconfdir}/%{drivername}/modprobe.preload
+%endif
 
 # XvMCConfig
 echo "libAMDXvBA.so.1" > %{buildroot}%{_sysconfdir}/%{drivername}/XvMCConfig
@@ -670,8 +669,10 @@ fi
 %ifarch x86_64
 	--slave %{_prefix}/lib/libAMDXvBA.cap libAMDXvBA_cap %{_libdir}/%{drivername}/libAMDXvBA.cap \
 %endif
-	--slave %{_sysconfdir}/modprobe.d/display-driver display-driver.modconf %{_sysconfdir}/%{drivername}/modprobe.conf \
+%if %{mdkversion} < 201100
+	--slave %{_sysconfdir}/modprobe.d/display-driver.conf display-driver.conf %{_sysconfdir}/%{drivername}/modprobe.conf \
 	--slave %{_sysconfdir}/modprobe.preload.d/display-driver display-driver.preload %{_sysconfdir}/%{drivername}/modprobe.preload \
+%endif
 %if %{mdkversion} >= 200910
 	--slave %{xorg_extra_modules} xorg_extra_modules %{ati_extdir} \
 %else
@@ -807,12 +808,16 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/ld.so.conf.d/GL
 %{_sysconfdir}/ld.so.conf.d/GL/ati.conf
 
-%ghost %{_sysconfdir}/modprobe.d/display-driver
+%if %{mdkversion} < 201100
+%ghost %{_sysconfdir}/modprobe.d/display-driver.conf
 %ghost %{_sysconfdir}/modprobe.preload.d/display-driver
+%endif
 %dir %{_sysconfdir}/%{drivername}
 %{_sysconfdir}/%{drivername}/XvMCConfig
+%if %{mdkversion} < 201100
 %{_sysconfdir}/%{drivername}/modprobe.conf
 %{_sysconfdir}/%{drivername}/modprobe.preload
+%endif
 
 %dir %{_sysconfdir}/ati
 %{_sysconfdir}/ati/control
@@ -890,6 +895,7 @@ rm -rf %{buildroot}
 %{_sysconfdir}/security/console.apps/amdcccle-su
 %{_sysconfdir}/pam.d/amdcccle-su
 %{_bindir}/amdcccle
+%dir %{_datadir}/ati
 %dir %{_datadir}/ati/amdcccle
 %if %{atibuild}
 %{_iconsdir}/%{drivername}-amdcccle.xpm
@@ -932,6 +938,54 @@ rm -rf %{buildroot}
 %changelog
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
+
+* Mon Apr 25 2011 Oden Eriksson <oeriksson@mandriva.com> 8.831.2-3
++ Revision: 658570
+- fix bork, my bad
+
+* Sun Apr 17 2011 Anssi Hannula <anssi@mandriva.org> 8.831.2-2
++ Revision: 654795
+- fix release tag value
+
+* Sun Apr 17 2011 Anssi Hannula <anssi@mandriva.org> 8.831.2-1.test.3
++ Revision: 654085
+- disable conflicts on videodrv ABI, as it may cause X server to be
+  uninstalled instead
+- remove references to removed xgamma
+- remove now unneeded modprobe.preload.d and modprobe.d entries on 2011.0+
+- add simple uninstaller script used by the ati binaries
+
+* Sat Apr 09 2011 Oden Eriksson <oeriksson@mandriva.com> 8.831.2-1
++ Revision: 652106
+- 11.3 (8.831.2)
+- disable some stuff for now (temporary fix)
+- P11: fix dkms build with 2.6.38 (arch linux)
+
+  + Anssi Hannula <anssi@mandriva.org>
+    - rename modprobe config file to display-driver.conf
+
+* Sun Feb 27 2011 Funda Wang <fwang@mandriva.org> 8.821-2
++ Revision: 640417
+- rebuild
+
+* Sat Feb 19 2011 Anssi Hannula <anssi@mandriva.org> 8.821-1
++ Revision: 638706
+- new version 8.821 aka 11.2
+
+* Thu Jan 27 2011 Anssi Hannula <anssi@mandriva.org> 8.812-1
++ Revision: 633433
+- new version 8.812 aka 11.1
+- drop patches for issues fixed upstream
+- rediff custom-kernel-dir.patch
+
+* Sun Dec 19 2010 Anssi Hannula <anssi@mandriva.org> 8.801-3mdv2011.0
++ Revision: 623167
+- fix name of the 2.6.37 support patch
+
+* Sun Dec 19 2010 Anssi Hannula <anssi@mandriva.org> 8.801-2mdv2011.0
++ Revision: 623150
+- add patch to fix dkms build on 2.6.37 (mdvbz #61823)
+- adapt for 2010.2
 
 * Fri Dec 17 2010 Oden Eriksson <oeriksson@mandriva.com> 8.801-1mdv2011.0
 + Revision: 622548
