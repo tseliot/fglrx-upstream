@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 27 00:12:11 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- fix ati-packager.sh because some files were removed
+  in /usr/X11R6/lib{,64}/fglrx/
+
+-------------------------------------------------------------------
 Sat Mar 26 15:23:20 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - move out the creating of symlinks from the spec file into the

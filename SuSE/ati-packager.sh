@@ -235,7 +235,7 @@ Requires:       kernel-devel\n\
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/fglrx/{fglrx*,libGL*,libEGL*} ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/fglrx/fglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
@@ -257,7 +257,7 @@ Requires:       kernel-devel\n\
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64 \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/fglrx/{fglrx*,libGL*,libEGL*} ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/fglrx/fglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/lib64/* ${TMP_BUILD_PATH}/usr/lib64 \
             || checkReturnOutput $?
@@ -267,7 +267,7 @@ Requires:       kernel-devel\n\
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/fglrx/{fglrx*,libGL*,libEGL*} ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/fglrx/fglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
