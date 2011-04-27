@@ -490,12 +490,16 @@ install -m755 %{SOURCE2} %{buildroot}%{_initrddir}/atieventsd
 
 # amdcccle data files
 install -d -m755 %{buildroot}%{_datadir}/ati/amdcccle
-install -m644 common/usr/share/ati/amdcccle/*.qm %{buildroot}%{_datadir}/ati/amdcccle
 rm -f amdcccle.langs
-for file in common/usr/share/ati/amdcccle/*.qm; do
-	file=$(basename $file)
-	lang=${file#amdcccle_}
+for fullname in common/usr/share/ati/amdcccle/*.qm; do
+	file=$(basename $fullname)
+	lang=${file#*_}
 	lang=${lang%%.qm}
+%if !%{bundle_qt}
+	# qt localization not necessary with non-bundled qt
+	[ "$file" = "${file#qt}" ] || continue
+%endif
+	install -m644 $fullname %{buildroot}%{_datadir}/ati/amdcccle
 	echo "%%lang($lang) %{_datadir}/ati/amdcccle/$file" >> amdcccle.langs
 done
 
