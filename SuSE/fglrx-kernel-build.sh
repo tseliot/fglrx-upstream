@@ -144,7 +144,7 @@ fi
 ${PRINTF_BIN} "\nUsed CPUs/Cores for compilation  =>  [\033[1;32m ${NUM_CORES} \033[0m]"
 
 # Get list of installed kernels
-KERNEL_LIST="`${RPM_BIN} -q kernel kernel-desktop kernel-default kernel-pae kernel-smp | \
+KERNEL_LIST="`${RPM_BIN} -q kernel kernel-desktop kernel-default kernel-pae kernel-smp kernel-bigsmp kernel-vanilla | \
                 ${GREP_BIN} -v 'not installed' | ${SORT_BIN}`"
 
 # Get list of installed vanilla kernels

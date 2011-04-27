@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Apr 27 22:17:13 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- fix the path in the switchlibglx script on SLE 10
+- add more Kernel packages to fglrx-kernel-build.sh:
+  - kernel-bigsmp
+  - kernel-vanilla
+
+-------------------------------------------------------------------
 Wed Apr 27 00:12:11 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - fix ati-packager.sh because some files were removed

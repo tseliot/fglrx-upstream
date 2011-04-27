@@ -49,6 +49,18 @@ case "${ARCH}" in
     ;;
 esac
 
+SUSE_NAME=`head -n 1 /etc/SuSE-release | cut -f1 -d" "`
+SUSE_VERSION=`grep VERSION /etc/SuSE-release | sed -e 's/VERSION\s=\s//g'`
+
+if [ "${SUSE_NAME}" != "openSUSE" ]; then
+    SUSE_NAME="SLE"
+fi
+
+# SLE 10
+if [ "${SUSE_NAME}" = "SLE" -a "${SUSE_VERSION}" = "10" ]; then
+    LIB="X11R6/${LIB}"
+fi
+
 function switch_to_amd() {
 
     ln -snf /usr/${LIB}/xorg/modules/updates/extensions/fglrx/fglrx-libglx.so \
