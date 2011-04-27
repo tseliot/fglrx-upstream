@@ -638,6 +638,9 @@ while [ -n "\$*" ]; do
 	case "\$1" in
 	--dryrun)	dryrun="--test" ;;
 	--force)	;;
+	--preserve)	;;
+	--quick)	;;
+	--getUninstallVersion) exit 2 ;;
 	*)		echo "Unknown option for \$0." >&2 ;;
 	esac
 	shift
