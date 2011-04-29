@@ -47,6 +47,25 @@ buildPrep()
     exit ${ATI_INSTALLER_ERR_PREP}
 }
 
+commonRPMparams()
+{
+    distro=$1
+    version=$(./ati-packager-helper.sh --version)
+    # insert 0 to the end of version if helper_version is two-decimal
+    [ $(echo $version | cut -f2 -d.) -lt 100 ] && version=${version}0
+    # --specfile can't take --with
+    echo -e "--define\n _with_ati 1"
+    echo -e "--define\n iversion $(./ati-packager-helper.sh --version)"
+    echo -e "--define\n version $version"
+    echo -e "--define\n rel $(./ati-packager-helper.sh --release)"
+    echo -e "--define\n distsuffix amd.mdv"
+    echo -e "--define\n vendor $(./ati-packager-helper.sh --vendor)"
+    echo -e "--define\n packager $(./ati-packager-helper.sh --vendor)"
+    echo -e "--define\n mdkversion $(echo ${distro}0 | tr -d .)"
+    echo -e "--define\n mandriva_release ${distro}"
+    echo -e "--define\n _sourcedir $PWD/packages/Mandriva"
+}
+
 buildPackage()
 {
     distro=$1
@@ -56,28 +75,23 @@ buildPackage()
 
     mkdir -p $temp_root/{RPMS,BUILD,tmp}
 
-    version=$(./ati-packager-helper.sh --version)
-    # insert 0 to the end of version if helper_version is two-decimal
-    [ $(echo $version | cut -f2 -d.) -lt 100 ] && version=${version}0
+    # hack to avoid word splitting of --defines from commonRPMparams
+    oldIFS="$IFS"
+    IFS=$'\n'
 
-    LC_ALL=C rpmbuild -bb --with ati \
+    LC_ALL=C rpmbuild -bb \
+	$(commonRPMparams $distro) \
 	--define "_topdir ${temp_root}" \
 	--define "_builddir ${temp_root}/BUILD" \
 	--define "_rpmdir ${temp_root}/RPMS" \
 	--define "_tmppath ${temp_root}/tmp" \
-	--define "_sourcedir ${installer_root}/packages/Mandriva" \
-	--define "iversion $(./ati-packager-helper.sh --version)" \
-	--define "version $version" \
-	--define "rel $(./ati-packager-helper.sh --release)" \
 	--define "ati_dir ${installer_root}" \
-	--define "distsuffix amd.mdv" \
-	--define "vendor $(./ati-packager-helper.sh --vendor)" \
-	--define "packager $(./ati-packager-helper.sh --vendor)" \
-	--define "mdkversion $(echo ${distro}0 | tr -d .)" \
-	--define "mandriva_release ${distro}" \
 	${installer_root}/packages/Mandriva/fglrx.spec &> $temp_root/output.log
 
-    if [ $? -ne 0 ]; then
+    rc=$?
+    IFS="$oldIFS"
+
+    if [ $rc -ne 0 ]; then
         echo "Building package failed!"
         echo "rpmbuild output follows:"
         cat $temp_root/output.log
@@ -96,31 +110,35 @@ buildPackage()
 installPackage()
 {
     package=$1
-    distrover=$(cat /etc/version | cut -d. -f1)
+    distrover=$(cat /etc/version | cut -d. -f1,2)
     if [ "${package}" != "${distrover}" ]; then
         echo "Mandriva Linux ${distrover} can't use ${package} packages."
         exit 1
     fi
-    packagenames="$(rpm -q --specfile --with ati \
-        --qf '%{name}-%{version}-%{release}.%{arch}.rpm\n' \
-	--define "version $(./ati-packager-helper.sh --version)" \
-	--define "rel $(./ati-packager-helper.sh --release)" \
-	--define "distsuffix amd.mdv" \
-	--define "mdkversion $(echo ${package}0 | tr -d .)" \
-	--define "mandriva_release ${package}" \
+
+    # hack to avoid word splitting of --defines from commonRPMparams
+    oldIFS="$IFS"
+    IFS=$'\n'
+
+    packagenames="$(rpm -q --specfile \
+	$(commonRPMparams $package) \
+	--qf '%{name}-%{version}-%{release}.%{arch}.rpm\n' \
 	$(dirname $0)/fglrx.spec | tail -n+2 | grep -v -e ^fglrx-debug -e ^fglrx-__restore__)"
+
+    IFS="$oldIFS"
+
     if [ -z "${packagenames}" ]; then
         echo "Unable to determine package names."
         exit 1
     fi
-    pushd ..
+    pushd .. >/dev/null
     if [ -n "$DISPLAY" ]; then
         gurpmi --auto $packagenames
     else
         su -c "urpmi --auto $packagenames"
     fi
     ret=$?
-    popd
+    popd >/dev/null
     if [ $ret -ne 0 ]; then
         echo "Unable to install packages."
         exit 1
@@ -180,10 +198,14 @@ case "${action}" in
     ;;
 --identify)
     package=$2
-    if [ -f /etc/mandriva-release ] && [ "${package}" = "$(cat /etc/version | cut -d. -f1,2)" ]; then
+    if [ -f /etc/mandriva-release ] && [ "${package}" = "$(cut -d. -f1,2 /etc/version)" ]; then
         exit 0
     fi
     exit ${ATI_INSTALLER_ERR_VERS}
+    ;;
+--get-maintainer)
+    echo "Anssi Hannula <anssi@mandriva.org>"
+    exit 0
     ;;
 --getAPIVersion)
     exit 2
