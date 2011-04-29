@@ -1,0 +1,71 @@
+Index: ati-9.10/common/lib/modules/fglrx/build_mod/make.sh
+===================================================================
+--- ati-9.10/common/lib/modules/fglrx/build_mod/make.sh
++++ ati-9.10/common/lib/modules/fglrx/build_mod/make.sh	2009-11-01 21:10:05.480455766 +0200
+@@ -72,6 +72,8 @@
+ # ==============================================================
+ # parse options
+ 
++kernel_dir=
++
+ while [ $# -gt 0 ]; do
+     case $1 in
+         --norootcheck)
+@@ -127,6 +129,15 @@
+             fi
+             shift
+             ;;
++        --kernel-dir*)
++            if echo $1 | grep '=' >/dev/null ; then
++                kernel_dir=`echo $1 | sed 's/^.*=//'`
++            else
++                kernel_dir="$2"
++                shift
++            fi
++            shift
++            ;;
+     esac
+ done
+ 
+@@ -155,6 +166,10 @@
+ # ==============================================================
+ # assing default location of linux kernel headers
+ 
++if [ -n "$kernel_dir" ]; then
++  linuxbuild=$kernel_dir
++  linuxsources=$linuxbuild
++else
+ linuxbuild=/usr/src/linux
+ linuxsources=$linuxbuild
+ 
+@@ -163,6 +177,7 @@
+     linuxbuild=/lib/modules/${uname_r}/build
+     linuxsources=/lib/modules/${uname_r}/source
+ fi
++fi
+ 
+ linuxincludes=$linuxbuild/include
+ 
+@@ -419,6 +434,7 @@
+     LIBIP_PREFIX=$(echo "$LIBIP_PREFIX" | sed -e 's|^\([^/]\)|../\1|') \
+     MODFLAGS="-DMODULE -DATI -DFGL -DPAGE_ATTR_FIX=$PAGE_ATTR_FIX $def_smp $def_modversions" \
+     KVER=${uname_r} \
++    KDIR=${kernel_dir} \
+     PAGE_ATTR_FIX=$PAGE_ATTR_FIX \
+     > tlog 2>&1 
+ 
+Index: ati-9.10/common/lib/modules/fglrx/build_mod/2.6.x/Makefile
+===================================================================
+--- ati-9.10/common/lib/modules/fglrx/build_mod/2.6.x/Makefile
++++ ati-9.10/common/lib/modules/fglrx/build_mod/2.6.x/Makefile	2009-11-01 21:10:05.498445357 +0200
+@@ -75,7 +75,9 @@
+ 	KVER        = $(shell uname -r)
+ endif
+ 
+-KDIR            = /lib/modules/$(KVER)/build
++ifeq ($(KDIR),)
++	KDIR        = /lib/modules/$(KVER)/build
++endif
+ PWD             = $(shell pwd)
+ 
+ fglrx-cfiles    = ${fglrx-c-objs:.o=.c}
