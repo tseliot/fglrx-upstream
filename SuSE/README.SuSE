@@ -62,22 +62,5 @@ x86_64).
 License Terms and Conditions
 ----------------------------
 
-  Copyright (c) 1999-2000 FGL Graphics, a division of SONICblue Inc.
-  Copyright (c) 2001-2002 ATI Technologies, Starnberg, GERMANY
-  Copyright (c) 2003-2005 ATI Technologies, Inc
-  All Rights Reserved.
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-
-  1) All conditions of the ATI Software End User License Agreement are
-     complied with.  A copy of ATI's Software End User License Agreement
-     should have been included with this software.  If you cannot locate
-     this Agreement, please contact ATI Technologies  (http://www.ati.com)
-     for a copy of this Agreement.
-
-  2) This header is included unchanged with this file.
-
-[See /usr/share/doc/fglrx/ATI_LICENSE.TXT for details.]
+See /usr/share/doc/fglrx/ATI_LICENSE.TXT.
 
