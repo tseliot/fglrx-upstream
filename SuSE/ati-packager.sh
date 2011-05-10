@@ -170,13 +170,6 @@ Requires:       kernel-devel\n\
             || checkReturnOutput $?
 #        mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/extensions \
 #            || checkReturnOutput $?
-        if [ "${SUSE_VERSION}" != "SLE10" ]; then
-            mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib/pm-utils/power.d \
-                || checkReturnOutput $?
-        else
-            mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib/powersave/scripts \
-                || checkReturnOutput $?
-        fi
     elif [ "${ARCH}" = "AMD64" ]; then
         mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib64/dri \
             || checkReturnOutput $?
@@ -186,13 +179,13 @@ Requires:       kernel-devel\n\
             || checkReturnOutput $?
 #        mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/extensions \
 #            || checkReturnOutput $?
-        if [ "${SUSE_VERSION}" != "SLE10" ]; then
-            mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib64/pm-utils/power.d \
-                || checkReturnOutput $?
-        else
-            mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib64/powersave/scripts \
-                || checkReturnOutput $?
-        fi
+    fi
+    if [ "${SUSE_VERSION}" != "SLE10" ]; then
+        mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib/pm-utils/power.d \
+            || checkReturnOutput $?
+    else
+        mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/lib/powersave/scripts \
+            || checkReturnOutput $?
     fi
     mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/var/adm/fillup-templates \
         || checkReturnOutput $?
@@ -243,13 +236,6 @@ Requires:       kernel-devel\n\
             || checkReturnOutput $?
         mv ${VERBOSE_OPTION} ${TMP_BUILD_PATH}/usr/lib/xorg/modules/extensions ${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/ \
             || checkReturnOutput $?
-        if [ "${SUSE_VERSION}" != "SLE10" ]; then
-            cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/ati-powermode.sh ${TMP_BUILD_PATH}/usr/lib/pm-utils/power.d/ \
-                || checkReturnOutput $?
-        else
-            cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/{ati-powermode.sh,toggle-lvds.sh} ${TMP_BUILD_PATH}/usr/lib/powersave/scripts/ \
-                || checkReturnOutput $?
-        fi
     elif [ "${ARCH}" = "AMD64" ]; then
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib64 \
             || checkReturnOutput $?
@@ -275,13 +261,13 @@ Requires:       kernel-devel\n\
             || checkReturnOutput $?
         mv ${VERBOSE_OPTION} ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/extensions ${TMP_BUILD_PATH}/usr/lib64/xorg/modules/updates/ \
             || checkReturnOutput $?
-        if [ "${SUSE_VERSION}" != "SLE10" ]; then
-            cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/ati-powermode.sh ${TMP_BUILD_PATH}/usr/lib64/pm-utils/power.d/ \
-                || checkReturnOutput $?
-        else
-            cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/{ati-powermode.sh,toggle-lvds.sh} ${TMP_BUILD_PATH}/usr/lib64/powersave/scripts/ \
-                || checkReturnOutput $?
-        fi
+    fi
+    if [ "${SUSE_VERSION}" != "SLE10" ]; then
+        cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/ati-powermode.sh ${TMP_BUILD_PATH}/usr/lib/pm-utils/power.d/ \
+            || checkReturnOutput $?
+    else
+        cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/{ati-powermode.sh,toggle-lvds.sh} ${TMP_BUILD_PATH}/usr/lib/powersave/scripts/ \
+            || checkReturnOutput $?
     fi
     cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/sbin/* ${TMP_BUILD_PATH}/usr/sbin \
         || checkReturnOutput $?
