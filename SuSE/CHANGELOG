@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May 11 19:33:44 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- add a patch file for Kernel 2.6.39 (deprecated BKL issue)
+
+-------------------------------------------------------------------
 Wed Apr 27 22:17:13 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - fix the path in the switchlibglx script on SLE 10
