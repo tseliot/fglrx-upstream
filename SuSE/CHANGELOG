@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 12 21:40:46 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- fix version numbering in ati-packager.sh to solve an issue
+  with package manager (for example: 8.85 -> 8.850)
+
+-------------------------------------------------------------------
 Wed May 11 19:33:44 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - add a patch file for Kernel 2.6.39 (deprecated BKL issue)

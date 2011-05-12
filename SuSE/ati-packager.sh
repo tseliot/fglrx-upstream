@@ -357,11 +357,17 @@ Requires:       kernel-devel\n\
     fi
     print_okay
 
+    # check fglrx version of ATI Catalyst and add a appending zero if necessary
+    ATI_DRIVER_VERSION="`./ati-packager-helper.sh --version`"
+    if [ "${#ATI_DRIVER_VERSION}" -eq "4" ]; then
+        ATI_DRIVER_VERSION="${ATI_DRIVER_VERSION}0"
+    fi
+
     # substitute variables in the specfile
     debugMsg "Substitute variables in the temporary spec file ...${VERBOSE_2_LINE_BREAK}"
     sed -f - "${DISTRO_PATH}/fglrx.spec" > ${TMP_SPEC_FILE} <<END_SED_SCRIPT
 s!%PACKAGE_NAME!${PACKAGE_NAME}!
-s!%ATI_DRIVER_VERSION!`./ati-packager-helper.sh --version`!
+s!%ATI_DRIVER_VERSION!${ATI_DRIVER_VERSION}!
 s!%ATI_DRIVER_RELEASE!${RELEASE}!
 s!%ATI_DRIVER_DESCRIPTION!`./ati-packager-helper.sh --description`!
 s!%ATI_DRIVER_URL!`./ati-packager-helper.sh --url`!
