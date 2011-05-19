@@ -205,6 +205,9 @@ export NO_BRP_CHECK_RPATH=true
 
 %post
 %run_ldconfig
+if [ -f etc/sysconfig/fglrxconfig-oldconfig ]; then
+    mv -f etc/sysconfig/fglrxconfig-oldconfig etc/sysconfig/fglrxconfig
+fi
 %{fillup_only -n fglrxconfig}
 CURRENT_PATH=`pwd`
 pushd /usr/src/kernel-modules/fglrx
@@ -234,14 +237,6 @@ echo "Apply some patches ..."
         echo "ati-2.6.36-compat_alloc_user_space.patch could not applied! Please report this bug to Sebastian Siebert <freespacer@gmx.de>. Thank you."
     fi
 %endif
-%if %suse_version > 1100
-    patch -p0 -s < /usr/share/doc/packages/fglrx/patches/ati-2.6.39-no-big-kernel-lock.patch
-    if [ $? -eq 0 ]; then
-        echo "ati-2.6.39-no-big-kernel-lock.patch applied successfully."
-    else
-        echo "ati-2.6.39-no-big-kernel-lock.patch could not applied! Please report this bug to Sebastian Siebert <freespacer@gmx.de>. Thank you."
-    fi
-%endif
 # placeholder_for_additional_patches_for_fglrx_sources
 rm -f *.orig
 popd
@@ -258,10 +253,6 @@ fi
 if [ -x etc/init.d/boot.fglrxrebuild ]; then
     # Create symbolic run level links for boot.fglrxrebuild start script:
     %{fillup_and_insserv -Y boot.fglrxrebuild}
-fi
-if [ -f etc/X11/xorg.conf ]; then
-    test -f etc/X11/xorg.conf.fglrx-post || \
-        cp etc/X11/xorg.conf etc/X11/xorg.conf.fglrx-post
 fi
 test -f %{MODULES_DIR}/drivers/fglrx_drv.so && \
     touch %{MODULES_DIR}/drivers/fglrx_drv.so
@@ -300,6 +291,13 @@ if grep -q NO_KMS_IN_INITRD=\"no\" /etc/sysconfig/kernel; then
 fi
 ATICONFIG_BIN="`which aticonfig 2>/dev/null`"
 if [ -n "${ATICONFIG_BIN}" -a -x "${ATICONFIG_BIN}" ]; then
+    if [ -f etc/X11/xorg.conf.fglrx-oldconfig ]; then
+        mv -f etc/X11/xorg.conf.fglrx-oldconfig etc/X11/xorg.conf
+    elif [ -f etc/X11/xorg.conf.fglrx-post ]; then
+        # Fallback for older fglrx versions.
+        # The condition will be removed later.
+        mv -f etc/X11/xorg.conf.fglrx-post etc/X11/xorg.conf
+    fi
     ${ATICONFIG_BIN} --initial=check >/dev/null
     if [ $? -eq 1 ]; then
         ${ATICONFIG_BIN} --initial >/dev/null
@@ -337,20 +335,35 @@ exit 0
     %{insserv_cleanup}
 #fi
 if [ "$1" -eq 0 ]; then
-    test -f etc/X11/xorg.conf && \
-        cp etc/X11/xorg.conf etc/X11/xorg.conf.fglrx-postun
-    if [ -r etc/X11/xorg.conf.fglrx-post ]; then
-        mv etc/X11/xorg.conf.fglrx-post etc/X11/xorg.conf
+    if [ -f etc/X11/xorg.conf ]; then
+        cp -f etc/X11/xorg.conf etc/X11/xorg.conf.fglrx-oldconfig
+    fi
+    ITERATION=0
+    while [ -f etc/X11/xorg.conf.original-${ITERATION} ];
+    do
+        ITERATION=$((${ITERATION} + 1))
+    done
+    ITERATION=$((${ITERATION} - 1))
+    if [ ${ITERATION} -ge 0 ]; then
+        if [ -n "`grep NOXORGCONFEXISTED etc/X11/xorg.conf.original-${ITERATION}`" ]; then
+            # if xorg.conf does not exist, the files can safely removed
+            rm -f etc/X11/xorg.conf etc/X11/xorg.conf.original-${ITERATION}
+        else
+            mv -f etc/X11/xorg.conf.original-${ITERATION} etc/X11/xorg.conf
+        fi
+    else
+        rm -f etc/X11/xorg.conf
+    fi
+    if [ -f etc/sysconfig/fglrxconfig ]; then
+        mv -f etc/sysconfig/fglrxconfig etc/sysconfig/fglrxconfig-oldconfig
     fi
     # cleanup
     rm -rf usr/src/kernel-modules/fglrx/
+    rm -rf etc/ati/
     # try to unload the kernel module, which fails if it is still in use
     rmmod fglrx &> /dev/null
-    # now remove it 
-    if modinfo fglrx 2> /dev/null | grep -q ^filename:; then 
-        modfile=$(modinfo fglrx | grep ^filename: | cut -d : -f 2 | head -n 1)
-        rm $modfile
-    fi
+    # now remove all available fglrx kernel modules
+    find /lib/modules -iname "fglrx.ko" -print0 | xargs -r -0 rm
 fi
 exit 0
 
