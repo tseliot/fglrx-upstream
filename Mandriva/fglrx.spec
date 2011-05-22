@@ -672,9 +672,11 @@ intel_target="%{_sysconfdir}/%{drivername}/pxpress-free.ld.so.conf"
 case \$1 in
 amd)
 	update-alternatives --set gl_conf "\$amd_target" >/dev/null
+	ldconfig -X
 	;;
 intel)
 	update-alternatives --set gl_conf "\$intel_target" >/dev/null
+	ldconfig -X
 	;;
 query)
 	case \$(readlink -f "%{_sysconfdir}/ld.so.conf.d/GL.conf") in
