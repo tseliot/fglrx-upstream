@@ -45,11 +45,11 @@
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl).
 
 # version in installer filename:
-%define oversion	11-3
+%define oversion	11-5
 # Advertised version, for description:
-%define mversion	11.3
+%define mversion	11.5
 # driver version from ati-packager-helper.sh:
-%define iversion	8.831.2
+%define iversion	8.85
 # release:
 %define rel		3
 # rpm version (adds 0 in order to not go backwards if iversion is two-decimal)
@@ -69,7 +69,7 @@
 %define drivername	fglrx
 %define xorg_version	pic
 # highest supported videodrv abi
-%define videodrv_abi	8
+%define videodrv_abi	10
 %define xorg_libdir	%{_libdir}/xorg
 %define xorg_dridir	%{_libdir}/dri
 %define xorg_dridir32	%{_prefix}/lib/dri
@@ -534,7 +534,7 @@ install -m644 common/usr/share/icons/ccc_large.xpm %{buildroot}%{_iconsdir}/%{dr
 install -d -m755					%{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/*.*		%{buildroot}%{_libdir}/%{drivername}
 install -m755 %{archdir}/usr/X11R6/%{_lib}/fglrx/*	%{buildroot}%{_libdir}/%{drivername}
-install -m755 %{archdir}/usr/%{_lib}/*.so*		%{buildroot}%{_libdir}/%{drivername}
+install -m755 %{archdir}/usr/%{_lib}/*.*		%{buildroot}%{_libdir}/%{drivername}
 mv %{buildroot}%{_libdir}/%{drivername}/{fglrx-,}libGL.so.1.2
 chmod 0644						%{buildroot}%{_libdir}/%{drivername}/*.a
 /sbin/ldconfig -n					%{buildroot}%{_libdir}/%{drivername}
@@ -545,7 +545,7 @@ done
 %ifarch x86_64
 install -d -m755					%{buildroot}%{_prefix}/lib/%{drivername}
 install -m755 arch/x86/usr/X11R6/lib/fglrx/*		%{buildroot}%{_prefix}/lib/%{drivername}
-install -m755 arch/x86/usr/lib/*.so*			%{buildroot}%{_prefix}/lib/%{drivername}
+install -m755 arch/x86/usr/lib/*.*			%{buildroot}%{_prefix}/lib/%{drivername}
 mv %{buildroot}%{_prefix}/lib/%{drivername}/{fglrx-,}libGL.so.1.2
 /sbin/ldconfig -n					%{buildroot}%{_prefix}/lib/%{drivername}
 # create devel symlinks
@@ -618,8 +618,12 @@ echo "fglrx"				> %{buildroot}%{_sysconfdir}/%{drivername}/modprobe.preload
 # XvMCConfig
 echo "libAMDXvBA.so.1" > %{buildroot}%{_sysconfdir}/%{drivername}/XvMCConfig
 
-# PowerXpress intel
-ln -s %{_sysconfdir}/ld.so.conf.d/GL/standard.conf %{buildroot}%{_sysconfdir}/%{drivername}/pxpress-free.ld.so.conf
+# PowerXpress intel - use Mesa libGL but still keep ATI specific libs in search path
+echo "%{_libdir}/mesa" > %{buildroot}%{_sysconfdir}/%{drivername}/pxpress-free.ld.so.conf
+%ifarch x86_64
+echo "%{_prefix}/lib/mesa" >> %{buildroot}%{_sysconfdir}/%{drivername}/pxpress-free.ld.so.conf
+%endif
+cat %{buildroot}%{_sysconfdir}/ld.so.conf.d/GL/%{ld_so_conf_file} >> %{buildroot}%{_sysconfdir}/%{drivername}/pxpress-free.ld.so.conf
 
 # install ldetect-lst pcitable files for backports
 sed -ne 's|^\s*FGL_ASIC_ID(\(0x....\)).*|\1|gp' common/lib/modules/fglrx/build_mod/fglrxko_pci_ids.h | tr '[:upper:]' '[:lower:]' | sort -u | sed 's,^.*$,0x1002\t\0\t"%{ldetect_cards_name}",' > pcitable.fglrx.lst
@@ -697,7 +701,9 @@ chmod 0755 %{buildroot}%{_libdir}/fglrx/switchlibGL
 
 # It is not feasible to configure these separately with the alternatives
 # system, so use the same script for both.
-ln -s switchlibGL %{buildroot}%{_libdir}/fglrx/switchlibglx
+# Note: using a symlink here fails as the driver checks go+w without
+# dereferencing the symlink.
+cp -a %{buildroot}%{_libdir}/fglrx/switchlibGL %{buildroot}%{_libdir}/fglrx/switchlibglx
 
 %if %{mdkversion} >= 200800
 %pre -n %{driverpkgname}
@@ -736,14 +742,24 @@ fi
 %if %{mdkversion} >= 200800
 	--slave %{_libdir}/xorg/modules/extensions/libglx.so libglx %{ati_extdir}/libglx.so
 %endif
-
+%endif
 # Alternative for PowerXpress intel (switchable graphics)
 # This is a separate alternative so that this situation can be differentiated
 # from standard intel configuration by tools (e.g. so that radeon driver won't
 # be loaded despite fglrx not being configured anymore).
 %{_sbindir}/update-alternatives \
-	--install %{_sysconfdir}/ld.so.conf.d/GL.conf gl_conf %{_sysconfdir}/%{drivername}/pxpress-free.ld.so.conf 50
-
+	--install %{_sysconfdir}/ld.so.conf.d/GL.conf gl_conf %{_sysconfdir}/%{drivername}/pxpress-free.ld.so.conf 50 \
+%if %{mdkversion} < 201100
+	--slave %{_sysconfdir}/modprobe.d/display-driver.conf display-driver.conf %{_sysconfdir}/%{drivername}/modprobe.conf \
+	--slave %{_sysconfdir}/modprobe.preload.d/display-driver display-driver.preload %{_sysconfdir}/%{drivername}/modprobe.preload \
+%endif
+%if %{mdkversion} >= 200800 && %{mdkversion} <= 200900
+	--slave %{_libdir}/xorg/modules/extensions/libglx.so libglx %{_libdir}/xorg/modules/extensions/standard/libglx.so \
+%if %{mdkversion} == 200900
+	--slave %{_libdir}/xorg/modules/extensions/libdri.so libdri.so %{_libdir}/xorg/modules/extensions/standard/libdri.so \
+%endif
+%endif
+#
 %if %{mdkversion} >= 200800
 if [ "$(readlink -e %{_sysconfdir}/ld.so.conf.d/GL.conf)" = "%{_sysconfdir}/ld.so.conf.d/GL/ati-hd2000.conf" ]; then
 	# Switch from the obsolete hd2000 branch:
@@ -756,14 +772,17 @@ if [ -e %{_sysconfdir}/ati/atiogl.xml.rpmnew -a ! -e %{_sysconfdir}/ati/atiogl.x
 	echo "Moved %{_sysconfdir}/ati/atiogl.xml.rpmnew back to %{_sysconfdir}/ati/atiogl.xml."
 fi
 %endif
-# empty line so that /sbin/ldconfig is not passed to update-alternatives
-%endif
 # Call /sbin/ldconfig explicitely due to alternatives
 /sbin/ldconfig -X
 %_post_service atieventsd
 %if "%{ldetect_cards_name}" != ""
 [ -x %{_sbindir}/update-ldetect-lst ] && %{_sbindir}/update-ldetect-lst || :
 %endif
+
+# Clear driver version numbers from amdpcsdb as suggested by AMD.
+# (fixes version display in amdcccle after upgrade)
+aticonfig --del-pcs-key=LDC,ReleaseVersion &>/dev/null || :
+aticonfig --del-pcs-key=LDC,Catalyst_Version &>/dev/null || :
 
 %if %{mdkversion} >= 200800
 %posttrans -n %{driverpkgname}
@@ -805,7 +824,7 @@ if [ ! -f %{_sysconfdir}/%{drivername}/pxpress-free.ld.so.conf ]; then
   %{_sbindir}/update-alternatives --remove gl_conf %{_sysconfdir}/%{drivername}/pxpress-free.ld.so.conf
 fi
 # Call /sbin/ldconfig explicitely due to alternatives
-/sbin/ldconfig
+/sbin/ldconfig -X
 %if "%{ldetect_cards_name}" != ""
 [ -x %{_sbindir}/update-ldetect-lst ] && %{_sbindir}/update-ldetect-lst || :
 %endif
@@ -1007,6 +1026,40 @@ rm -rf %{buildroot}
 %changelog
 * %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
 - automatic package build by the ATI installer
+
+* Tue May 24 2011 Anssi Hannula <anssi@mandriva.org> 8.850-3mdv2010.0
++ Revision: 678000
+- use -X on postun ldconfig call
+- clear version numbers from configuration database on installation as
+  suggested by AMD (fixes incorrect version in amdcccle after upgrade)
+- update amd-uninstall.sh script with new options
+- do not use a symlink for PowerXpress ld.so.conf, it causes an error in
+  switchlibfoo scripts (reported by Wiliam Souza)
+- do not use a symlink for switchlibglx, it causes an error in fglrx driver
+  when trying to do a PowerXpress switch (reported by Wiliam Souza)
+- fix an error in a conditional causing PowerXpress alternative to not be
+  installed (reported by Wiliam Souza)
+- provide ATI libraries also in PowerXpress Intel mode, while using Mesa
+  libs for libGL
+- use fglrx modprobe.d and modprobe.preload.d files in PowerXpress Intel
+  mode on 2010.1 and earlier
+- fix missing libglx and libdri extension in PowerXpress mode on 2008.0,
+  2008.1, 2009.0
+
+* Sun May 22 2011 Anssi Hannula <anssi@mandriva.org> 8.850-2
++ Revision: 677466
+- run ldconfig after alternatives call in PowerXpress switcher script
+
+* Fri May 13 2011 Anssi Hannula <anssi@mandriva.org> 8.850-1
++ Revision: 673999
+- new version 11.5 aka 8.85
+  o fixes intel/fglrx switching on PowerXpress
+  o fixes some cases of suspend not working
+
+* Sat Apr 30 2011 Anssi Hannula <anssi@mandriva.org> 8.841-1
++ Revision: 660782
+- new version 8.841 aka 11.4
+- remove 2.6.38 support patch, fixed upstream
 
 * Mon Apr 25 2011 Oden Eriksson <oeriksson@mandriva.com> 8.831.2-3
 + Revision: 658570
