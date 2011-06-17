@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jun 17 22:17:03 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
+
+- remove the support of openSUSE 11.2
+
+-------------------------------------------------------------------
 Thu May 19 01:19:27 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - remove patch file for Kernel 2.6.39 because is no longer required for 8.87
@@ -7,7 +12,7 @@ Thu May 19 01:19:27 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
   - /etc/X11/xorg.conf -> /etc/X11/xorg.conf.fglrx-oldconfig
   - /etc/sysconfig/fglrxconfig -> /etc/sysconfig/fglrxconfig-oldconfig
   - /etc/X11/xorg.conf.fglrx-original-<n> -> /etc/X11/xorg.conf
-    if the above file contents #NOXORGCONFEXISTED, remove safely both files.
+    if the above file contains #NOXORGCONFEXISTED, remove safely both files.
 - change the behaviour of recovering the configuration
   files by reinstallation:
   - if old configuration files exist either /etc/X11/xorg.conf.fglrx-oldconfig
