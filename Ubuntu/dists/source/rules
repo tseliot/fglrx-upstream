@@ -80,6 +80,13 @@ clean:
 	cat usr/share/doc/fglrx/ATI_LICENSE.TXT >> debian/copyright
 	cat debian/copyright_stub_1 >> debian/copyright
 
+	# remove any file generated from a template
+	for file in *.in; do \
+		# strip only the last .in from the name \
+		filename=`echo $$file | sed -e "s|.in|$1|"` \
+		rm -f $(filename); \
+	done
+
 	dh clean
 
 
