@@ -157,7 +157,7 @@ if [ "$1" = "configure" ]; then
         --slave /#SYSCONFDIR#/modprobe.d/fglrx.conf #DEB_HOST_MULTIARCH#_fglrx_modconf /lib/fglrx/modprobe.conf \
         --slave /#SYSCONFDIR#/X11/Xsession.d/10fglrx #DEB_HOST_MULTIARCH#_10fglrx /#PKGLIBDIR#/10fglrx \
         --slave /#SYSCONFDIR#/ati #DEB_HOST_MULTIARCH#_ati_conf /#PKGLIBDIR#/#SYSCONFDIR#/ati \
-        --slave /#XORGEXTRA# #DEB_HOST_MULTIARCH#_xorg_extra_modules /#LIBDIR#/pxpress/xorg \
+        --slave /#XORGEXTRA# #DEB_HOST_MULTIARCH#_xorg_extra_modules /#PXDIR#/xorg \
         --slave /#LIBDIR#/libaticalcl.so #DEB_HOST_MULTIARCH#_libaticalcl.so /#PKGLIBDIR#/libaticalcl.so \
         --slave /#LIBDIR32#/libaticalcl.so #DEB_HOST_MULTIARCH#_libaticalcl.so_lib32 /#PKGLIBDIR32#/libaticalcl.so \
         --slave /#LIBDIR#/libaticalrt.so #DEB_HOST_MULTIARCH#_libaticalrt.so /#PKGLIBDIR#/libaticalrt.so \
