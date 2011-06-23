@@ -126,7 +126,29 @@ class Alternatives:
 class Switcher(object):
 
     def __init__(self):
-        self.__gl_switcher = Alternatives('gl_conf')
+        self._supported_architectures = {'i386': 'i386', 'amd64': 'x86_64'}
+        main_arch = self._get_architecture()
+        other_arch = self._supported_architectures.values()[
+                          int(not self._supported_architectures
+                          .values().index(main_arch))]
+        main_alternative_name = self._get_alternative_name_from_arch(main_arch)
+        other_alternative_name = self._get_alternative_name_from_arch(other_arch)
+
+        # We have 2 alternatives, one for each architecture
+        self.__gl_switcher = Alternatives(main_alternative_name)
+        self.__gl_switcher_other = Alternatives(other_alternative_name)
+
+    def _get_architecture(self):
+        dev_null = open('/dev/null', 'w')
+        p1 = Popen(['dpkg', '--print-architecture'], stdout=PIPE, stderr=dev_null)
+        p = p1.communicate()[0]
+        dev_null.close()
+        architecture = p.strip()
+        return self._supported_architectures.get(architecture)
+
+    def _get_alternative_name_from_arch(self, architecture):
+        alternative = '%s-linux-gnu_gl_conf' % architecture
+        return alternative
 
     def __simplify_x_alternative_name(self, alternative):
         return alternative.split('/')[-1]
@@ -148,20 +170,25 @@ class Switcher(object):
         # we might be looking for e.g. an xorg.conf alternative
         alternatives = [None, None]
         raw_gl_alternative = self.__gl_switcher.get_current_alternative()
+        raw_gl_alternative_other = self.__gl_switcher_other.get_current_alternative()
 
         if (raw_gl_alternative != None):
             alternatives[0] = self.__simplify_gl_alternative_name(raw_gl_alternative)
+        if (raw_gl_alternative_other != None):
+            alternatives[1] = self.__simplify_gl_alternative_name(raw_gl_alternative_other)
 
         return alternatives
 
     def enable_alternative(self, alternative):
         # Make sure that the alternative exists
         gl_alternative = self.__gl_switcher.get_alternative_by_name(alternative)
+        gl_alternative_other = self.__gl_switcher_other.get_alternative_by_name(alternative)
 
         # See if they are null
         # Abort if gl_alternative is null
-        if gl_alternative:
-            success = self.__gl_switcher.set_alternative(gl_alternative)
+        if gl_alternative and gl_alternative_other:
+            success = (self.__gl_switcher.set_alternative(gl_alternative) and
+                       self.__gl_switcher_other.set_alternative(gl_alternative))
             return success
         else:
             sys.stderr.write("Error: no alternative can be found for %s\n" % alternative)
@@ -173,13 +200,14 @@ class Switcher(object):
 
         try:
             alternative = str(alternatives[0])
+            alternative_other = str(alternatives[1])
         except IndexError:
             # No alternative exists
             return False
 
-        if alternative == 'fglrx':
+        if alternative == alternative_other == 'fglrx':
             print 'amd'
-        elif alternative == 'pxpress':
+        elif alternative == alternative_other == 'pxpress':
             print 'intel'
         else:
             print 'unknown'
