@@ -99,62 +99,67 @@ if [ "$1" = "configure" ]; then
     fi
 
     update-alternatives --force \
-        --install /#SYSCONFDIR#/ld.so.conf.d/GL.conf gl_conf /#LDSOCONF# #ALTPRIORITY# \
-        --slave /#BINDIR#/aticonfig aticonfig /#PKGBINDIR#/aticonfig \
-        --slave /#BINDIR#/atiode atiode /#PKGBINDIR#/atiode \
-        --slave /#BINDIR#/amdnotifyui amdnotifyui /#PKGBINDIR#/amdnotifyui \
-        --slave /#BINDIR#/amdcccle amdcccle /#PKGBINDIR#/amdcccle \
-        --slave /#BINDIR#/amdxdg-su amdxdg_su /#PKGBINDIR#/amdxdg-su \
-        --slave /#BINDIR#/amdupdaterandrconfig amdupdaterandrconfig /#PKGBINDIR#/amdupdaterandrconfig \
-        --slave /#DATADIR#/applications/ubuntu-amdcccle.desktop amdcccle_desktop /#PKGDATADIR#/amdcccle.desktop \
-        --slave /#DATADIR#/applications/ubuntu-amdccclesu.desktop amdccclesu_desktop /#PKGDATADIR#/amdccclesu.desktop \
-        --slave /#BINDIR#/fgl_glxgears fgl_glxgears /#PKGBINDIR#/fgl_glxgears \
-        --slave /#BINDIR#/fglrxinfo fglrxinfo /#PKGBINDIR#/fglrxinfo \
-        --slave /#BINDIR#/atiodcli atiodcli  /#PKGBINDIR#/atiodcli \
-        --slave /#BINDIR#/atieventsd atieventsd  /#PKGBINDIR#/atieventsd \
-        --slave /#LIBDIR#/xorg/modules/drivers/fglrx_drv.so fglrx_drv /#PKGLIBDIR#/xorg/modules/drivers/fglrx_drv.so \
-        --slave /#LIBDIR#/dri/fglrx_dri.so fglrx_dri /#PKGLIBDIR#/dri/fglrx_dri.so \
-        --slave /#LIBDIR#/libAMDXvBA.cap libAMDXvBA_cap /#PKGLIBDIR#/libAMDXvBA.cap \
-        --slave /#SYSCONFDIR#/modprobe.d/fglrx.conf fglrx_modconf /lib/fglrx/modprobe.conf \
-        --slave /#SYSCONFDIR#/X11/Xsession.d/10fglrx 10fglrx /#PKGLIBDIR#/10fglrx \
-        --slave /#SYSCONFDIR#/ati ati_conf /#PKGLIBDIR#/#SYSCONFDIR#/ati \
-        --slave /#XORGEXTRA# xorg_extra_modules /#PKGLIBDIR#/xorg \
-        --slave /#LIBDIR#/libaticalcl.so libaticalcl.so /#PKGLIBDIR#/libaticalcl.so \
-        --slave /#LIBDIR32#/libaticalcl.so libaticalcl.so_lib32 /#PKGLIBDIR32#/libaticalcl.so \
-        --slave /#LIBDIR#/libaticalrt.so libaticalrt.so /#PKGLIBDIR#/libaticalrt.so \
-        --slave /#LIBDIR32#/libaticalrt.so libaticalrt.so_lib32 /#PKGLIBDIR32#/libaticalrt.so \
-        --slave /#DATADIR#/grub-gfxpayload-lists/blacklist/10_$PACKAGE_NAME grub_fb_blacklist /#PKGDATADIR#/fglrx.grub-gfxpayload
+        --install /#SYSCONFDIR#/ld.so.conf.d/#DEB_HOST_MULTIARCH#_GL.conf #DEB_HOST_MULTIARCH#_gl_conf /#LDSOCONF# #ALTPRIORITY# \
+        --slave /#BINDIR#/aticonfig #DEB_HOST_MULTIARCH#_aticonfig /#PKGBINDIR#/aticonfig \
+        --slave /#BINDIR#/atiode #DEB_HOST_MULTIARCH#_atiode /#PKGBINDIR#/atiode \
+        --slave /#BINDIR#/amdnotifyui #DEB_HOST_MULTIARCH#_amdnotifyui /#PKGBINDIR#/amdnotifyui \
+        --slave /#BINDIR#/amdcccle #DEB_HOST_MULTIARCH#_amdcccle /#PKGBINDIR#/amdcccle \
+        --slave /#BINDIR#/amdxdg-su #DEB_HOST_MULTIARCH#_amdxdg_su /#PKGBINDIR#/amdxdg-su \
+        --slave /#BINDIR#/amdupdaterandrconfig #DEB_HOST_MULTIARCH#_amdupdaterandrconfig /#PKGBINDIR#/amdupdaterandrconfig \
+        --slave /#DATADIR#/applications/ubuntu-amdcccle.desktop #DEB_HOST_MULTIARCH#_amdcccle_desktop /#PKGDATADIR#/amdcccle.desktop \
+        --slave /#DATADIR#/applications/ubuntu-amdccclesu.desktop #DEB_HOST_MULTIARCH#_amdccclesu_desktop /#PKGDATADIR#/amdccclesu.desktop \
+        --slave /#BINDIR#/fgl_glxgears #DEB_HOST_MULTIARCH#_fgl_glxgears /#PKGBINDIR#/fgl_glxgears \
+        --slave /#BINDIR#/fglrxinfo #DEB_HOST_MULTIARCH#_fglrxinfo /#PKGBINDIR#/fglrxinfo \
+        --slave /#BINDIR#/atiodcli #DEB_HOST_MULTIARCH#_atiodcli  /#PKGBINDIR#/atiodcli \
+        --slave /#BINDIR#/atieventsd #DEB_HOST_MULTIARCH#_atieventsd  /#PKGBINDIR#/atieventsd \
+        --slave /#LIBDIR#/xorg/modules/drivers/fglrx_drv.so #DEB_HOST_MULTIARCH#_fglrx_drv /#PKGLIBDIR#/xorg/modules/drivers/fglrx_drv.so \
+        --slave /#LIBDIR#/dri/fglrx_dri.so #DEB_HOST_MULTIARCH#_fglrx_dri /#PKGLIBDIR#/dri/fglrx_dri.so \
+        --slave /#LIBDIR#/libAMDXvBA.cap #DEB_HOST_MULTIARCH#_libAMDXvBA_cap /#PKGLIBDIR#/libAMDXvBA.cap \
+        --slave /#SYSCONFDIR#/modprobe.d/fglrx.conf #DEB_HOST_MULTIARCH#_fglrx_modconf /lib/fglrx/modprobe.conf \
+        --slave /#SYSCONFDIR#/X11/Xsession.d/10fglrx #DEB_HOST_MULTIARCH#_10fglrx /#PKGLIBDIR#/10fglrx \
+        --slave /#SYSCONFDIR#/ati #DEB_HOST_MULTIARCH#_ati_conf /#PKGLIBDIR#/#SYSCONFDIR#/ati \
+        --slave /#XORGEXTRA# #DEB_HOST_MULTIARCH#_xorg_extra_modules /#PKGLIBDIR#/xorg \
+        --slave /#LIBDIR#/libaticalcl.so #DEB_HOST_MULTIARCH#_libaticalcl.so /#PKGLIBDIR#/libaticalcl.so \
+        --slave /#LIBDIR32#/libaticalcl.so #DEB_HOST_MULTIARCH#_libaticalcl.so_lib32 /#PKGLIBDIR32#/libaticalcl.so \
+        --slave /#LIBDIR#/libaticalrt.so #DEB_HOST_MULTIARCH#_libaticalrt.so /#PKGLIBDIR#/libaticalrt.so \
+        --slave /#LIBDIR32#/libaticalrt.so #DEB_HOST_MULTIARCH#_libaticalrt.so_lib32 /#PKGLIBDIR32#/libaticalrt.so \
+        --slave /#DATADIR#/grub-gfxpayload-lists/blacklist/10_$PACKAGE_NAME #DEB_HOST_MULTIARCH#_grub_fb_blacklist /#PKGDATADIR#/fglrx.grub-gfxpayload
 
     # This is for switchable graphics
     # Note: the radeon kernel module is still blacklisted
     update-alternatives --force \
-        --install /#SYSCONFDIR#/ld.so.conf.d/GL.conf gl_conf /#PXLDSOCONF# #PXALTPRIORITY# \
-        --slave /#BINDIR#/aticonfig aticonfig /#PKGBINDIR#/aticonfig \
-        --slave /#BINDIR#/atiode atiode /#PKGBINDIR#/atiode \
-        --slave /#BINDIR#/amdnotifyui amdnotifyui /#PKGBINDIR#/amdnotifyui \
-        --slave /#BINDIR#/amdcccle amdcccle /#PKGBINDIR#/amdcccle \
-        --slave /#BINDIR#/amdxdg-su amdxdg_su /#PKGBINDIR#/amdxdg-su \
-        --slave /#BINDIR#/amdupdaterandrconfig amdupdaterandrconfig /#PKGBINDIR#/amdupdaterandrconfig \
-        --slave /#DATADIR#/applications/ubuntu-amdcccle.desktop amdcccle_desktop /#PKGDATADIR#/amdcccle.desktop \
-        --slave /#DATADIR#/applications/ubuntu-amdccclesu.desktop amdccclesu_desktop /#PKGDATADIR#/amdccclesu.desktop \
-        --slave /#BINDIR#/fgl_glxgears fgl_glxgears /#PKGBINDIR#/fgl_glxgears \
-        --slave /#BINDIR#/fglrxinfo fglrxinfo /#PKGBINDIR#/fglrxinfo \
-        --slave /#BINDIR#/atiodcli atiodcli  /#PKGBINDIR#/atiodcli \
-        --slave /#BINDIR#/atieventsd atieventsd  /#PKGBINDIR#/atieventsd \
-        --slave /#LIBDIR#/xorg/modules/drivers/fglrx_drv.so fglrx_drv /#PKGLIBDIR#/xorg/modules/drivers/fglrx_drv.so \
-        --slave /#LIBDIR#/dri/fglrx_dri.so fglrx_dri /#PKGLIBDIR#/dri/fglrx_dri.so \
-        --slave /#LIBDIR#/libAMDXvBA.cap libAMDXvBA_cap /#PKGLIBDIR#/libAMDXvBA.cap \
-        --slave /#SYSCONFDIR#/modprobe.d/fglrx.conf fglrx_modconf /lib/fglrx/modprobe.conf \
-        --slave /#SYSCONFDIR#/X11/Xsession.d/10fglrx 10fglrx /#PKGLIBDIR#/10fglrx \
-        --slave /#SYSCONFDIR#/ati ati_conf /#PKGLIBDIR#/#SYSCONFDIR#/ati \
-        --slave /#XORGEXTRA# xorg_extra_modules /#LIBDIR#/pxpress/xorg \
-        --slave /#LIBDIR#/libaticalcl.so libaticalcl.so /#PKGLIBDIR#/libaticalcl.so \
-        --slave /#LIBDIR32#/libaticalcl.so libaticalcl.so_lib32 /#PKGLIBDIR32#/libaticalcl.so \
-        --slave /#LIBDIR#/libaticalrt.so libaticalrt.so /#PKGLIBDIR#/libaticalrt.so \
-        --slave /#LIBDIR32#/libaticalrt.so libaticalrt.so_lib32 /#PKGLIBDIR32#/libaticalrt.so \
-        --slave /#DATADIR#/grub-gfxpayload-lists/blacklist/10_$PACKAGE_NAME grub_fb_blacklist /#PKGDATADIR#/fglrx.grub-gfxpayload
+        --install /#SYSCONFDIR#/ld.so.conf.d/#DEB_HOST_MULTIARCH#_GL.conf #DEB_HOST_MULTIARCH#_gl_conf /#PXLDSOCONF# #PXALTPRIORITY# \
+        --slave /#BINDIR#/aticonfig #DEB_HOST_MULTIARCH#_aticonfig /#PKGBINDIR#/aticonfig \
+        --slave /#BINDIR#/atiode #DEB_HOST_MULTIARCH#_atiode /#PKGBINDIR#/atiode \
+        --slave /#BINDIR#/amdnotifyui #DEB_HOST_MULTIARCH#_amdnotifyui /#PKGBINDIR#/amdnotifyui \
+        --slave /#BINDIR#/amdcccle #DEB_HOST_MULTIARCH#_amdcccle /#PKGBINDIR#/amdcccle \
+        --slave /#BINDIR#/amdxdg-su #DEB_HOST_MULTIARCH#_amdxdg_su /#PKGBINDIR#/amdxdg-su \
+        --slave /#BINDIR#/amdupdaterandrconfig #DEB_HOST_MULTIARCH#_amdupdaterandrconfig /#PKGBINDIR#/amdupdaterandrconfig \
+        --slave /#DATADIR#/applications/ubuntu-amdcccle.desktop #DEB_HOST_MULTIARCH#_amdcccle_desktop /#PKGDATADIR#/amdcccle.desktop \
+        --slave /#DATADIR#/applications/ubuntu-amdccclesu.desktop #DEB_HOST_MULTIARCH#_amdccclesu_desktop /#PKGDATADIR#/amdccclesu.desktop \
+        --slave /#BINDIR#/fgl_glxgears #DEB_HOST_MULTIARCH#_fgl_glxgears /#PKGBINDIR#/fgl_glxgears \
+        --slave /#BINDIR#/fglrxinfo #DEB_HOST_MULTIARCH#_fglrxinfo /#PKGBINDIR#/fglrxinfo \
+        --slave /#BINDIR#/atiodcli #DEB_HOST_MULTIARCH#_atiodcli  /#PKGBINDIR#/atiodcli \
+        --slave /#BINDIR#/atieventsd #DEB_HOST_MULTIARCH#_atieventsd  /#PKGBINDIR#/atieventsd \
+        --slave /#LIBDIR#/xorg/modules/drivers/fglrx_drv.so #DEB_HOST_MULTIARCH#_fglrx_drv /#PKGLIBDIR#/xorg/modules/drivers/fglrx_drv.so \
+        --slave /#LIBDIR#/dri/fglrx_dri.so #DEB_HOST_MULTIARCH#_fglrx_dri /#PKGLIBDIR#/dri/fglrx_dri.so \
+        --slave /#LIBDIR#/libAMDXvBA.cap #DEB_HOST_MULTIARCH#_libAMDXvBA_cap /#PKGLIBDIR#/libAMDXvBA.cap \
+        --slave /#SYSCONFDIR#/modprobe.d/fglrx.conf #DEB_HOST_MULTIARCH#_fglrx_modconf /lib/fglrx/modprobe.conf \
+        --slave /#SYSCONFDIR#/X11/Xsession.d/10fglrx #DEB_HOST_MULTIARCH#_10fglrx /#PKGLIBDIR#/10fglrx \
+        --slave /#SYSCONFDIR#/ati #DEB_HOST_MULTIARCH#_ati_conf /#PKGLIBDIR#/#SYSCONFDIR#/ati \
+        --slave /#XORGEXTRA# #DEB_HOST_MULTIARCH#_xorg_extra_modules /#LIBDIR#/pxpress/xorg \
+        --slave /#LIBDIR#/libaticalcl.so #DEB_HOST_MULTIARCH#_libaticalcl.so /#PKGLIBDIR#/libaticalcl.so \
+        --slave /#LIBDIR32#/libaticalcl.so #DEB_HOST_MULTIARCH#_libaticalcl.so_lib32 /#PKGLIBDIR32#/libaticalcl.so \
+        --slave /#LIBDIR#/libaticalrt.so #DEB_HOST_MULTIARCH#_libaticalrt.so /#PKGLIBDIR#/libaticalrt.so \
+        --slave /#LIBDIR32#/libaticalrt.so #DEB_HOST_MULTIARCH#_libaticalrt.so_lib32 /#PKGLIBDIR32#/libaticalrt.so \
+        --slave /#DATADIR#/grub-gfxpayload-lists/blacklist/10_$PACKAGE_NAME #DEB_HOST_MULTIARCH#_grub_fb_blacklist /#PKGDATADIR#/fglrx.grub-gfxpayload
 
-
+    # Install just the ld.so.conf.d alternatives for the secondary architecture.
+    # We need only to ensure that any mesa ld.so.conf.d alternative isn't active.
+    update-alternatives --force \
+        --install /#SYSCONFDIR#/ld.so.conf.d/#OTHER_ARCH#_GL.conf #OTHER_ARCH#_gl_conf /#LDSOCONF# #ALTPRIORITY#
+    update-alternatives --force \
+        --install /#SYSCONFDIR#/ld.so.conf.d/#OTHER_ARCH#_GL.conf #OTHER_ARCH#_gl_conf /#PXLDSOCONF# #PXALTPRIORITY#
 
     # ldconfig needs to be run immediately as we're changing /etc/ld.so.conf.d/ with
     # alternatives.
@@ -166,7 +171,7 @@ if [ "$1" = "configure" ]; then
     CURRENT_KERNEL=$(uname -r)
     NEWEST_KERNEL=$(get_newest_kernel "$KERNELS")
 
-    ALTERNATIVE=$(readlink /etc/alternatives/gl_conf)
+    ALTERNATIVE=$(readlink /etc/alternatives/#DEB_HOST_MULTIARCH#_gl_conf)
     if [ "$ALTERNATIVE" = "/#LDSOCONF#" ]; then
         # Update initramfs so that the blacklist ends up in the initramfs
         update-initramfs -u

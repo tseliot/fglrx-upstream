@@ -9,6 +9,12 @@ CVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut
 DVERSION := $(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d\: -f2)
 DISTRO   := $(shell dpkg-parsechangelog | grep '^Distribution:' | cut -d' ' -f2 | cut -d\: -f2)
 
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+# If the host is i386 set OTHER_ARCH to x86_64 and vice versa
+OTHER_ARCH := $(shell (echo "$(DEB_HOST_MULTIARCH)" | grep i386 >/dev/null) && \
+		echo "$(DEB_HOST_MULTIARCH)" | sed s/i386/x86_64/ || \
+		echo "$(DEB_HOST_MULTIARCH)" | sed s/x86_64/i386/)
+
 # Package names
 PKG_driver      := fglrx
 PKG_driver_dev  := fglrx-dev
@@ -143,6 +149,8 @@ build:
 			-e "s|#SRCXARCH#|$(SRC_xarch)|g" \
 			-e "s|#SRCARCH#|$(SRC_arch)|g" \
 			-e "s|#SRCLIBDIR#|$(SRC_libdir)|g" \
+			-e "s|#DEB_HOST_MULTIARCH#|$(DEB_HOST_MULTIARCH)|g" \
+			-e "s|#OTHER_ARCH#|$(OTHER_ARCH)|g" \
 			debian/$$i.in > debian/$$i;      \
 	done
 
