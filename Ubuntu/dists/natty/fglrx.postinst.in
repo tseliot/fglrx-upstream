@@ -123,6 +123,8 @@ if [ "$1" = "configure" ]; then
         --slave /#LIBDIR32#/libaticalcl.so libaticalcl.so_lib32 /#PKGLIBDIR32#/libaticalcl.so \
         --slave /#LIBDIR#/libaticalrt.so libaticalrt.so /#PKGLIBDIR#/libaticalrt.so \
         --slave /#LIBDIR32#/libaticalrt.so libaticalrt.so_lib32 /#PKGLIBDIR32#/libaticalrt.so \
+        --slave /#LIBDIR#/fglrx/switchlibGL switchlibGL /#PXDIR#/switchlibGL \
+        --slave /#LIBDIR#/fglrx/switchlibglx switchlibglx /#PXDIR#/switchlibglx \
         --slave /#DATADIR#/grub-gfxpayload-lists/blacklist/10_$PACKAGE_NAME grub_fb_blacklist /#PKGDATADIR#/fglrx.grub-gfxpayload
 
     # This is for switchable graphics
@@ -152,6 +154,8 @@ if [ "$1" = "configure" ]; then
         --slave /#LIBDIR32#/libaticalcl.so libaticalcl.so_lib32 /#PKGLIBDIR32#/libaticalcl.so \
         --slave /#LIBDIR#/libaticalrt.so libaticalrt.so /#PKGLIBDIR#/libaticalrt.so \
         --slave /#LIBDIR32#/libaticalrt.so libaticalrt.so_lib32 /#PKGLIBDIR32#/libaticalrt.so \
+        --slave /#LIBDIR#/fglrx/switchlibGL switchlibGL /#PXDIR#/switchlibGL \
+        --slave /#LIBDIR#/fglrx/switchlibglx switchlibglx /#PXDIR#/switchlibglx \
         --slave /#DATADIR#/grub-gfxpayload-lists/blacklist/10_$PACKAGE_NAME grub_fb_blacklist /#PKGDATADIR#/fglrx.grub-gfxpayload
 
 
