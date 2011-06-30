@@ -112,6 +112,7 @@ pushd $tmpdir/fglrx
 %endif
     install -m 755 usr/bin/* \
                    $RPM_BUILD_ROOT/usr/bin
+    ln -s aticonfig $RPM_BUILD_ROOT/usr/bin/amdconfig
     install -m 644 usr/include/ATI/GL/* \
                    $RPM_BUILD_ROOT/usr/include/ATI/GL
     install -m 644 usr/include/GL/* \
@@ -285,8 +286,12 @@ echo "configuration details when using SaX2."
 echo "*************************************************************"
 echo
 # recreate initrd without KMS, if the use of KMS is enabled in initrd
+# The developer of openSUSE 12.1 changed the name of KMS configuration.
+# In the future we should add a switch for openSUSE 12.1. Currently
+# both variable are used.
 if grep -q NO_KMS_IN_INITRD=\"no\" /etc/sysconfig/kernel; then
-    sed -i 's/NO_KMS_IN_INITRD.*/NO_KMS_IN_INITRD="yes"/g' /etc/sysconfig/kernel
+    sed -i 's/^NO_KMS_IN_INITRD.*/NO_KMS_IN_INITRD="yes"/g' /etc/sysconfig/kernel
+    sed -i 's/^KMS_IN_INITRD.*/KMS_IN_INITRD="no"/g' /etc/sysconfig/kernel
     mkinitrd
 fi
 ATICONFIG_BIN="`which aticonfig 2>/dev/null`"

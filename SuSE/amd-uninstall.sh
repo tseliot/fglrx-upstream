@@ -29,13 +29,13 @@ export LANG=C
 
 #check for permissions before continuing
 if [ "`whoami`" != "root" ]; then
-    echo "[Warning] ATI Catalyst(TM) Proprietary Driver Uninstall : must be run as root to execute this script"
+    echo "[Warning] AMD Catalyst(TM) Proprietary Driver Uninstall : must be run as root to execute this script"
     exit 1
 fi
 
 printHelp()
 {
-    echo "ATI Catalyst(TM) Proprietary Driver Uninstall script supports the following arguments:"
+    echo "AMD Catalyst(TM) Proprietary Driver Uninstall script supports the following arguments:"
     echo "--help                           : print help messages"
     echo "--force                          : uninstall without checking dependencies"
     echo "--dryrun                         : tests uninstall but does not uninstall"
@@ -61,14 +61,14 @@ while [ "$#" -gt "0" ]; do
         shift 1
         ;;
     *|--*)
-        echo "$1: unsupported option passed to ATI Catalyst(TM) Proprietary Driver Uninstall"
+        echo "$1: unsupported option passed to AMD Catalyst(TM) Proprietary Driver Uninstall"
         exit 1
         ;;
     esac
 done
 
 if [ "${DO_DRY_RUN}" = "yes" -a "${USE_FORCE}" = "yes" ]; then
-   echo "ATI Catalyst(TM) Proprietary Driver does not support"
+   echo "AMD Catalyst(TM) Proprietary Driver does not support"
    echo "--dryrun and --force commands together."
    echo "Please use --dryrun only for uninstall details."
    exit 1
@@ -81,12 +81,12 @@ PACKAGES_FAILED=""
 if [ "${DO_DRY_RUN}" = "yes" ]; then
     RPM_OPTION="${RPM_OPTION} --test"
 
-    echo "Simulating uninstall of ATI Catalyst(TM) Proprietary Driver."
+    echo "Simulating uninstall of AMD Catalyst(TM) Proprietary Driver."
     echo "Dryrun only, uninstall is not done."
 elif [ "${USE_FORCE}" = "yes" ]; then
     RPM_OPTION="${RPM_OPTION} --nodeps"
 
-    echo "Forcing uninstall of ATI Catalyst(TM) Proprietary Driver."
+    echo "Forcing uninstall of AMD Catalyst(TM) Proprietary Driver."
     echo "No integrity verification is done."
 fi
 
@@ -121,9 +121,9 @@ if [ -n "${RPM_BIN}" -a -x "${RPM_BIN}" ]; then
         exit 1
     else
         if [ "${DO_DRY_RUN}" = "yes" ]; then
-            echo "Dryrun uninstall of ATI Catalyst(TM) Proprietary Driver complete."
+            echo "Dryrun uninstall of AMD Catalyst(TM) Proprietary Driver complete."
         else
-            echo "Uninstall of ATI Catalyst(TM) Proprietary Driver complete."
+            echo "Uninstall of AMD Catalyst(TM) Proprietary Driver complete."
             echo "System must be rebooted to avoid system instability and potential data loss."
         fi
         exit 0
