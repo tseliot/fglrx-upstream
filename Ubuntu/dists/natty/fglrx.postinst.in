@@ -101,6 +101,7 @@ if [ "$1" = "configure" ]; then
     update-alternatives --force \
         --install /#SYSCONFDIR#/ld.so.conf.d/GL.conf gl_conf /#LDSOCONF# #ALTPRIORITY# \
         --slave /#BINDIR#/aticonfig aticonfig /#PKGBINDIR#/aticonfig \
+        --slave /#BINDIR#/amdconfig amdconfig /#PKGBINDIR#/amdconfig \
         --slave /#BINDIR#/atiode atiode /#PKGBINDIR#/atiode \
         --slave /#BINDIR#/amdnotifyui amdnotifyui /#PKGBINDIR#/amdnotifyui \
         --slave /#BINDIR#/amdcccle amdcccle /#PKGBINDIR#/amdcccle \
@@ -132,6 +133,7 @@ if [ "$1" = "configure" ]; then
     update-alternatives --force \
         --install /#SYSCONFDIR#/ld.so.conf.d/GL.conf gl_conf /#PXLDSOCONF# #PXALTPRIORITY# \
         --slave /#BINDIR#/aticonfig aticonfig /#PKGBINDIR#/aticonfig \
+        --slave /#BINDIR#/amdconfig amdconfig /#PKGBINDIR#/amdconfig \
         --slave /#BINDIR#/atiode atiode /#PKGBINDIR#/atiode \
         --slave /#BINDIR#/amdnotifyui amdnotifyui /#PKGBINDIR#/amdnotifyui \
         --slave /#BINDIR#/amdcccle amdcccle /#PKGBINDIR#/amdcccle \
