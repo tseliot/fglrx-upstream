@@ -17,7 +17,7 @@ Build-Depends: debhelper (>= 5),
                libgl1-mesa-glx,
                libxinerama1
 Standards-Version: 3.8.0
-Homepage: http://ati.amd.com/support/driver.html
+Homepage: http://support.amd.com
 
 Package: xorg-driver-fglrx
 Architecture: amd64 i386
@@ -26,8 +26,8 @@ Suggests: libamdxvba1
 Depends: ${shlibs:Depends}, xserver-xorg-core, fglrx-kernel-source, lib32gcc1 [amd64], libc6-i386 [amd64]
 Conflicts: fglrx-driver, xfree86-driver-fglrx, nvidia-glx, nvidia-glx-legacy, nvidia-glx-new, nvidia-glx-71, nvidia-glx-96, nvidia-glx-173, nvidia-glx-177, nvidia-glx-180
 Replaces: fglrx-driver, xfree86-driver-fglrx
-Description: Video driver for the ATI graphics accelerators
- Video driver for the ATI Radeon and FireGL graphics accelerators.
+Description: Video driver for the AMD graphics accelerators
+ Video driver for the AMD Radeon and FireGL graphics accelerators.
  .
  This package provides 2D display drivers
  and hardware accelerated OpenGL.
@@ -37,8 +37,8 @@ Architecture: amd64 i386
 Depends: xorg-driver-fglrx
 Conflicts: fglrx-driver-dev, xfree86-driver-fglrx-dev
 Replaces: fglrx-driver-dev, xfree86-driver-fglrx-dev
-Description: Video driver for the ATI graphics accelerators (devel files)
- Video driver for the ATI Radeon and FireGL graphics accelerators.
+Description: Video driver for the AMD graphics accelerators (devel files)
+ Video driver for the AMD Radeon and FireGL graphics accelerators.
  .
  This package provides definitions for the GL and GLX extensions.
 
@@ -47,8 +47,8 @@ Architecture: amd64 i386
 Depends: make, dkms, linux-libc-dev, linux-headers-generic | linux-headers
 Suggests: xorg-driver-fglrx
 Conflicts: pentium-builder
-Description: Kernel module source for the ATI graphics accelerators
- Video driver for the ATI Radeon and FireGL graphics accelerators.
+Description: Kernel module source for the AMD graphics accelerators
+ Video driver for the AMD Radeon and FireGL graphics accelerators.
  .
  This package provides the kernel module build environment.
 
@@ -57,15 +57,15 @@ Architecture: amd64 i386
 Depends: xorg-driver-fglrx, ${shlibs:Depends}
 Conflicts: fglrx-control-qt2, fglrx-control
 Replaces: fglrx-control
-Description: Catalyst Control Center for the ATI graphics accelerators
- Catalyst Control Center for the ATI Radeon and FireGL graphics accelerators.
+Description: Catalyst Control Center for the AMD graphics accelerators
+ Catalyst Control Center for the AMD Radeon and FireGL graphics accelerators.
  .
  This package provides the Catalyst Control Center, Linux Edition
 
 Package: fglrx-modaliases
 Section: admin
 Architecture: amd64 i386
-Description: Identifiers supported by the ATI graphics driver
+Description: Identifiers supported by the AMD graphics driver
  In order to identify what hardware is supported by Jockey,
  there must be a static list of what the current driver in the Ubuntu
  archive supports.
