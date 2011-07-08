@@ -102,7 +102,7 @@ configure/$(PKG_driver)::
 clean::
 	# refresh copyright file
 	cat debian/copyright_stub_0 > debian/copyright
-	cat usr/share/doc/fglrx/ATI_LICENSE.TXT >> debian/copyright
+	cat usr/share/doc/fglrx/LICENSE.TXT >> debian/copyright
 	cat debian/copyright_stub_1 >> debian/copyright
 
 	rm -f debian/{10fglrx, \
@@ -145,7 +145,7 @@ endif
 	#they don't provide the symlink for us (starting at 8.699)
 	dh_link -p$(PKG_driver) usr/lib/libatiuki.so.1.0 usr/lib/libatiuki.so.1
 
-	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude ATI_LICENSE.TXT
+	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude LICENSE.TXT
 	dh_installdocs -p$(PKG_driver) debian/AUTHORS
 
 	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start --update-rcd-params="defaults 31"
