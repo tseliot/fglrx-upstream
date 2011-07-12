@@ -47,6 +47,12 @@ PKG_UVD_library := libamdxvba1
 DEB_DH_SHLIBDEPS_ARGS_ALL="-Xlib32"
 DEB_DH_SHLIBDEPS_ARGS_$(PKG_UVD_library)="-XlibAMD"
 
+refresh_copyright::
+	# refresh copyright file
+	cat debian/copyright_stub_0 > debian/copyright
+	cat usr/share/doc/fglrx/LICENSE.TXT >> debian/copyright
+	cat debian/copyright_stub_1 >> debian/copyright
+
 configure/$(PKG_driver)::
 
 	#Create important strings
@@ -90,12 +96,7 @@ configure/$(PKG_driver)::
 		lib/modules/fglrx/build_mod/fglrxko_pci_ids.h > \
 		debian/modaliases/fglrx-modules.alias.override
 
-clean::
-	# refresh copyright file
-	cat debian/copyright_stub_0 > debian/copyright
-	cat usr/share/doc/fglrx/LICENSE.TXT >> debian/copyright
-	cat debian/copyright_stub_1 >> debian/copyright
-
+clean:: refresh_copyright
 	rm -f debian/{10fglrx, \
 		dkms.conf, \
 		$(PKG_driver).install, \
@@ -111,7 +112,7 @@ ifeq ($(DEB_BUILD_ARCH),amd64)
 	dh_install -p$(PKG_UVD_library) "arch/x86/usr/X11R6/lib/libAMD*.so*"           "usr/lib32"
 endif
 
-binary-install/$(PKG_driver)::
+binary-install/$(PKG_driver):: refresh_copyright
 
 	# Remove any libraries that may be caught by shell expansion
 	find . -name libGLE* | xargs rm -f
@@ -159,5 +160,6 @@ endif
 
 	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude LICENSE.TXT
 	dh_installdocs -p$(PKG_driver) debian/AUTHORS
+	dh_installdocs -p$(PKG_driver) debian/copyright
 
 	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start --update-rcd-params="defaults 31"
