@@ -3,20 +3,20 @@
 #############################################################################
 
 Name:           %PACKAGE_NAME
-Summary:        %ATI_DRIVER_SUMMARY
-Version:        %ATI_DRIVER_VERSION
-Release:        %ATI_DRIVER_RELEASE
-License:        %ATI_DRIVER_VENDOR
-URL:            %ATI_DRIVER_URL
+Summary:        %AMD_DRIVER_SUMMARY
+Version:        %AMD_DRIVER_VERSION
+Release:        %AMD_DRIVER_RELEASE
+License:        %AMD_DRIVER_VENDOR
+URL:            %AMD_DRIVER_URL
 Group:          Servers
 PreReq:         %insserv_prereq %fillup_prereq
-Requires:       gcc make patch %ATI_DRIVER_KERNEL_DEVEL
+Requires:       gcc make patch %AMD_DRIVER_KERNEL_DEVEL
 Provides:       fglrx km_fglrx
 Obsoletes:      fglrx km_fglrx ati-fglrxG02 x11-video-fglrxG02
 Obsoletes:      fglrx_6_9_0_SLE10 fglrx64_6_9_0_SLE10 fglrx_7_4_0_SLE11 fglrx64_7_4_0_SLE11
 Obsoletes:      fglrx_7_4_0_SUSE111 fglrx64_7_4_0_SUSE111 fglrx_7_4_0_SUSE112 fglrx64_7_4_0_SUSE112 fglrx_7_5_0_SUSE113 fglrx64_7_5_0_SUSE113 fglrx_7_6_0_SUSE114 fglrx64_7_6_0_SUSE114
 ExclusiveArch:  %ix86 x86_64
-BuildRoot:      %ATI_DRIVER_BUILD_ROOT
+BuildRoot:      %AMD_DRIVER_BUILD_ROOT
 
 %if %suse_version > 1010
 %define MODULES_DIR       /usr/%{_lib}/xorg/modules
@@ -35,15 +35,15 @@ BuildRoot:      %ATI_DRIVER_BUILD_ROOT
 # spec file description                                                     #
 #############################################################################
 %description
-%ATI_DRIVER_DESCRIPTION
+%AMD_DRIVER_DESCRIPTION
 
 %install
 %if %suse_version > 1110
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT
-cp -a %ATI_DRIVER_BUILD_ROOT/* $RPM_BUILD_ROOT
+cp -a %AMD_DRIVER_BUILD_ROOT/* $RPM_BUILD_ROOT
 %endif
-tmpdir=$(mktemp -d /tmp/ati_fglrx.XXXXXX)
+tmpdir=$(mktemp -d /tmp/amd_fglrx.XXXXXX)
 mkdir $tmpdir/fglrx
 mv $RPM_BUILD_ROOT/* $tmpdir/fglrx
 #
@@ -167,9 +167,9 @@ pushd $tmpdir/fglrx
                    $RPM_BUILD_ROOT/usr/sbin
     install -m 644 usr/share/applications/* \
                    $RPM_BUILD_ROOT/usr/share/applications
-    echo "GenericName=ATI Catalyst Control Center" >> $RPM_BUILD_ROOT/usr/share/applications/amdcccle.desktop
+    echo "GenericName=AMD Catalyst Control Center" >> $RPM_BUILD_ROOT/usr/share/applications/amdcccle.desktop
     echo "X-SuSE-translate=false" >> $RPM_BUILD_ROOT/usr/share/applications/amdcccle.desktop
-    echo "GenericName=ATI Catalyst Control Center (Administrative)" >> $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
+    echo "GenericName=AMD Catalyst Control Center (Administrative)" >> $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
     echo "X-SuSE-translate=false" >> $RPM_BUILD_ROOT/usr/share/applications/amdccclesu.desktop
     install -m 755 usr/share/ati/amd-uninstall.sh \
                    $RPM_BUILD_ROOT/usr/share/ati
@@ -294,8 +294,8 @@ if grep -q NO_KMS_IN_INITRD=\"no\" /etc/sysconfig/kernel; then
     sed -i 's/^KMS_IN_INITRD.*/KMS_IN_INITRD="no"/g' /etc/sysconfig/kernel
     mkinitrd
 fi
-ATICONFIG_BIN="`which aticonfig 2>/dev/null`"
-if [ -n "${ATICONFIG_BIN}" -a -x "${ATICONFIG_BIN}" ]; then
+AMDCONFIG_BIN="`which aticonfig 2>/dev/null`"
+if [ -n "${AMDCONFIG_BIN}" -a -x "${AMDCONFIG_BIN}" ]; then
     if [ -f etc/X11/xorg.conf.fglrx-oldconfig ]; then
         mv -f etc/X11/xorg.conf.fglrx-oldconfig etc/X11/xorg.conf
     elif [ -f etc/X11/xorg.conf.fglrx-post ]; then
@@ -303,12 +303,12 @@ if [ -n "${ATICONFIG_BIN}" -a -x "${ATICONFIG_BIN}" ]; then
         # The condition will be removed later.
         mv -f etc/X11/xorg.conf.fglrx-post etc/X11/xorg.conf
     fi
-    ${ATICONFIG_BIN} --initial=check >/dev/null
+    ${AMDCONFIG_BIN} --initial=check >/dev/null
     if [ $? -eq 1 ]; then
-        ${ATICONFIG_BIN} --initial >/dev/null
+        ${AMDCONFIG_BIN} --initial >/dev/null
     fi
-    ${ATICONFIG_BIN} --del-pcs-key=LDC,ReleaseVersion >/dev/null 2>&1
-    ${ATICONFIG_BIN} --del-pcs-key=LDC,Catalyst_Version >/dev/null 2>&1
+    ${AMDCONFIG_BIN} --del-pcs-key=LDC,ReleaseVersion >/dev/null 2>&1
+    ${AMDCONFIG_BIN} --del-pcs-key=LDC,Catalyst_Version >/dev/null 2>&1
 fi
 if [ ! -L %{_libdir}/xorg/modules/updates/extensions/libglx.so ]; then
     echo "Create symlink to fglrx-libglx.so"

@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-## Path:        System/Kernel/Graphics card/ATI
+## Path:        System/Kernel/Graphics card/AMD
 ## Description: Handles loading and building of fglrx kernel module. This is needed for the proprietary AMD/ATI graphics card driver.
 ## Type:        yesno
 ## Default:     yes

@@ -121,23 +121,23 @@ Requires:       kernel-devel\n\
     INSTALLER_PATH=`pwd` \
         || checkReturnOutput $? "Could not get the path of installer!"
     debugMsg "Path to the installer:\n   ${INSTALLER_PATH}" && print_okay
-    TMP_BUILD_OUTPUT="$(mktemp /tmp/ati_pkg_build.out.XXXXXX)" \
+    TMP_BUILD_OUTPUT="$(mktemp /tmp/amd_pkg_build.out.XXXXXX)" \
         || checkReturnOutput $? "Could not create a temp file in /tmp for the build output!"
     debugMsg "Temporary path to the output from the build:\n   ${TMP_BUILD_OUTPUT}" && print_okay
-    TMP_BUILD_PATH="$(mktemp -d /tmp/ati_fglrx.XXXXXX)" \
+    TMP_BUILD_PATH="$(mktemp -d /tmp/amd_fglrx.XXXXXX)" \
         || checkReturnOutput $? "Could not create a temp directory in /tmp for the build of rpm file!"
     debugMsg "Temporary path to the build:\n   ${TMP_BUILD_PATH}" && print_okay
-    TMP_SPEC_FILE="$(mktemp /tmp/ati_fglrx.spec.XXXXXX)" \
+    TMP_SPEC_FILE="$(mktemp /tmp/amd_fglrx.spec.XXXXXX)" \
         || checkReturnOutput $? "Could not create a temp file in /tmp for the spec file!"
     debugMsg "Temporary path to the spec file:\n   ${TMP_SPEC_FILE}" && print_okay
 
-    debugMsg "Get the architecture for the ATI arch path: "
+    debugMsg "Get the architecture for the AMD arch path: "
     if [ "${ARCH}" = "IA32" ]; then
-        ATI_ARCH="x86"
+        AMD_ARCH="x86"
     elif [ "${ARCH}" = "AMD64" ]; then
-        ATI_ARCH="x86_64"
+        AMD_ARCH="x86_64"
     fi
-    debugMsg "${ATI_ARCH}" && print_okay
+    debugMsg "${AMD_ARCH}" && print_okay
 
     SPEC_FILE="${DISTRO_PATH}/fglrx.spec"
     debugMsg "Path to the spec file: ${SPEC_FILE}" && print_okay
@@ -217,35 +217,35 @@ Requires:       kernel-devel\n\
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/src/ati/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/lib/modules/fglrx/build_mod/* ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/lib/modules/fglrx/build_mod/* ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/bin/* ${TMP_BUILD_PATH}/usr/bin \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/bin/* ${TMP_BUILD_PATH}/usr/bin \
         || checkReturnOutput $?
     if [ "${ARCH}" = "IA32" ]; then
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/modules/dri/* ${TMP_BUILD_PATH}/usr/lib/dri \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib/modules/dri/* ${TMP_BUILD_PATH}/usr/lib/dri \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib/fglrx/fglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib/fglrx/fglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/lib/* ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/${XORG}/usr/X11R6/lib/modules/* ${TMP_BUILD_PATH}/usr/lib/xorg/modules \
             || checkReturnOutput $?
         mv ${VERBOSE_OPTION} ${TMP_BUILD_PATH}/usr/lib/xorg/modules/extensions ${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/ \
             || checkReturnOutput $?
     elif [ "${ARCH}" = "AMD64" ]; then
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib64 \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib64/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib64 \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/modules/dri/* ${TMP_BUILD_PATH}/usr/lib64/dri \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib64/modules/dri/* ${TMP_BUILD_PATH}/usr/lib64/dri \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64 \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib64/libfglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64 \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/X11R6/lib64/fglrx/fglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib64/fglrx/fglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
             || checkReturnOutput $?
-        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/lib64/* ${TMP_BUILD_PATH}/usr/lib64 \
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/lib64/* ${TMP_BUILD_PATH}/usr/lib64 \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
@@ -269,9 +269,9 @@ Requires:       kernel-devel\n\
         cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/{ati-powermode.sh,toggle-lvds.sh} ${TMP_BUILD_PATH}/usr/lib/powersave/scripts/ \
             || checkReturnOutput $?
     fi
-    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/sbin/* ${TMP_BUILD_PATH}/usr/sbin \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/sbin/* ${TMP_BUILD_PATH}/usr/sbin \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${ATI_ARCH}/usr/share/ati/* ${TMP_BUILD_PATH}/usr/share/ati \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/share/ati/* ${TMP_BUILD_PATH}/usr/share/ati \
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/amd-uninstall.sh ${TMP_BUILD_PATH}/usr/share/ati \
         || checkReturnOutput $?
@@ -357,24 +357,24 @@ Requires:       kernel-devel\n\
     fi
     print_okay
 
-    # check fglrx version of ATI Catalyst and add a appending zero if necessary
-    ATI_DRIVER_VERSION="`./ati-packager-helper.sh --version`"
-    if [ "${#ATI_DRIVER_VERSION}" -eq "4" ]; then
-        ATI_DRIVER_VERSION="${ATI_DRIVER_VERSION}0"
+    # check fglrx version of AMD Catalyst and add a appending zero if necessary
+    AMD_DRIVER_VERSION="`./ati-packager-helper.sh --version`"
+    if [ "${#AMD_DRIVER_VERSION}" -eq "4" ]; then
+        AMD_DRIVER_VERSION="${AMD_DRIVER_VERSION}0"
     fi
 
     # substitute variables in the specfile
     debugMsg "Substitute variables in the temporary spec file ...${VERBOSE_2_LINE_BREAK}"
     sed -f - "${DISTRO_PATH}/fglrx.spec" > ${TMP_SPEC_FILE} <<END_SED_SCRIPT
 s!%PACKAGE_NAME!${PACKAGE_NAME}!
-s!%ATI_DRIVER_VERSION!${ATI_DRIVER_VERSION}!
-s!%ATI_DRIVER_RELEASE!${RELEASE}!
-s!%ATI_DRIVER_DESCRIPTION!`./ati-packager-helper.sh --description`!
-s!%ATI_DRIVER_URL!`./ati-packager-helper.sh --url`!
-s!%ATI_DRIVER_VENDOR!`./ati-packager-helper.sh --vendor`!
-s!%ATI_DRIVER_SUMMARY!`./ati-packager-helper.sh --summary`!
-s!%ATI_DRIVER_KERNEL_DEVEL!${KERNEL_DEVEL}!
-s!%ATI_DRIVER_BUILD_ROOT!${TMP_BUILD_PATH}!
+s!%AMD_DRIVER_VERSION!${AMD_DRIVER_VERSION}!
+s!%AMD_DRIVER_RELEASE!${RELEASE}!
+s!%AMD_DRIVER_DESCRIPTION!`./ati-packager-helper.sh --description`!
+s!%AMD_DRIVER_URL!`./ati-packager-helper.sh --url`!
+s!%AMD_DRIVER_VENDOR!`./ati-packager-helper.sh --vendor`!
+s!%AMD_DRIVER_SUMMARY!`./ati-packager-helper.sh --summary`!
+s!%AMD_DRIVER_KERNEL_DEVEL!${KERNEL_DEVEL}!
+s!%AMD_DRIVER_BUILD_ROOT!${TMP_BUILD_PATH}!
 END_SED_SCRIPT
     if [ $? -ne 0 ]; then
         print_failure
@@ -517,29 +517,29 @@ case "${ACTION}" in
             SUSE_VERSION=`grep VERSION /etc/SuSE-release | sed -e 's/VERSION\s=\s//g'`
 
             if [ "${SUSE_NAME}" = "openSUSE" ]; then
-                ATI_SUSE_NAME="SUSE"
+                AMD_SUSE_NAME="SUSE"
             else
-                ATI_SUSE_NAME="SLE"
+                AMD_SUSE_NAME="SLE"
             fi
 
-            ATI_SUSE_VERSION=`echo "${SUSE_VERSION}" | sed -e 's/\.//g'`
+            AMD_SUSE_VERSION=`echo "${SUSE_VERSION}" | sed -e 's/\.//g'`
 
             ARCH="$(uname -m)"
             case "${ARCH}" in
                 i?86)
-                    ATI_ARCH="IA32"
+                    AMD_ARCH="IA32"
                     ;;
                 x86_64)
-                    ATI_ARCH="AMD64"
+                    AMD_ARCH="AMD64"
                     ;;
             esac
 
-            PACKAGE="${ATI_SUSE_NAME}${ATI_SUSE_VERSION}-${ATI_ARCH}"
+            PACKAGE="${AMD_SUSE_NAME}${AMD_SUSE_VERSION}-${AMD_ARCH}"
 
             echo "   Distribution: ${SUSE_NAME}"
             echo "   Version:      ${SUSE_VERSION}"
             echo "   Architecture: ${ARCH}"
-            echo "   Package name: ${ATI_SUSE_NAME}${ATI_SUSE_VERSION}-${ATI_ARCH}"
+            echo "   Package name: ${AMD_SUSE_NAME}${AMD_SUSE_VERSION}-${AMD_ARCH}"
         fi
     fi
 
