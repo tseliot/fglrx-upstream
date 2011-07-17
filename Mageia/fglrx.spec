@@ -392,6 +392,8 @@ install -m755 common/usr/X11R6/bin/*			%{buildroot}%{_bindir}
 # install self-built binaries
 install -m755 fglrx_tools/fgl_glxgears/fgl_glxgears	%{buildroot}%{_bindir}
 %endif
+# compatibility symlink
+ln -s aticonfig %{buildroot}%{_bindir}/amdconfig
 
 # atieventsd initscript
 install -d -m755 %{buildroot}%{_initrddir}
@@ -755,6 +757,7 @@ rm -rf %{buildroot}
 %{_sbindir}/amdnotifyui
 %{_sbindir}/atigetsysteminfo.sh
 
+%{_bindir}/amdconfig
 %{_bindir}/amdupdaterandrconfig
 %{_bindir}/amdxdg-su
 %{_bindir}/aticonfig
