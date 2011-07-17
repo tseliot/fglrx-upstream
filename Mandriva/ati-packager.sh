@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Purpose
-#   Mandriva ATI packaging script
+#   Mandriva AMD packaging script
 #
 # Usage
 #   See README.distro document
@@ -54,7 +54,7 @@ commonRPMparams()
     # insert 0 to the end of version if helper_version is two-decimal
     [ $(echo $version | cut -f2 -d.) -lt 100 ] && version=${version}0
     # --specfile can't take --with
-    echo -e "--define\n _with_ati 1"
+    echo -e "--define\n _with_amd 1"
     echo -e "--define\n iversion $(./ati-packager-helper.sh --version)"
     echo -e "--define\n version $version"
     echo -e "--define\n rel $(./ati-packager-helper.sh --release)"
@@ -71,7 +71,7 @@ buildPackage()
     distro=$1
     buildCheck 1 || exit 1
     installer_root="$PWD"
-    temp_root="$(mktemp -d --tmpdir ati.XXXXXX)"
+    temp_root="$(mktemp -d --tmpdir amd.XXXXXX)"
 
     mkdir -p $temp_root/{RPMS,BUILD,tmp}
 
@@ -85,7 +85,7 @@ buildPackage()
 	--define "_builddir ${temp_root}/BUILD" \
 	--define "_rpmdir ${temp_root}/RPMS" \
 	--define "_tmppath ${temp_root}/tmp" \
-	--define "ati_dir ${installer_root}" \
+	--define "amd_dir ${installer_root}" \
 	${installer_root}/packages/Mandriva/fglrx.spec &> $temp_root/output.log
 
     rc=$?
