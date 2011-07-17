@@ -728,7 +728,7 @@ rm -rf %{buildroot}
 # described in configure.html seem to be used by the driver, though, so it is
 # packaged, while the other html files are not:
 %doc common/usr/share/doc/fglrx/configure.html
-%doc common/usr/share/doc/fglrx/ATI_LICENSE.TXT
+%doc common/usr/share/doc/fglrx/LICENSE.TXT
 
 %if "%{ldetect_cards_name}" != ""
 %{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
