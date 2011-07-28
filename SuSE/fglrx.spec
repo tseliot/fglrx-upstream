@@ -291,6 +291,9 @@ echo
 # both variable are used.
 if grep -q NO_KMS_IN_INITRD=\"no\" /etc/sysconfig/kernel; then
     sed -i 's/^NO_KMS_IN_INITRD.*/NO_KMS_IN_INITRD="yes"/g' /etc/sysconfig/kernel
+    mkinitrd
+fi
+if grep -q KMS_IN_INITRD=\"yes\" /etc/sysconfig/kernel; then
     sed -i 's/^KMS_IN_INITRD.*/KMS_IN_INITRD="no"/g' /etc/sysconfig/kernel
     mkinitrd
 fi

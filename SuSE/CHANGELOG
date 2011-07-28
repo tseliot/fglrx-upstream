@@ -1,3 +1,10 @@
+Thu Jul 28 14:13:23 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
+-------------------------------------------------------------------
+
+- KMS Configuration in Tumbleweed for openSUSE 11.4 is missing
+- add to the force mode removing the older fglrx kernel modules
+  in fglrx-kernel-build.sh
+
 Thu Jul 14 21:03:41 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
 

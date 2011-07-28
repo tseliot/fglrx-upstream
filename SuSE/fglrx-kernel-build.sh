@@ -132,6 +132,13 @@ while [ "$#" -gt "0" ]; do
     esac
 done
 
+# Remove all available fglrx kernel modules before we build a new fglrx kernel module
+if [ "${BUILD_FOR_ALL_KERNELS}" = "yes" -a "${FORCE_BUILD}" = "yes" ]; then
+    find /lib/modules/ -iname "fglrx.ko" -print0 | xargs -0 -r rm
+elif [ "${BUILD_FOR_ALL_KERNELS}" = "no" -a "${FORCE_BUILD}" = "yes" ]; then
+    find /lib/modules/`uname -r`/ -iname "fglrx.ko" -print0 | xargs -0 -r rm
+fi
+
 # Get number of CPU cores to speed up compilation on multi-core machines.
 NUM_CORES="`${CAT_BIN} /proc/cpuinfo | ${GREP_BIN} '^processor' \
                 | ${WC_BIN} -l | ${GREP_BIN} -E '^[0-9]+$'`";
