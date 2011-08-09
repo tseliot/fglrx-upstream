@@ -61,6 +61,10 @@ buildDepends()
 {
     release=$1
 
+    if [ "$release" = "source" ]; then
+        release=`lsb`
+    fi
+
     #if we don't know what we're working with, assume it's supported by the source target
     if [ ! -d packages/Ubuntu/dists/$release ]; then
         release="source"
