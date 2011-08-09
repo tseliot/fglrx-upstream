@@ -63,7 +63,7 @@ PX_xmoddir := $(PX_dir)/xorg/modules
 PX_libdir := $(PX_dir)/lib
 PX_libdir32 := $(PX_dir32)/lib
 PX_ld_so_conf := $(PX_dir)/$(ld_so_conf_file)
-PX_ld_so_conf_alt := $(alt_ld_so_conf_path)
+PX_ld_so_conf_alt := $(PX_dir)/$(alt_ld_so_conf_file)
 
 # This is a hack to make sure that
 # the blacklist file is available
@@ -333,6 +333,9 @@ endif
 
 	# empty ld.so.conf for the fake multi-arch alternative
 	echo "" > "$(CURDIR)/debian/$(PKG_driver)/$(alt_ld_so_conf_path)"
+
+	# empty ld.so.conf for the fake multi-arch alternative for PXpress
+	echo "" > "$(CURDIR)/debian/$(PKG_driver)/$(PX_ld_so_conf_alt)"
 
 	# Generate modaliases
 	sh -e debian/modaliases/fglrx_supported \
