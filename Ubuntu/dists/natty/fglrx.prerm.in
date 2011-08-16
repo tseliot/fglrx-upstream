@@ -22,6 +22,9 @@ case "$1" in
 
 		update-alternatives --remove gl_conf /#LDSOCONF#
 
+		# Remove PXpress alternatives
+		update-alternatives --remove gl_conf /#PXLDSOCONF#
+
 		# Trigger gmenu so as to update the gnome menu
 		dpkg-trigger --by-package=$PACKAGE_NAME gmenucache || true
 
