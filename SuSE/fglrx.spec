@@ -289,11 +289,13 @@ echo
 # The developer of openSUSE 12.1 changed the name of KMS configuration.
 # In the future we should add a switch for openSUSE 12.1. Currently
 # both variable are used.
-if grep -q NO_KMS_IN_INITRD=\"no\" /etc/sysconfig/kernel; then
+if grep -q '^NO_KMS_IN_INITRD=\"no\"' /etc/sysconfig/kernel; then
+    echo "Disable KMS to prevent driver issue:"
     sed -i 's/^NO_KMS_IN_INITRD.*/NO_KMS_IN_INITRD="yes"/g' /etc/sysconfig/kernel
     mkinitrd
 fi
-if grep -q KMS_IN_INITRD=\"yes\" /etc/sysconfig/kernel; then
+if grep -q '^KMS_IN_INITRD=\"yes\"' /etc/sysconfig/kernel; then
+    echo "Disable KMS to prevent driver issue:"
     sed -i 's/^KMS_IN_INITRD.*/KMS_IN_INITRD="no"/g' /etc/sysconfig/kernel
     mkinitrd
 fi
