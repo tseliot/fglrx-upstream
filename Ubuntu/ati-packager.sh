@@ -22,12 +22,11 @@ REVISION="`./ati-packager-helper.sh --release`"
 
 #Root command
 if [ "$USER" != "root" ]; then
-    if [ -x /usr/bin/gksudo ] && [ ! -z "$DISPLAY" ]; then
-        ROOT="/usr/bin/gksudo --description 'AMD_Installer' "
-    elif [ -x /usr/bin/kdesu ] && [ ! -z "$DISPLAY" ]; then
-        ROOT="/usr/bin/kdesu"
-    elif [ -x /usr/bin/sudo ]; then
+    if [ -x /usr/bin/sudo ]; then
         ROOT="/usr/bin/sudo"
+    else
+        echo "Unable to install sudo.  Please manually install and try again."
+        exit ${ATI_INSTALLER_ERR_PREP}
     fi
 else
     ROOT="sh -c"
@@ -80,7 +79,7 @@ EOF
                 $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
                 rm $TEMPFILE -f
             else
-                $ROOT "apt-get -y install dpkg-dev"
+                $ROOT apt-get -y install dpkg-dev
             fi
             #do a check again in case we have failed here
             if [ ! -x /usr/bin/dpkg-checkbuilddeps ]; then
@@ -106,7 +105,7 @@ EOF
                 $ROOT "sh -c '/usr/sbin/synaptic --set-selections --non-interactive --hide-main-window < $TEMPFILE'"
                 rm $TEMPFILE -f
             else
-                $ROOT "apt-get -y install $missing_dependencies"
+                $ROOT apt-get -y install $missing_dependencies
             fi
             #do a check again, abort if we still have some not installed
             missing_dependencies=$(dpkg-checkbuilddeps packages/Ubuntu/dists/$release/control 2>&1 | awk -F: '{ print $3 }' | sed 's/([^)]*)//g' | sed 's/|\s[^\s]*//g')
