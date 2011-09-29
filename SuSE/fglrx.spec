@@ -50,6 +50,7 @@ mv $RPM_BUILD_ROOT/* $tmpdir/fglrx
 mkdir -p $RPM_BUILD_ROOT/etc/ati \
          $RPM_BUILD_ROOT/etc/init.d \
          $RPM_BUILD_ROOT/etc/modprobe.d \
+         $RPM_BUILD_ROOT/etc/OpenCL/vendors \
          $RPM_BUILD_ROOT/etc/pam.d \
          $RPM_BUILD_ROOT/etc/security/console.apps \
          $RPM_BUILD_ROOT/usr/X11R6/%{_lib}/fglrx \
@@ -89,6 +90,8 @@ pushd $tmpdir/fglrx
     install -m 755 etc/init.d/* \
                    $RPM_BUILD_ROOT/etc/init.d
     ln -s /etc/init.d/atieventsd $RPM_BUILD_ROOT/usr/sbin/rcatieventsd
+    install -m 644 etc/OpenCL/vendors/* \
+                   $RPM_BUILD_ROOT/etc/OpenCL/vendors
     install -m 644 etc/modprobe.d/* \
                    $RPM_BUILD_ROOT/etc/modprobe.d
     ln -s su $RPM_BUILD_ROOT/etc/pam.d/amdcccle-su
@@ -150,6 +153,7 @@ pushd $tmpdir/fglrx
     ln -s libXvBAW.so.1 $RPM_BUILD_ROOT/usr/%{_lib}/libXvBAW.so
     ln -s libatiuki.so.1.0 $RPM_BUILD_ROOT/usr/%{_lib}/libatiuki.so.1
     ln -s libatiuki.so.1 $RPM_BUILD_ROOT/usr/%{_lib}/libatiuki.so
+    ln -s libOpenCL.so.1 $RPM_BUILD_ROOT/usr/%{_lib}/libOpenCL.so
 %ifarch x86_64
     install -m 755 usr/lib/dri/* \
                    $RPM_BUILD_ROOT%{DRI_DRIVERS32_DIR}
@@ -162,6 +166,7 @@ pushd $tmpdir/fglrx
     ln -s libXvBAW.so.1 $RPM_BUILD_ROOT/usr/lib/libXvBAW.so
     ln -s libatiuki.so.1.0 $RPM_BUILD_ROOT/usr/lib/libatiuki.so.1
     ln -s libatiuki.so.1 $RPM_BUILD_ROOT/usr/lib/libatiuki.so
+    ln -s libOpenCL.so.1 $RPM_BUILD_ROOT/usr/lib/libOpenCL.so
 %endif
     install -m 755 usr/sbin/* \
                    $RPM_BUILD_ROOT/usr/sbin
@@ -387,6 +392,7 @@ exit 0
 /etc/ati/*
 /etc/init.d/*
 /etc/modprobe.d/*
+/etc/OpenCL/vendors/*
 /etc/pam.d/*
 /etc/security/console.apps/*
 /usr/X11R6/%{_lib}/*

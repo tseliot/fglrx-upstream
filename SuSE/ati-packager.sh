@@ -151,7 +151,7 @@ Requires:       kernel-devel\n\
 
     # create needed directory
     debugMsg "Create needed directory ...${VERBOSE_2_LINE_BREAK}"
-    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/etc/{init.d,modprobe.d,pam.d} \
+    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/etc/{init.d,modprobe.d,pam.d,OpenCL/vendors} \
         || checkReturnOutput $?
     mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/{bin,include,sbin} \
         || checkReturnOutput $?
@@ -221,7 +221,11 @@ Requires:       kernel-devel\n\
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/bin/* ${TMP_BUILD_PATH}/usr/bin \
         || checkReturnOutput $?
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/bin/* ${TMP_BUILD_PATH}/usr/bin \
+        || checkReturnOutput $?
     if [ "${ARCH}" = "IA32" ]; then
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/etc/OpenCL/vendors/* ${TMP_BUILD_PATH}/etc/OpenCL/vendors \
+            || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib/modules/dri/* ${TMP_BUILD_PATH}/usr/lib/dri \
@@ -237,6 +241,8 @@ Requires:       kernel-devel\n\
         mv ${VERBOSE_OPTION} ${TMP_BUILD_PATH}/usr/lib/xorg/modules/extensions ${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/ \
             || checkReturnOutput $?
     elif [ "${ARCH}" = "AMD64" ]; then
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/etc/OpenCL/vendors/* ${TMP_BUILD_PATH}/etc/OpenCL/vendors \
+            || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib64/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib64 \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib64/modules/dri/* ${TMP_BUILD_PATH}/usr/lib64/dri \
@@ -246,6 +252,8 @@ Requires:       kernel-devel\n\
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/lib64/fglrx/fglrx* ${TMP_BUILD_PATH}/usr/X11R6/lib64/fglrx \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/lib64/* ${TMP_BUILD_PATH}/usr/lib64 \
+            || checkReturnOutput $?
+        cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/etc/OpenCL/vendors/* ${TMP_BUILD_PATH}/etc/OpenCL/vendors \
             || checkReturnOutput $?
         cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/x86/usr/X11R6/lib/{libAMD*,libXvBAW*,libati*} ${TMP_BUILD_PATH}/usr/lib \
             || checkReturnOutput $?

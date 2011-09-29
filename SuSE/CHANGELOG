@@ -1,3 +1,8 @@
+Fri Sep 30 00:04:15 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
+-------------------------------------------------------------------
+
+- add OpenCL runtime integration (changes in packaging script + spec file)
+
 Fri Aug 19 00:44:15 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
 
