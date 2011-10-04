@@ -4,8 +4,12 @@ debian/acpi/fglrx-powermode.sh                 etc/acpi
 debian/10fglrx                                 etc/X11/Xsession.d
 etc/ati                                        etc
 debian/replacements/authatieventsd.sh          etc/ati
+arch/x86/etc/OpenCL/vendors/*.icd              etc/OpenCL/vendors
+arch/x86_64/etc/OpenCL/vendors/*.icd           etc/OpenCL/vendors
+
 
 #binaries
+arch/#ARCH#/usr/bin/*                          usr/bin
 arch/#ARCH#/usr/sbin/*                         usr/sbin
 arch/#ARCH#/usr/X11R6/bin/ati*                 usr/bin
 arch/#ARCH#/usr/X11R6/bin/fgl*                 usr/bin

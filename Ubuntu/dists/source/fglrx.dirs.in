@@ -5,8 +5,10 @@
 #PKGDATADIR#
 #PKGLIBCONFDIR#
 #PKGLIBDIR#/#SYSCONFDIR#/ati
+#PKGLIBDIR#/#SYSCONFDIR#/OpenCL/vendors
 usr/share/initramfs-tools/conf-hooks.d
 #DATADIR#/grub-gfxpayload-lists/blacklist
 #LIBDIR#/dri
 #LIBDIR#/xorg/modules/drivers/
 #XORGEXTRA#
+#SYSCONFDIR#/OpenCL/vendors

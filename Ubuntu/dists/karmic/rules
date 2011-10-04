@@ -152,10 +152,12 @@ endif
 	dh_installinit -p$(PKG_driver) --name="atieventsd" --no-start --update-rcd-params="defaults 31"
 
 	for i in \
+			debian/$(PKG_driver)/usr/bin/clinfo \
 			debian/$(PKG_driver)/usr/bin/atiode \
 			debian/$(PKG_driver)/usr/sbin/amdnotifyui \
 			debian/$(PKG_driver)/usr/lib/dri/fglrx_dri.so \
 			debian/$(PKG_driver)/usr/lib/*libGL.so.*.* \
+			debian/$(PKG_driver)/usr/lib/*libOpenCL.so.*.* \
 			; do execstack -q $$i; execstack -c $$i; done
 
 	dh_install -p$(PKG_driver)

@@ -112,6 +112,7 @@ if [ "$1" = "configure" ]; then
         --slave /#BINDIR#/fgl_glxgears fgl_glxgears /#PKGBINDIR#/fgl_glxgears \
         --slave /#BINDIR#/fglrxinfo fglrxinfo /#PKGBINDIR#/fglrxinfo \
         --slave /#BINDIR#/atiodcli atiodcli  /#PKGBINDIR#/atiodcli \
+        --slave /#BINDIR#/clinfo clinfo /#PKGBINDIR#/clinfo \
         --slave /#BINDIR#/atieventsd atieventsd  /#PKGBINDIR#/atieventsd \
         --slave /#LIBDIR#/xorg/modules/drivers/fglrx_drv.so fglrx_drv /#PKGLIBDIR#/xorg/modules/drivers/fglrx_drv.so \
         --slave /#LIBDIR#/dri/fglrx_dri.so fglrx_dri /#PKGLIBDIR#/dri/fglrx_dri.so \
@@ -119,6 +120,9 @@ if [ "$1" = "configure" ]; then
         --slave /#SYSCONFDIR#/modprobe.d/fglrx.conf fglrx_modconf /lib/fglrx/modprobe.conf \
         --slave /#SYSCONFDIR#/X11/Xsession.d/10fglrx 10fglrx /#PKGLIBDIR#/10fglrx \
         --slave /#SYSCONFDIR#/ati ati_conf /#PKGLIBDIR#/#SYSCONFDIR#/ati \
+        --slave /#SYSCONFDIR#/OpenCL/vendors/amdocl32.icd amdocl32.icd /#PKGLIBDIR#/#SYSCONFDIR#/OpenCL/vendors/amdocl32.icd \
+        --slave /#SYSCONFDIR#/OpenCL/vendors/amdocl64.icd amdocl64.icd /#PKGLIBDIR#/#SYSCONFDIR#/OpenCL/vendors/amdocl64.icd \
+        --slave /#LIBDIR#/libOpenCL.so libOpenCL.so /#PKGLIBDIR#/libOpenCL.so \
         --slave /#XORGEXTRA# xorg_extra_modules /#PKGLIBDIR#/xorg \
         --slave /#LIBDIR#/libaticalcl.so libaticalcl.so /#PKGLIBDIR#/libaticalcl.so \
         --slave /#LIBDIR32#/libaticalcl.so libaticalcl.so_lib32 /#PKGLIBDIR32#/libaticalcl.so \
@@ -142,6 +146,7 @@ if [ "$1" = "configure" ]; then
         --slave /#BINDIR#/fgl_glxgears fgl_glxgears /#PKGBINDIR#/fgl_glxgears \
         --slave /#BINDIR#/fglrxinfo fglrxinfo /#PKGBINDIR#/fglrxinfo \
         --slave /#BINDIR#/atiodcli atiodcli  /#PKGBINDIR#/atiodcli \
+        --slave /#BINDIR#/clinfo clinfo /#PKGBINDIR#/clinfo \
         --slave /#BINDIR#/atieventsd atieventsd  /#PKGBINDIR#/atieventsd \
         --slave /#LIBDIR#/xorg/modules/drivers/fglrx_drv.so fglrx_drv /#PKGLIBDIR#/xorg/modules/drivers/fglrx_drv.so \
         --slave /#LIBDIR#/dri/fglrx_dri.so fglrx_dri /#PKGLIBDIR#/dri/fglrx_dri.so \
@@ -149,6 +154,9 @@ if [ "$1" = "configure" ]; then
         --slave /#SYSCONFDIR#/modprobe.d/fglrx.conf fglrx_modconf /lib/fglrx/modprobe.conf \
         --slave /#SYSCONFDIR#/X11/Xsession.d/10fglrx 10fglrx /#PKGLIBDIR#/10fglrx \
         --slave /#SYSCONFDIR#/ati ati_conf /#PKGLIBDIR#/#SYSCONFDIR#/ati \
+        --slave /#SYSCONFDIR#/OpenCL/vendors/amdocl32.icd amdocl32.icd /#PKGLIBDIR#/#SYSCONFDIR#/OpenCL/vendors/amdocl32.icd \
+        --slave /#SYSCONFDIR#/OpenCL/vendors/amdocl64.icd amdocl64.icd /#PKGLIBDIR#/#SYSCONFDIR#/OpenCL/vendors/amdocl64.icd \
+        --slave /#LIBDIR#/libOpenCL.so libOpenCL.so /#PKGLIBDIR#/libOpenCL.so \
         --slave /#XORGEXTRA# xorg_extra_modules /#LIBDIR#/pxpress/xorg \
         --slave /#LIBDIR#/libaticalcl.so libaticalcl.so /#PKGLIBDIR#/libaticalcl.so \
         --slave /#LIBDIR32#/libaticalcl.so libaticalcl.so_lib32 /#PKGLIBDIR32#/libaticalcl.so \
