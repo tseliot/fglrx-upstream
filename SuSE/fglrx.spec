@@ -320,13 +320,11 @@ if [ -n "${AMDCONFIG_BIN}" -a -x "${AMDCONFIG_BIN}" ]; then
     ${AMDCONFIG_BIN} --del-pcs-key=LDC,ReleaseVersion >/dev/null 2>&1
     ${AMDCONFIG_BIN} --del-pcs-key=LDC,Catalyst_Version >/dev/null 2>&1
 fi
-if [ ! -L %{_libdir}/xorg/modules/updates/extensions/libglx.so ]; then
-    echo "Create symlink to fglrx-libglx.so"
-    %{_libdir}/fglrx/switchlibglx amd 2>/dev/null
+if [ "$(%{_libdir}/fglrx/switchlibglx query)" = "unknown" ]; then
+    %{_libdir}/fglrx/switchlibglx amd
 fi
-if [ ! -L /usr/X11R6/%{_lib}/libGL.so.1.2 ]; then
-    echo "Create symlink to fglrx-libGL.so.1.2"
-    %{_libdir}/fglrx/switchlibGL amd 2>/dev/null
+if [ "$(%{_libdir}/fglrx/switchlibGL query)" = "unknown" ]; then
+    %{_libdir}/fglrx/switchlibGL amd
 fi
 exit 0
 

@@ -1,3 +1,10 @@
+Mon Oct 10 08:20:32 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
+-------------------------------------------------------------------
+
+- activate packaging for openSUSE 12.1
+- add kernel-debug package in the detecting routine of build script
+- rewrite the PowerXpress check routine in the post install script
+
 Fri Sep 30 00:04:15 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
 
