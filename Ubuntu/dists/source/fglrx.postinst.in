@@ -128,7 +128,6 @@ if [ "$1" = "configure" ]; then
         --slave /#LIBDIR#/dri/fglrx_dri.so #DEB_HOST_MULTIARCH#_fglrx_dri /#PKGLIBDIR#/dri/fglrx_dri.so \
         --slave /#LIBDIR#/libAMDXvBA.cap #DEB_HOST_MULTIARCH#_libAMDXvBA_cap /#PKGLIBDIR#/libAMDXvBA.cap \
         --slave /#SYSCONFDIR#/modprobe.d/fglrx.conf #DEB_HOST_MULTIARCH#_fglrx_modconf /lib/fglrx/modprobe.conf \
-        --slave /#DATADIR#/initramfs-tools/conf-hooks.d/proprietary-graphics-drivers #DEB_HOST_MULTIARCH#_initramfs-hook /#PKGLIBCONFDIR#/initramfs-hook \
         --slave /#SYSCONFDIR#/X11/Xsession.d/10fglrx #DEB_HOST_MULTIARCH#_10fglrx /#PKGLIBDIR#/10fglrx \
         --slave /#SYSCONFDIR#/ati #DEB_HOST_MULTIARCH#_ati_conf /#PKGLIBDIR#/#SYSCONFDIR#/ati \
         --slave /#SYSCONFDIR#/OpenCL/vendors/amdocl32.icd #DEB_HOST_MULTIARCH#_amdocl32.icd /#PKGLIBDIR#/#SYSCONFDIR#/OpenCL/vendors/amdocl32.icd \
@@ -163,7 +162,6 @@ if [ "$1" = "configure" ]; then
         --slave /#LIBDIR#/dri/fglrx_dri.so #DEB_HOST_MULTIARCH#_fglrx_dri /#PKGLIBDIR#/dri/fglrx_dri.so \
         --slave /#LIBDIR#/libAMDXvBA.cap #DEB_HOST_MULTIARCH#_libAMDXvBA_cap /#PKGLIBDIR#/libAMDXvBA.cap \
         --slave /#SYSCONFDIR#/modprobe.d/fglrx.conf #DEB_HOST_MULTIARCH#_fglrx_modconf /lib/fglrx/modprobe.conf \
-        --slave /#DATADIR#/initramfs-tools/conf-hooks.d/proprietary-graphics-drivers #DEB_HOST_MULTIARCH#_initramfs-hook /#PKGLIBCONFDIR#/initramfs-hook \
         --slave /#SYSCONFDIR#/X11/Xsession.d/10fglrx #DEB_HOST_MULTIARCH#_10fglrx /#PKGLIBDIR#/10fglrx \
         --slave /#SYSCONFDIR#/ati #DEB_HOST_MULTIARCH#_ati_conf /#PKGLIBDIR#/#SYSCONFDIR#/ati \
         --slave /#SYSCONFDIR#/OpenCL/vendors/amdocl32.icd #DEB_HOST_MULTIARCH#_amdocl32.icd /#PKGLIBDIR#/#SYSCONFDIR#/OpenCL/vendors/amdocl32.icd \
