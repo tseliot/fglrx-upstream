@@ -111,7 +111,7 @@
 %endif
 
 # do not require fglrx stuff, they are all included
-%define common_requires_exceptions libfglrx.\\+\\.so\\|libati.\\+\\.so%{qt_requires_exceptions}
+%define common_requires_exceptions libfglrx.\\+\\.so\\|libati.\\+\\.so\\|libOpenCL\\.so%{qt_requires_exceptions}
 
 %ifarch x86_64
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
@@ -249,7 +249,6 @@ Requires(post):	dkms
 Requires(preun): dkms
 Obsoletes:	dkms-ati < %{version}-%{release}
 Provides:	dkms-ati = %{version}-%{release}
-Requires:	%{driverpkgname} = %{version}
 
 %description -n dkms-%{drivername}
 AMD proprietary kernel module. This is to be used with the
@@ -270,6 +269,16 @@ AMD proprietary development libraries and headers. This package is
 not required for normal use.
 
 The main driver package name is %{driverpkgname}.
+
+%package -n %{drivername}-opencl
+Summary:	OpenCL libraries for the AMD proprietary driver
+Group: 		System/Kernel and hardware
+Requires:	kmod(fglrx) = %{version}
+
+%description -n %{drivername}-opencl
+OpenCL libraries for the AMD proprietary driver. This package is not
+required for normal use, it provides libraries to use AMD cards for High
+Performance Computing (HPC).
 
 %prep
 %setup -T -c
@@ -386,6 +395,7 @@ install -d -m755					%{buildroot}%{_sbindir}
 install -m755 %{archdir}/usr/sbin/*			%{buildroot}%{_sbindir}
 install -m755 common/usr/sbin/*				%{buildroot}%{_sbindir}
 install -d -m755					%{buildroot}%{_bindir}
+install -m755 %{archdir}/usr/bin/*			%{buildroot}%{_bindir}
 install -m755 %{archdir}/usr/X11R6/bin/*		%{buildroot}%{_bindir}
 install -m755 common/usr/X11R6/bin/*			%{buildroot}%{_bindir}
 %if !%{amdbuild}
@@ -508,6 +518,13 @@ touch					%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL.conf
 # XvMCConfig
 install -d -m755 %{buildroot}%{_sysconfdir}/%{drivername}
 echo "libAMDXvBA.so.1" > %{buildroot}%{_sysconfdir}/%{drivername}/XvMCConfig
+
+# OpenCL icd
+install -d -m755				%{buildroot}%{_sysconfdir}/OpenCL/vendors
+install -m644 %{archdir}/etc/OpenCL/vendors/*	%{buildroot}%{_sysconfdir}/OpenCL/vendors
+%ifarch x86_64
+install -m644 arch/x86/etc/OpenCL/vendors/*	%{buildroot}%{_sysconfdir}/OpenCL/vendors
+%endif
 
 # PowerXpress intel - use Mesa libGL but still keep AMD specific libs in search path
 echo "%{_libdir}/mesa" > %{buildroot}%{_sysconfdir}/%{drivername}/pxpress-free.ld.so.conf
@@ -703,6 +720,10 @@ fi
 [ -d %{_datadir}/fglrx-hd2000 ] && rm -r %{_datadir}/fglrx-hd2000
 true
 
+%post -n %{drivername}-opencl
+# explicit /sbin/ldconfig due to a non-standard library directory
+/sbin/ldconfig -X
+
 %post -n dkms-%{drivername}
 /usr/sbin/dkms --rpm_safe_upgrade add -m %{drivername} -v %{version}-%{release} &&
 /usr/sbin/dkms --rpm_safe_upgrade build -m %{drivername} -v %{version}-%{release} &&
@@ -851,6 +872,19 @@ rm -rf %{buildroot}
 %ifarch x86_64
 %{_prefix}/lib/%{drivername}/libGL.so
 %{_prefix}/lib/%{drivername}/libatiuki.so
+%endif
+
+%files -n %{drivername}-opencl
+%defattr(-,root,root)
+%dir %{_sysconfdir}/OpenCL
+%dir %{_sysconfdir}/OpenCL/vendors
+%{_sysconfdir}/OpenCL/vendors/amdocl*.icd
+%{_bindir}/clinfo
+%{_libdir}/%{drivername}/libamdocl*.so
+%{_libdir}/%{drivername}/libOpenCL.so.1
+%ifarch x86_64
+%{_prefix}/lib/%{drivername}/libamdocl*.so
+%{_prefix}/lib/%{drivername}/libOpenCL.so.1
 %endif
 
 %files -n dkms-%{drivername}
