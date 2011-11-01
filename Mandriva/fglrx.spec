@@ -213,7 +213,7 @@ BuildRequires:	ImageMagick
 Source package of the AMD proprietary driver. Binary packages are
 named x11-driver-video-fglrx on Mandriva Linux 2008 and later, and ati on
 2007 and earlier.
-%if !%{atibuild}
+%if !%{amdbuild}
 This package corresponds to AMD Catalyst version %mversion.
 %endif
 
