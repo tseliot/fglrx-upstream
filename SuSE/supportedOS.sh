@@ -41,5 +41,5 @@ SUSE-autodetection"
 # unlock this list with, for example:
 # UNSUPPORTED="yes" ./ati-driver-installer-<version>-<architecture>.run --buildpkg SuSE/SUSE114-AMD64
 if [ "${UNSUPPORTED}" = "yes" -o "${UNSUPPORTED}" = "true" -o "${UNSUPPORTED}" = "1"  ]; then
-    SUSE_LIST="${SUSE_LIST} SUSEFACTORY-IA32 SUSEFACTORY-AMD64"
+    SUSE_LIST="${SUSE_LIST} SUSE122-IA32 SUSE122-AMD64  SUSEFACTORY-IA32 SUSEFACTORY-AMD64"
 fi

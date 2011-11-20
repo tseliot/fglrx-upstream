@@ -158,7 +158,7 @@ pushd $tmpdir/fglrx
     install -m 755 usr/lib/dri/* \
                    $RPM_BUILD_ROOT%{DRI_DRIVERS32_DIR}
     rm -rf usr/lib/dri
-    install -m 644 usr/lib/* \
+    install -m 755 usr/lib/* \
                    $RPM_BUILD_ROOT/usr/lib
     ln -s libAMDXvBA.so.1.0 $RPM_BUILD_ROOT/usr/lib/libAMDXvBA.so.1
     ln -s libAMDXvBA.so.1 $RPM_BUILD_ROOT/usr/lib/libAMDXvBA.so
@@ -245,6 +245,16 @@ echo "Apply some patches ..."
 %endif
 # placeholder_for_additional_patches_for_fglrx_sources
 rm -f *.orig
+# For openSUSE 12.1 and higher: we should add a dynamic library search path
+%if %suse_version > 1140
+%ifarch x86_64
+    echo "/usr/X11R6/lib64" >/etc/ld.so.conf.d/fglrx.conf
+    echo "/usr/X11R6/lib" >>/etc/ld.so.conf.d/fglrx.conf
+%else
+    echo "/usr/X11R6/lib" >/etc/ld.so.conf.d/fglrx.conf
+%endif
+%run_ldconfig
+%endif
 popd
 if [ -x etc/init.d/atieventsd ]; then
     # Create symbolic run level links for atieventsd start script:
@@ -339,6 +349,10 @@ fi
 if [ "$1" -eq 0 ]; then
     rm -f /usr/X11R6/lib*/libGL.so*
     rm -f %{_libdir}/xorg/modules/updates/extensions/libglx.so
+    if [ -f /etc/ld.so.conf.d/fglrx.conf ]; then
+        rm -f /etc/ld.so.conf.d/fglrx.conf
+    fi
+    %run_ldconfig
 fi
 exit 0
 
