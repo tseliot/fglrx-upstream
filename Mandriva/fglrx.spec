@@ -976,6 +976,7 @@ rm -rf %{buildroot}
 %{_libdir}/%{drivername}/libaticaldd.so
 %{_libdir}/%{drivername}/libaticalrt.so
 %{_libdir}/%{drivername}/libatiuki.so.1*
+%{_libdir}/%{drivername}/libSlotMaximizer*.so
 %ifarch x86_64
 %dir %{_prefix}/lib/%{drivername}
 %{_prefix}/lib/%{drivername}/libGL.so.1
@@ -984,6 +985,7 @@ rm -rf %{buildroot}
 %{_prefix}/lib/%{drivername}/libaticaldd.so
 %{_prefix}/lib/%{drivername}/libaticalrt.so
 %{_prefix}/lib/%{drivername}/libatiuki.so.1*
+%{_prefix}/lib/%{drivername}/libSlotMaximizer*.so
 %endif
 
 %{_libdir}/%{drivername}/libfglrx_dm.so.1*
