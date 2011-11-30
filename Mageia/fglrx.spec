@@ -882,9 +882,11 @@ rm -rf %{buildroot}
 %{_bindir}/clinfo
 %{_libdir}/%{drivername}/libamdocl*.so
 %{_libdir}/%{drivername}/libOpenCL.so.1
+%{_libdir}/%{drivername}/libSlotMaximizer*.so
 %ifarch x86_64
 %{_prefix}/lib/%{drivername}/libamdocl*.so
 %{_prefix}/lib/%{drivername}/libOpenCL.so.1
+%{_prefix}/lib/%{drivername}/libSlotMaximizer*.so
 %endif
 
 %files -n dkms-%{drivername}
