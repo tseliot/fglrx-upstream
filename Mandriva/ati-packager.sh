@@ -204,7 +204,7 @@ case "${action}" in
     exit ${ATI_INSTALLER_ERR_VERS}
     ;;
 --get-maintainer)
-    echo "Anssi Hannula <anssi@mandriva.org>"
+    echo "Dmitry Mikhirev <dmikhirev@mandriva.org>"
     exit 0
     ;;
 --getAPIVersion)
