@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2010-2011, Sebastian Siebert (freespacer@gmx.de)
+# Copyright (c) 2010-2012, Sebastian Siebert (freespacer@gmx.de)
 # All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person

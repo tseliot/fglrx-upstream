@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2010-2011, Sebastian Siebert (freespacer@gmx.de)
+# Copyright (c) 2010-2012, Sebastian Siebert (freespacer@gmx.de)
 # All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person
@@ -525,6 +525,8 @@ case "${ACTION}" in
             SUSE_VERSION=`grep VERSION /etc/SuSE-release | sed -e 's/VERSION\s=\s//g'`
 
             if [ "${SUSE_NAME}" = "openSUSE" ]; then
+                AMD_SUSE_NAME="SUSE"
+            elif [ "${SUSE_NAME}" = "Balsam" ]; then
                 AMD_SUSE_NAME="SUSE"
             else
                 AMD_SUSE_NAME="SLE"
