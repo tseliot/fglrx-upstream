@@ -66,11 +66,6 @@ mkdir -p $RPM_BUILD_ROOT/etc/ati \
          $RPM_BUILD_ROOT/usr/lib \
 %endif
          $RPM_BUILD_ROOT/usr/%{_lib}/fglrx \
-%if %suse_version > 1020
-         $RPM_BUILD_ROOT/usr/lib/pm-utils/power.d \
-%else
-         $RPM_BUILD_ROOT/usr/lib/powersave/scripts \
-%endif
          $RPM_BUILD_ROOT%{MODULES_DIR}/{linux,drivers} \
          $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/fglrx \
          $RPM_BUILD_ROOT/usr/sbin \
@@ -126,15 +121,6 @@ pushd $tmpdir/fglrx
     install -m 755 usr/%{_lib}/fglrx/* \
                    $RPM_BUILD_ROOT/usr/%{_lib}/fglrx
     rm -rf usr/%{_lib}/fglrx
-%if %suse_version > 1020
-    install -m 755 usr/lib/pm-utils/power.d/* \
-                   $RPM_BUILD_ROOT/usr/lib/pm-utils/power.d
-    rm -rf usr/lib/pm-utils
-%else
-    install -m 755 usr/lib/powersave/scripts/* \
-                   $RPM_BUILD_ROOT/usr/lib/powersave/scripts
-    rm -rf usr/lib/powersave
-%endif
     install -m 755 usr/%{_lib}/xorg/modules/drivers/* \
                    $RPM_BUILD_ROOT%{MODULES_DIR}/drivers
     install -m 755 usr/%{_lib}/xorg/modules/linux/* \
@@ -420,9 +406,6 @@ exit 0
 /usr/lib/*
 %{DRI_DRIVERS32_DIR}/*
 %endif
-%if %suse_version > 1020
-/usr/lib/pm-utils/*
-%endif
 %{MODULES_DIR}/*
 %{MODULES_DIR}/drivers/*
 %{MODULES_DIR}/linux/*
@@ -441,10 +424,4 @@ exit 0
 %verify(not md5 size mtime) /usr/src/kernel-modules/fglrx/*
 /usr/src/kernel-modules/fglrx/2.6.x/*
 %verify(not mtime) %{MODULES_DIR}/drivers/fglrx_drv.*
-# powersave script
-%if %suse_version > 1020
-/usr/lib/pm-utils/power.d/*
-%else
-/usr/lib/powersave/scripts/*
-%endif
 /var/adm/fillup-templates/*
