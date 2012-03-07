@@ -1,3 +1,7 @@
+Wed Mar 07 19:37:22 CET 2012 - Sebastian Siebert <freespacer@gmx.de>
+-------------------------------------------------------------------
+- remove runlevel 3 from the init script atieventsd.sh
+
 Wed Feb 15 19:20:01 CET 2012 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
 - update packaging script and fglrx.spec file
