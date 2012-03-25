@@ -324,7 +324,7 @@ ${PRINTF_BIN} "\n\nSummary report:\n"
 ${PRINTF_BIN} '=%.0s' $(seq 1 80) && ${PRINTF_BIN} "\n"
 if [ -z "${SUMMARY_REPORT}" ]; then
     ${PRINTF_BIN} "Nothing to do because the fglrx kernel module was already"
-    ${PRINTF_BIN} " successfully builded!\n\n\nIf you want to force"
+    ${PRINTF_BIN} " successfully built!\n\n\nIf you want to force"
     ${PRINTF_BIN} " compiling the fglrx kernel module,"
     ${PRINTF_BIN} " try \"fglrx-kernel-build.sh --force\"\n"
 else
