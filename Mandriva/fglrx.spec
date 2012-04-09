@@ -45,13 +45,13 @@
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl).
 
 # version in installer filename:
-%define oversion	11-5
+%define oversion	12-4
 # Advertised version, for description:
-%define mversion	11.5
+%define mversion	12.4
 # driver version from ati-packager-helper.sh:
-%define iversion	8.85
+%define iversion	8.96
 # release:
-%define rel		3
+%define rel		2
 # rpm version (adds 0 in order to not go backwards if iversion is two-decimal)
 %define version		%{iversion}%([ $(echo %iversion | wc -c) -le 5 ] && echo 0)
 %else
@@ -64,6 +64,8 @@
 
 # set to 1 for a prerelease driver with an ubuntu tarball as source
 %define ubuntu_prerelease 0
+# set to 1 for a prerelease driver with an OpenCL tarball as source
+%define opencl_prerelease 1
 
 %define driverpkgname	x11-driver-video-fglrx
 %define drivername	fglrx
@@ -139,25 +141,45 @@
 # Other packages should not require any AMD specific proprietary libraries
 # (if that is really necessary, we may want to split that specific lib out),
 # and this package should not be pulled in when libGL.so.1 is required.
+%if %{mdvver} < 201200
 %define _provides_exceptions \\.so
+%else
+%define __noautoprov '\\.so'
+%endif
 
 %define qt_requires_exceptions %nil
 %if %{bundle_qt}
 # do not require Qt if it is bundled
+%if %{mdvver} < 201200
 %define qt_requires_exceptions \\|libQtCore\\.so\\|libQtGui\\.so
+%else
+%define qt_requires_exceptions |libQtCore\\.so|libQtGui\\.so
+%endif
 %endif
 
 # do not require fglrx stuff, they are all included
+%if %{mdvver} < 201200
 %define common_requires_exceptions libfglrx.\\+\\.so\\|libati.\\+\\.so\\|libOpenCL\\.so%{qt_requires_exceptions}
+%else
+%define common_requires_exceptions libfglrx.+\\.so|libati.+\\.so|libOpenCL\\.so%{qt_requires_exceptions}
+%endif
 
 %ifarch x86_64
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
 # of 32-bit libraries are not satisfied. If a 32-bit package that requires
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit fglrx libraries in as well.
+%if %{mdvver} < 201200
 %define _requires_exceptions %common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
 %else
+%define __noautoreq '%common_requires_exceptions|lib.*so\\.[^(]+(\\([^)]+\\))?$'
+%endif
+%else
+%if %{mdvver} < 201200
 %define _requires_exceptions %common_requires_exceptions
+%else
+%define __noautoreq '%common_requires_exceptions'
+%endif
 %endif
 
 # (anssi) Do not require qt for amdnotifyui (used as event notifier, as
@@ -166,7 +188,11 @@
 # It is not moved to fglrx-control-center as due to its small size it may
 # be wanted on e.g. KDE Ones, which can't have the full fglrx-control-center,
 # and due to it having nothing to do with fglrx-control-center.
+%if %{mdvver} <= 201100
 %define _exclude_files_from_autoreq ^%{_sbindir}/amdnotifyui$
+%else
+%define __noautoreqfiles ^%{_sbindir}/amdnotifyui$
+%endif
 
 Summary:	AMD proprietary X.org driver and libraries
 Name:		%{name}
@@ -174,7 +200,11 @@ Version:	%{version}
 Release:	%{release}
 %if !%{amdbuild}
 %if !%{ubuntu_prerelease}
-Source0:	https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-%{oversion}-x86.x86_64.run
+%if !%{opencl_prerelease}
+Source0:	http://www2.ati.com/drivers/linux/amd-driver-installer-%{oversion}-x86.x86_64.run
+%else
+Source0:	http://download2-developer.amd.com/amd/APPSDK/OpenCL1.2betadriversLinux.tgz
+%endif
 %else
 Source0:        fglrx-installer_%{iversion}.orig.tar.gz
 %endif
@@ -186,17 +216,22 @@ Source2:	atieventsd.init
 # archive. Requires kenobi access for fetching names for changelog.
 # (for manual use)
 Source10:	generate-fglrx-spec-from-svn.sh
+Source11:	fglrx.rpmlintrc
+Source12:	README_for_maintainers.txt
 %endif
 Patch3:		fglrx-authfile-locations.patch
 Patch9:		fglrx-make_sh-custom-kernel-dir.patch
 # do not probe /proc for kernel info as we may be building for a
 # different kernel
 Patch10:	fglrx-make_sh-no-proc-probe.patch
+Patch11:	fglrx-8.951-kernel-3.3.x_fix.diff
 License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
 Group:		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
+%if %{mdvver} <= 201010
 BuildRoot:	%{_tmppath}/%{name}-root
+%endif
 %if !%{amdbuild}
 BuildRequires:	mesagl-devel
 BuildRequires:	libxmu-devel
@@ -206,7 +241,7 @@ BuildRequires:	libxtst-devel
 BuildRequires:	imake
 # Used by atieventsd:
 Suggests:	acpid
-BuildRequires:	ImageMagick
+BuildRequires:	imagemagick
 %endif
 
 %description
@@ -248,6 +283,10 @@ Conflicts:	x11-server-common < 1.6.0-11
 %if %{mdkversion} >= 201100
 Requires:	x11-server-common >= 1.9
 %if !%{amdbuild}
+%if %{mdvver} >= 201200
+Requires(post):	rpm-helper
+Requires(preun): rpm-helper
+%endif
 # Conflict with the next videodrv ABI break.
 # The driver may support multiple ABI versions and therefore
 # a strict version-specific requirement would not be enough.
@@ -351,13 +390,17 @@ ln -s %{amd_dir}/%{xverdir} %{amd_dir}/arch .
 # patches affects common, so we cannot symlink it:
 cp -a %{amd_dir}/common .
 %else
+%if %opencl_prerelease
+%setup -q -n fglrx-%iversion
+sh *.run --extract .
+%else
 %if %ubuntu_prerelease
 %setup -q -T -D -a 0
 ln -s . common
 %else
 sh %{SOURCE0} --extract .
 %endif
-
+%endif
 mkdir fglrx_tools
 tar -xzf common/usr/src/ati/fglrx_sample_source.tgz -C fglrx_tools
 %if %ubuntu_prerelease
@@ -371,6 +414,7 @@ cd common # ensure patches do not touch outside
 %patch3 -p2
 %patch9 -p2
 %patch10 -p2
+%patch11 -p0
 cd ..
 
 cat > README.install.urpmi <<EOF
@@ -724,6 +768,15 @@ chmod 0755 %{buildroot}%{_libdir}/fglrx/switchlibGL
 # dereferencing the symlink.
 cp -a %{buildroot}%{_libdir}/fglrx/switchlibGL %{buildroot}%{_libdir}/fglrx/switchlibglx
 
+#%if %{mdvver} >= 201200
+## Strip files that spec-helper misses
+#%__strip --strip-unneeded %{buildroot}%{_libdir}/xorg/modules/amdxmm.so
+#%endif
+
+# Fix file permissions
+find %{buildroot} -name '*.h' -exec %__chmod 0644 {} \;
+find %{buildroot} -name '*.c' -exec %__chmod 0644 {} \;
+
 %if %{mdkversion} >= 200800
 %pre -n %{driverpkgname}
 # Handle alternatives-era /etc/ati directory
@@ -894,7 +947,7 @@ rmmod fglrx > /dev/null 2>&1 || true
 rm -rf %{buildroot}
 
 %files -n %{driverpkgname}
-%defattr(-,root,root)
+%defattr(0644,root,root)
 %doc README.install.urpmi README.manual-setup
 %doc README.8.600.upgrade.urpmi
 # the documentation files are grossly out of date; the configuration options
@@ -905,6 +958,8 @@ rm -rf %{buildroot}
 %if %{mdkversion} <= 200810
 %doc README.8.532.upgrade.urpmi
 %endif
+
+%defattr(-,root,root)
 
 %if "%{ldetect_cards_name}" != ""
 %{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
@@ -1003,7 +1058,7 @@ rm -rf %{buildroot}
 
 %files -n %{drivername}-control-center -f amdcccle.langs
 %defattr(-,root,root)
-%doc common/usr/share/doc/amdcccle/*
+%attr(0644,root,root) %doc common/usr/share/doc/amdcccle/*
 %{_sysconfdir}/security/console.apps/amdcccle-su
 %{_sysconfdir}/pam.d/amdcccle-su
 %{_bindir}/amdcccle
@@ -1059,636 +1114,10 @@ rm -rf %{buildroot}
 %endif
 
 %files -n dkms-%{drivername}
-%defattr(-,root,root)
-%{_usrsrc}/%{drivername}-%{version}-%{release}
-
-%changelog
-* %(LC_ALL=C date "+%a %b %d %Y") %{packager} %{version}-%{release}
-- automatic package build by the AMD installer
-
-* Tue May 24 2011 Anssi Hannula <anssi@mandriva.org> 8.850-3mdv2010.0
-+ Revision: 678000
-- use -X on postun ldconfig call
-- clear version numbers from configuration database on installation as
-  suggested by AMD (fixes incorrect version in amdcccle after upgrade)
-- update amd-uninstall.sh script with new options
-- do not use a symlink for PowerXpress ld.so.conf, it causes an error in
-  switchlibfoo scripts (reported by Wiliam Souza)
-- do not use a symlink for switchlibglx, it causes an error in fglrx driver
-  when trying to do a PowerXpress switch (reported by Wiliam Souza)
-- fix an error in a conditional causing PowerXpress alternative to not be
-  installed (reported by Wiliam Souza)
-- provide ATI libraries also in PowerXpress Intel mode, while using Mesa
-  libs for libGL
-- use fglrx modprobe.d and modprobe.preload.d files in PowerXpress Intel
-  mode on 2010.1 and earlier
-- fix missing libglx and libdri extension in PowerXpress mode on 2008.0,
-  2008.1, 2009.0
-
-* Sun May 22 2011 Anssi Hannula <anssi@mandriva.org> 8.850-2
-+ Revision: 677466
-- run ldconfig after alternatives call in PowerXpress switcher script
-
-* Fri May 13 2011 Anssi Hannula <anssi@mandriva.org> 8.850-1
-+ Revision: 673999
-- new version 11.5 aka 8.85
-  o fixes intel/fglrx switching on PowerXpress
-  o fixes some cases of suspend not working
-
-* Sat Apr 30 2011 Anssi Hannula <anssi@mandriva.org> 8.841-1
-+ Revision: 660782
-- new version 8.841 aka 11.4
-- remove 2.6.38 support patch, fixed upstream
-
-* Mon Apr 25 2011 Oden Eriksson <oeriksson@mandriva.com> 8.831.2-3
-+ Revision: 658570
-- fix bork, my bad
-
-* Sun Apr 17 2011 Anssi Hannula <anssi@mandriva.org> 8.831.2-2
-+ Revision: 654795
-- fix release tag value
-
-* Sun Apr 17 2011 Anssi Hannula <anssi@mandriva.org> 8.831.2-1.test.3
-+ Revision: 654085
-- disable conflicts on videodrv ABI, as it may cause X server to be
-  uninstalled instead
-- remove references to removed xgamma
-- remove now unneeded modprobe.preload.d and modprobe.d entries on 2011.0+
-- add simple uninstaller script used by the ati binaries
-
-* Sat Apr 09 2011 Oden Eriksson <oeriksson@mandriva.com> 8.831.2-1
-+ Revision: 652106
-- 11.3 (8.831.2)
-- disable some stuff for now (temporary fix)
-- P11: fix dkms build with 2.6.38 (arch linux)
-
-  + Anssi Hannula <anssi@mandriva.org>
-    - rename modprobe config file to display-driver.conf
-
-* Sun Feb 27 2011 Funda Wang <fwang@mandriva.org> 8.821-2
-+ Revision: 640417
-- rebuild
-
-* Sat Feb 19 2011 Anssi Hannula <anssi@mandriva.org> 8.821-1
-+ Revision: 638706
-- new version 8.821 aka 11.2
-
-* Thu Jan 27 2011 Anssi Hannula <anssi@mandriva.org> 8.812-1
-+ Revision: 633433
-- new version 8.812 aka 11.1
-- drop patches for issues fixed upstream
-- rediff custom-kernel-dir.patch
-
-* Sun Dec 19 2010 Anssi Hannula <anssi@mandriva.org> 8.801-3mdv2011.0
-+ Revision: 623167
-- fix name of the 2.6.37 support patch
-
-* Sun Dec 19 2010 Anssi Hannula <anssi@mandriva.org> 8.801-2mdv2011.0
-+ Revision: 623150
-- add patch to fix dkms build on 2.6.37 (mdvbz #61823)
-- adapt for 2010.2
-
-* Fri Dec 17 2010 Oden Eriksson <oeriksson@mandriva.com> 8.801-1mdv2011.0
-+ Revision: 622548
-- 10.12, 8.801
-
-* Thu Nov 18 2010 Anssi Hannula <anssi@mandriva.org> 8.791-1mdv2011.0
-+ Revision: 598736
-- new version 8.791 aka 10.11
-- clarify atibuild conditional statement
-- hardcode videodrv abi as the driver is precompiled
-
-* Thu Nov 11 2010 Thierry Vignaud <tv@mandriva.org> 8.783-2mdv2011.0
-+ Revision: 595848
-- require xorg server with proper ABI
-
-* Fri Oct 22 2010 Anssi Hannula <anssi@mandriva.org> 8.783-1mdv2011.0
-+ Revision: 587534
-- new version 8.783 aka 10.10
-- rediff make_sh-custom-kernel-dir.patch
-
-* Tue Oct 12 2010 Anssi Hannula <anssi@mandriva.org> 8.780-1mdv2011.0
-+ Revision: 585045
-- new 10.10 prerelease with X.org server 1.9 support (from Ubuntu)
-- remove CVE-2010-3081 patch, fixed upstream
-- rediff affected patches
-
-* Sat Oct 02 2010 Thomas Backlund <tmb@mandriva.org> 8.771-3mdv2011.0
-+ Revision: 582570
-- Add compatibility with 2.6.36 kernels (P11, from Ubuntu)
-- Use CFLAGS_MODULE together with MODFLAGS in make.sh (P12, from Ubuntu)
-
-* Tue Sep 21 2010 Anssi Hannula <anssi@mandriva.org> 8.771-2mdv2011.0
-+ Revision: 580368
-- apply CVE-2010-3081 64bit security fix from the kernel commit c41d68a5
-  locally (also fixes build on kernels with c41d68a5 applied)
-- rediff custom-kernel-dir.patch
-
-* Fri Sep 17 2010 Anssi Hannula <anssi@mandriva.org> 8.771-1mdv2011.0
-+ Revision: 579247
-- new version 10.9 aka 8.771
-- switch to the upstream amdxdg-su wrapper for the superuser control
-  center mode as it now works well
-
-* Sat Sep 04 2010 Anssi Hannula <anssi@mandriva.org> 8.762-3mdv2011.0
-+ Revision: 575801
-- new version 8.762 aka 10.8
-
-* Thu Aug 12 2010 Anssi Hannula <anssi@mandriva.org> 8.753-2mdv2011.0
-+ Revision: 569320
-- fix XvBA on x86_64 (.cap file was being loaded from a wrong place, so
-  compatibility symlink was added; reported by Balcaen John)
-- provide pcitable.d files on 2010.1 as well, marking cards as vesa/fglrx
-
-* Thu Aug 12 2010 Anssi Hannula <anssi@mandriva.org> 8.753-1mdv2011.0
-+ Revision: 569194
-- new version 8.753 aka 10.7
-- drop 2.6.34.patch, fixed upstream
-
-* Fri Jul 09 2010 Anssi Hannula <anssi@mandriva.org> 8.741-1mdv2011.0
-+ Revision: 549894
-- new version 8.741 aka 10.6
-- remove fglrx-2.6.33.patch, fixed upstream
-
-* Fri Jun 11 2010 Anssi Hannula <anssi@mandriva.org> 8.732-1mdv2010.1
-+ Revision: 547892
-- new version 8.732 aka 10.5
-- allow specifying repository url for generate-fglrx-spec-from-svn.sh
-- version 8.723 aka 10.4
-  o this is older than the previous version, but contains support for
-    older X.org servers and is therefore suitable for backporting
-- fix incorrect categories in menu entry files (issue reported by St?\195?\169phane)
-
-* Wed May 05 2010 Anssi Hannula <anssi@mandriva.org> 8.723.1-6mdv2010.1
-+ Revision: 542231
-- add a modprobe.preload.d entry loading the module before X server
-- blacklist radeon module in modprobe.d entry as udev will now otherwise
-  load it
-
-* Sat May 01 2010 Thomas Backlund <tmb@mandriva.org> 8.723.1-5mdv2010.1
-+ Revision: 541442
-- fix build with 2.6.34 series kernels (from Charles A Edwards)
-
-* Wed Apr 28 2010 Anssi Hannula <anssi@mandriva.org> 8.723.1-4mdv2010.1
-+ Revision: 540653
-- add alternatives slave for libAMDXvBA.cap (fixes load of XvBA)
-- update version info in description (this driver is actually newer than
-  10.4, i.e. not a prerelease after all)
-
-* Tue Apr 27 2010 Anssi Hannula <anssi@mandriva.org> 8.723.1-3mdv2010.1
-+ Revision: 539736
-- do not require qt4 libs in the main package (reported by Christophe
-  Fergeau)
-  o this allows installing the driver without installing qt4 libraries
-  o without qt4 libraries DisplayLink failure notifications won't be shown
-  o to get the notifications, users can install fglrx-control-center package
-
-* Tue Apr 27 2010 Christophe Fergeau <cfergeau@mandriva.com> 8.723.1-2mdv2010.1
-+ Revision: 539576
-- rebuild so that shared libraries are properly stripped again
-
-* Wed Apr 21 2010 Anssi Hannula <anssi@mandriva.org> 8.723.1-1mdv2010.1
-+ Revision: 537743
-- new 10.4 prerelease 8.723.1 from ubuntu
-- fix module load on 32-bit 2.6.33+ systems (modified 2.6.33.patch)
-
-* Tue Mar 30 2010 Anssi Hannula <anssi@mandriva.org> 8.721-1mdv2010.1
-+ Revision: 528938
-- new version 8.721 (10.4 prerelease from Ubuntu)
-  o includes X.org server 1.7 support
-- call ldconfig with -X parameter
-- adapt file lists
-- rediff fglrx-2.6.33.patch
-
-* Tue Mar 30 2010 Anssi Hannula <anssi@mandriva.org> 8.712-1mdv2010.1
-+ Revision: 528935
-- new version 8.712 aka 10.3
-- fix dkms build as non-root user
-- fix false smp detection when running on smp kernel
-- remove /tmp/AtiXUEvent* before starting atieventsd (fixes bug #57291)
-
-* Thu Feb 25 2010 Anssi Hannula <anssi@mandriva.org> 8.702-1mdv2010.1
-+ Revision: 511385
-- new version 10.2 aka 8.702
-- generalize requires_exceptions on libati*.so.* to avoid future surprises
-
-* Fri Jan 29 2010 Anssi Hannula <anssi@mandriva.org> 8.690-3mdv2010.1
-+ Revision: 498068
-- call __cmpxchg with constant size argument on 2.6.33+ (2.6.33.patch
-  modified, reported by Charles A Edwards)
-
-* Thu Jan 28 2010 Anssi Hannula <anssi@mandriva.org> 8.690-2mdv2010.1
-+ Revision: 497792
-- add requires_exceptions on libatiuki.so.1 (Charles A Edwards)
-
-* Thu Jan 28 2010 Anssi Hannula <anssi@mandriva.org> 8.690-1mdv2010.1
-+ Revision: 497689
-- new version 8.69 aka 10.1
-- drop 2.6.32.patch, applied upstream
-- add 2.6.33+ support (2.6.33.patch, fixes #57259)
-- custom libdri.so has been dropped upstream
-- do not package most of the very obsolete documentation (bug #57139)
-
-* Fri Jan 08 2010 Anssi Hannula <anssi@mandriva.org> 8.681-3mdv2010.1
-+ Revision: 487448
-- fix dkms build on 2.6.32+ (fixes #56693, 2.6.32.patch from Ubuntu)
-
-* Sat Dec 19 2009 Anssi Hannula <anssi@mandriva.org> 8.681-1mdv2010.1
-+ Revision: 480058
-- remove Mandriva 2006.0 support (this can be readded if still actually
-  needed, please contact us in such a case)
-- new version 8.681 aka 9.12
-- use now-bundled QT4 libraries on old distributions as needed
-
-* Sat Nov 21 2009 Anssi Hannula <anssi@mandriva.org> 8.671-1mdv2010.1
-+ Revision: 468576
-- add libxtst-devel as buildrequires (now needed on cooker due to headers
-  having been moved away from x11 proto packages)
-- use the new upstream desktop files instead of providing our own
-- generate pcitable files on cooker as well in order to catch errors
-  (they are still not really installed on cooker, just when backporting)
-- new version 8.671 aka 9.11
-- add a comment in .spec reminding to update ldetect-lst
-
-* Fri Nov 06 2009 Anssi Hannula <anssi@mandriva.org> 8.661-2mdv2010.1
-+ Revision: 461590
-- rebuild due to a missing changelog entry for the previous release
-
-* Fri Nov 06 2009 Anssi Hannula <anssi@mandriva.org> 8.661-1mdv2010.1
-+ Revision: 461252
-- provide a pcitable.d file in backported packages, so that XFdrake sees
-  the installed fglrx driver as able to drive the graphics card even if
-  ldetect-lst package does not know it
-- new version 9.10 aka 8.661
-- adapt for upstream changes in xorg targets
-- drop rt-compat.patch, affected code has been removed
-- rediff make_sh-custom-kernel-dir.patch
-- add missing atibuild conditionals into package descriptions
-
-* Sat Sep 19 2009 Anssi Hannula <anssi@mandriva.org> 8.650-1mdv2010.0
-+ Revision: 444730
-- new version 9.9 aka 8.65
-- drop fglrx-reenable-acpi-2.6.29.patch, now unneeded
-- replace fgl_glxgears-includes.patch with an include flag
-
-* Wed Aug 19 2009 Anssi Hannula <anssi@mandriva.org> 8.640-1mdv2010.0
-+ Revision: 418160
-- new version 8.64 aka 9.8
-- automatically append 0 to two-decimal upstream version numbers
-- drop 2.6.29 and 2.6.30 patches, fixed upstream
-- re-enable ACPI notifications on 2.6.29+ (reenable-acpi-2.6.29.patch;
-  ATI "fixed" the ACPI headers issue by removing the notification support
-  on 2.6.29+; however, our kernel-devel packages contain the necessary
-  headers, so reimplement our previous 2.6.29-fixes.patch on top of
-  current fglrx)
-- fix unexpanded macros in descriptions in atibuild mode
-
-* Wed Aug 05 2009 Anssi Hannula <anssi@mandriva.org> 8.632-2mdv2010.0
-+ Revision: 410235
-- do not use /proc for probing kernel info to avoid running kernel
-  affecting the build (make_sh-no-proc-probe.patch and changes to the
-  make command)
-- define target uname_a to "none" to prevent make.sh using "uname -a" to
-  determine whether target kernel is SMP, instead using the target kernel
-  configuration to determine it
-- support custom kernel build directories again
-  (make_sh-custom-kernel-dir.patch) and use that feature with dkms
-- fix failing module load on 2.6.30+ 32-bit SMP kernels due to missing
-  symbol flush_tlb_page (2.6.30-smp.patch, reported by Shlomi Fish)
-
-* Tue Jul 28 2009 Anssi Hannula <anssi@mandriva.org> 8.632-1mdv2010.0
-+ Revision: 402383
-- new version 8.632 aka 9.7
-- show advertised version (9.7) in descriptions
-
-* Fri Jul 17 2009 Anssi Hannula <anssi@mandriva.org> 8.620-2mdv2010.0
-+ Revision: 396704
-- allow redistributing .spec file with MIT license as per AMD request
-  (Colin Guthrie, Luiz Fernando Capitulino, and Thomas Backlund agreed)
-- clean spec
-- fix license tag
-- fix missing dot from description
-- remove executable permission from headers
-- tag language files of fglrx-control-center
-- use more wildcards in %%install
-- move everything except extensions out from /usr/lib/fglrx/xorg
-- fix extraneous ghost files on 2009.1+
-- fix backportability
-- add copyright doc to fglrx-control-center
-- drop compatibility symlinks from /usr/X11R6, it seems the code finally
-  supports /usr/lib/dri
-- clean up old buildrequires
-
-* Wed Jul 01 2009 Thomas Backlund <tmb@mandriva.org> 8.620-1mdv2010.0
-+ Revision: 391139
-- add patch7 to better support realtime preempt (Gentoo)
-- update patch6 based on Gentoo fixes, and fix it to apply cleanly (2.6.30 buildfix)
-- fix patch5 to apply cleanly (2.6.29 buildfix)
-- update to Catalyst 9.6 (8.620)
-
-* Tue Jun 30 2009 Thomas Backlund <tmb@mandriva.org> 8.600-3mdv2010.0
-+ Revision: 390981
-- rediff patch5 to apply cleanly
-- fix build with 2.6.30 series kernels
-
-* Mon Apr 13 2009 Anssi Hannula <anssi@mandriva.org> 8.600-2mdv2009.1
-+ Revision: 366537
-- adapt for dropped alternatives on /usr/bin/Xorg
-
-* Wed Apr 01 2009 Anssi Hannula <anssi@mandriva.org> 8.600-1mdv2009.1
-+ Revision: 363380
-- add notification of dropped support, shown during upgrade of the package
-- new version (8.600)
-  o this is the special version AMD provided for Ubuntu Jaunty which
-  includes X.org server 1.6 support (the license allows repackaging)
-  o this version only supports r600 and newer chipsets (HD2000 onwards)
-
-* Sat Mar 21 2009 Anssi Hannula <anssi@mandriva.org> 8.582-6mdv2009.1
-+ Revision: 359879
-- remove unneeded hack
-
-* Thu Mar 19 2009 Ander Conselvan de Oliveira <ander@mandriva.com> 8.582-5mdv2009.1
-+ Revision: 357792
-- ensure the alternatives links are created if its current state is manual
-
-* Mon Mar 16 2009 Ander Conselvan de Oliveira <ander@mandriva.com> 8.582-4mdv2009.1
-+ Revision: 356061
-- Use alternative X server Xorg 1.5
-
-* Mon Feb 23 2009 Thomas Backlund <tmb@mandriva.org> 8.582-3mdv2009.1
-+ Revision: 344323
-- fix location of acpica headers so it will build with 2.6.29 series kernels
-
-  + Anssi Hannula <anssi@mandriva.org>
-    - use patch fuzz 2 in ati installer mode
-    - additional comments in .spec
-    - fix build on 2008.1 and earlier
-
-* Sun Feb 22 2009 Anssi Hannula <anssi@mandriva.org> 8.582-2mdv2009.1
-+ Revision: 343808
-- hack around an error in 2.6.29-fixes.patch that caused build failure
-  on earlier kernels
-
-* Sat Feb 21 2009 Anssi Hannula <anssi@mandriva.org> 8.582-1mdv2009.1
-+ Revision: 343732
-- br libxp-devel
-- new version 8.582 aka 9.2
-
-  + Luiz Fernando Capitulino <lcapitulino@mandriva.com>
-    - Quick-and-dirty fix to make fglrx compile on 2.6.29-rc
-
-* Mon Feb 02 2009 Anssi Hannula <anssi@mandriva.org> 8.573-1mdv2009.1
-+ Revision: 336504
-- new version 8.573 aka 9.1
-
-* Sat Dec 20 2008 Anssi Hannula <anssi@mandriva.org> 8.561-1mdv2009.1
-+ Revision: 316488
-- new version 8.561 aka 8.12
-- drop uname_r patch, use the new upstream solution
-
-* Sat Nov 29 2008 Colin Guthrie <cguthrie@mandriva.org> 8.552-2mdv2009.1
-+ Revision: 308110
-- Hopefully fix xserver 1.5 libglx.so inclusion
-
-  + Anssi Hannula <anssi@mandriva.org>
-    - use X.org server 1.5 compatible driver variant on cooker
-
-* Sat Nov 15 2008 Anssi Hannula <anssi@mandriva.org> 8.552-1mdv2009.1
-+ Revision: 303545
-- new version 8.552 aka 8.11
-- drop 2.6.27 support patch, applied upstream
-
-* Sun Nov 02 2008 Anssi Hannula <anssi@mandriva.org> 8.542-2mdv2009.1
-+ Revision: 299202
-- provide XvMCConfig file so that MPEG/2 acceleration (UVD2) is enabled
-  automatically on programs using libXvMCW
-
-* Sun Oct 19 2008 Anssi Hannula <anssi@mandriva.org> 8.542-1mdv2009.1
-+ Revision: 295257
-- new version 8.542 aka 8.10
-- rediff uname_r patch
-
-* Sun Oct 12 2008 Anssi Hannula <anssi@mandriva.org> 8.532-1mdv2009.1
-+ Revision: 292944
-- 8.532 aka 8.9
-  o Driver now includes its own libdri.so; therefore added additional
-    manual configuration instructions for 2008.1 and older releases due
-    to libdri.so only being handled by alternatives since 2009.0.
-    Providing this package in general-purpose pre-2009.0 repositories is
-    not recommended.
-- rediff 2.6.27 support patch
-
-* Sun Aug 31 2008 Herton Ronaldo Krzesinski <herton@mandriva.com.br> 8.522-3mdv2009.0
-+ Revision: 277752
-- Really fix fglrx build for Linux 2.6.27
-
-* Thu Aug 28 2008 Luiz Fernando Capitulino <lcapitulino@mandriva.com> 8.522-2mdv2009.0
-+ Revision: 277040
-- Fix fglrx build for 2.6.27-rc
-
-* Mon Aug 25 2008 Anssi Hannula <anssi@mandriva.org> 8.522-1mdv2009.0
-+ Revision: 275718
-- new version 8.8 aka 8.522
-- drop now unneeded 2.6.26 support patch
-- update file list
-- add super-user mode menu entry for amdcccle, using more robust
-  consolehelper instead of amdxdg-su which upstream created for the
-  purpose
-
-* Sun Aug 10 2008 Anssi Hannula <anssi@mandriva.org> 8.512-2mdv2009.0
-+ Revision: 270241
-- adapt for libdri.so handled by alternatives
-
-* Thu Aug 07 2008 Ander Conselvan de Oliveira <ander@mandriva.com> 8.512-1mdv2009.0
-+ Revision: 267038
-- Update to version 8.512 (aka Catalyst 8.7)
-  Included Gentoo patch to compile against 2.6.26 (Gentoo bug #232609)
-
-* Thu Jul 10 2008 Olivier Blin <oblin@mandriva.com> 8.501-3mdv2009.0
-+ Revision: 233211
-- conditionally fix build on 2.6.26 (patch from Ubuntu #239967, with some space cleaning)
-
-* Fri Jun 20 2008 Anssi Hannula <anssi@mandriva.org> 8.501-2mdv2009.0
-+ Revision: 227323
-- restore calls to /sbin/ldconfig, they are there due to alternatives and
-  filetriggers do not handle them
-
-* Thu Jun 19 2008 Anssi Hannula <anssi@mandriva.org> 8.501-1mdv2009.0
-+ Revision: 226978
-- add a custom CLEAN command for dkms to stop it from complaining about
-  bad exit status
-- adapt to reverted /usr/X11R6 changes on cooker
-- 8.501 aka 8.6
-- update filelist
-- fglrx_gamma: fix underlinking (fix-underlinking.patch)
-- use %%ldflags on cooker for fglrx_tools
-- import generate-fglrx-spec-from-svn.sh for generating fglrx.spec for
-  use within AMD installer archive
-
-  + Pixel <pixel@mandriva.com>
-    - rpm filetriggers deprecates update_menus/update_scrollkeeper/update_mime_database/update_icon_cache/update_desktop_database/post_install_gconf_schemas
-    - do not call ldconfig in %%post/%%postun, it is now handled by filetriggers
-
-* Thu May 29 2008 Anssi Hannula <anssi@mandriva.org> 8.493.1-1mdv2009.0
-+ Revision: 212852
-- 8.493.1 aka 8.5
-- adapt to X11 directory changes of cooker
-
-* Wed May 07 2008 Anssi Hannula <anssi@mandriva.org> 8.476-3mdv2009.0
-+ Revision: 202692
-- readd 32-bit dri compatibility directories and symlink on x86_64
-
-* Tue May 06 2008 Anssi Hannula <anssi@mandriva.org> 8.476-2mdv2009.0
-+ Revision: 201797
-- drop /usr/X11R6/ dri symlink from cooker, now handled in
-  x11-server-common
-
-* Fri Apr 18 2008 Anssi Hannula <anssi@mandriva.org> 8.476-1mdv2009.0
-+ Revision: 195718
-- new version (8.476 aka 8.4)
-- ensure correct version with ati-packager-helper.sh on non-atibuild
-  builds
-- suggests acpid for atieventsd
-- fix authfile locations in authatieventsd.sh for Mandriva XDM and KDM,
-  preventing atieventsd from working properly (partially fixes #33095)
-- longer timeout for fglrx driver check in atieventsd initscript
-  (see #33095)
-- better timeout handling in fglrx check of atieventsd initscript
-
-* Tue Apr 01 2008 Anssi Hannula <anssi@mandriva.org> 8.471-3mdv2008.1
-+ Revision: 191501
-- add versioned requires on kernel module on 2008.1
-
-* Wed Mar 26 2008 Anssi Hannula <anssi@mandriva.org> 8.471-2mdv2008.1
-+ Revision: 190341
-- do not use alternatives for amdcccle desktop file (fixes #39200)
-- amdpcsdb.default is not a config file
-- control-center subpackage requires the main package
-
-* Sat Mar 08 2008 Anssi Hannula <anssi@mandriva.org> 8.471-1mdv2008.1
-+ Revision: 182051
-- new version 8.3 aka 8.471 aka 8.47.3
-- now using the ati-packager-helper.sh versioning
-- update comments
-
-* Thu Feb 14 2008 Anssi Hannula <anssi@mandriva.org> 8.45.5-1mdv2008.1
-+ Revision: 168540
-- new version
-- drop empty fields from initscript
-- exclude unused patches from ati-packager.sh build
-- use ati reported version in ati-packager.sh builds
-- change distsuffix of ati-packager.sh builds to amd.mdv
-
-* Sun Jan 20 2008 Anssi Hannula <anssi@mandriva.org> 8.45.2-1mdv2008.1
-+ Revision: 155387
-- new version
-- fix ati-packager.sh build
-- use automatic detection when no distroversion is selected in
-  ati-packager.sh
-- restore menu on 2006.0 builds
-
-  + Thierry Vignaud <tv@mandriva.org>
-    - drop old menu
-
-* Sun Dec 30 2007 Anssi Hannula <anssi@mandriva.org> 8.44.3-4mdv2008.1
-+ Revision: 139573
-- obsolete ati-control-center on 2008.0 and newer
-
-* Tue Dec 25 2007 Anssi Hannula <anssi@mandriva.org> 8.44.3-3mdv2008.1
-+ Revision: 137792
-- fix exit status of %%posttrans in cases where unhandled files exist
-  in /etc/fglrx or /etc/fglrx-hd2000
-
-* Tue Dec 25 2007 Anssi Hannula <anssi@mandriva.org> 8.44.3-2mdv2008.1
-+ Revision: 137767
-- handle more upgrade scenarios
-- require kmod(fglrx) in driver package
-
-* Tue Dec 25 2007 Anssi Hannula <anssi@mandriva.org> 8.44.3-1mdv2008.1
-+ Revision: 137625
-- new version (internally 8.44.3/8.443.1, announced as 7.12)
-- drop 2.6.23 support patch, applied upstream
-
-  + Olivier Blin <oblin@mandriva.com>
-    - restore BuildRoot
-
-  + Thierry Vignaud <tv@mandriva.org>
-    - kill re-definition of %%buildroot on Pixel's request
-
-* Sun Oct 28 2007 Anssi Hannula <anssi@mandriva.org> 8.40.4-8mdv2008.1
-+ Revision: 102854
-- use alternatives for fglrx_dri.so to allow 8.42.3 cohabitation
-
-* Fri Sep 21 2007 Anssi Hannula <anssi@mandriva.org> 8.40.4-7mdv2008.0
-+ Revision: 91892
-- apply a workaround patch for kernel 2.6.23
-
-* Thu Sep 20 2007 Anssi Hannula <anssi@mandriva.org> 8.40.4-6mdv2008.0
-+ Revision: 91578
-- change %%post to %%posttrans to prevent more problems with rpm removing files
-
-* Thu Sep 20 2007 Anssi Hannula <anssi@mandriva.org> 8.40.4-5mdv2008.0
-+ Revision: 91420
-- provide ghosts for directories as well (fixes #33809)
-- disable parallel make of fglrx_gamma lib
-
-* Sun Sep 16 2007 Anssi Hannula <anssi@mandriva.org> 8.40.4-4mdv2008.0
-+ Revision: 87594
-- add conflict with old drakx-kbd-mouse-x11
-- fix suggests
-- check for driver before printing anything in atieventsd initscript
-- use alternatives for more files to allow co-existence with fglrx-hd2000
-
-* Sat Sep 15 2007 Anssi Hannula <anssi@mandriva.org> 8.40.4-3mdv2008.0
-+ Revision: 85915
-- start atieventsd on runlevel 5 only
-- fix versioned provides/obsoletes in control center subpkg
-- no need to own /usr/X11R6, it is owned by x11-server-common
-- drop useless fgl_glxgears man page, it was an old upstream one
-  without all the correct options
-- fix menu entry
-
-* Fri Aug 31 2007 Anssi Hannula <anssi@mandriva.org> 8.40.4-2mdv2008.0
-+ Revision: 76979
-- drop executable perm of fglrx.spec (Charles A Edwards)
-- add a note into README.install.urpmi about reconfiguring being
-  unnecessary when upgrading
-
-  + Thierry Vignaud <tv@mandriva.org>
-    - kill desktop-file-validate's 'warning: key "Encoding" in group "Desktop Entry" is deprecated'
-
-* Sun Aug 26 2007 Anssi Hannula <anssi@mandriva.org> 8.40.4-1mdv2008.0
-+ Revision: 71697
-- use alternatives for libglx.so
-- update documentation
-- 8.40.4
-- rewrite spec
-- preapply uname_r patch
-- can now be built as standard rpm as well, i.e. outside ati installer
-- build some tools from sources when built outside ati installer
-- add patches that fix includes in some tools
-- use %%{version}-%%{release} for dkms PACKAGE_VERSION
-- now has a source package, named fglrx
-- rename to x11-driver-video-fglrx and dkms-fglrx on cooker
-- move tools to main driver package, except for amdcccle
-- introduce control-center subpackage for amdcccle
-- require fixed update-alternatives instead of workarounding bugs
-- use generic license tag
-- remove hardcoded vendor, packager, prefix tags
-- adapt and simplify ati-packager.sh for new spec layout
-- clean libGL.so.1 from provides (bug #28216)
-- first Mandriva build with the tools enabled (bug #28094)
-- better URL
-- exclusivearch ix86 x86_64
-- add post and preun script requires on dkms
-- re-enable devel package
-- do not call the next dkms step if previous fails
-- own the old X11R6 directories where we are creating the compatibility
-  symlink for now
-- move atieventsd to the main package; the separation was not useful as it
-  was required by main package
-- provide png icon
-- change distsuffix of the ati installer build
-- do not leave temp directory behind in installer mode when rpm-build is not
-  installed
-
+%defattr(0644,root,root)
+%{_usrsrc}/%{drivername}-%{version}-%{release}/*.c
+%{_usrsrc}/%{drivername}-%{version}-%{release}/*.h
+%{_usrsrc}/%{drivername}-%{version}-%{release}/2.6.x/
+%{_usrsrc}/%{drivername}-%{version}-%{release}/dkms.conf
+%attr(0755,root,root) %{_usrsrc}/%{drivername}-%{version}-%{release}/libfglrx_ip.a
+%attr(0755,root,root) %{_usrsrc}/%{drivername}-%{version}-%{release}/make.sh
