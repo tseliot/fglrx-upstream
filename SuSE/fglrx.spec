@@ -322,6 +322,9 @@ fi
 if [ "$(%{_libdir}/fglrx/switchlibGL query)" = "unknown" ]; then
     %{_libdir}/fglrx/switchlibGL amd
 fi
+if [ ! -f "etc/ati/atiapfuser.blb" ]; then
+    touch etc/ati/atiapfuser.blb
+fi
 exit 0
 
 %preun
@@ -333,6 +336,9 @@ if [ -x etc/init.d/boot.fglrxrebuild ]; then
 fi
 # remove symlinks during uninstall (not during update)
 if [ "$1" -eq 0 ]; then
+    if [ -f "etc/ati/atiapfuser.blb" ]; then
+        rm -f etc/ati/atiapfuser.blb
+    fi
     rm -f /usr/X11R6/lib*/libGL.so*
     rm -f %{_libdir}/xorg/modules/updates/extensions/libglx.so
     if [ -f /etc/ld.so.conf.d/fglrx.conf ]; then

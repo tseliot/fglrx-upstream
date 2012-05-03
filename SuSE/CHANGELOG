@@ -1,3 +1,9 @@
+Thu May 03 20:15:03 CEST 2012 - Sebastian Siebert <freespacer@gmx.de>
+-------------------------------------------------------------------
+- add new file for /etc/ati/atiapfxx.blb
+- create /etc/ati/atiapfuser.blb during installation and remove the
+  file if the package was uninstalled.
+
 Wed Mar 07 19:37:22 CET 2012 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
 - remove runlevel 3 from the init script atieventsd.sh
