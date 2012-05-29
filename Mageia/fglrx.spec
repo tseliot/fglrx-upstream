@@ -498,6 +498,8 @@ mv %{buildroot}%{ati_extdir}/{fglrx-,}libglx.so
 install -d -m755		%{buildroot}%{_sysconfdir}/ati
 install -m644 common/etc/ati/*	%{buildroot}%{_sysconfdir}/ati
 chmod 0755			%{buildroot}%{_sysconfdir}/ati/*.sh
+# Ghost file created as suggested by AMD.
+touch %{buildroot}%{_sysconfdir}/ati/atiapfuser.blb
 
 # dri libraries
 install -d -m755						%{buildroot}%{xorg_dridir}
@@ -660,6 +662,9 @@ fi
 [ -x %{_sbindir}/update-ldetect-lst ] && %{_sbindir}/update-ldetect-lst || :
 %endif
 
+# Ghost file created as suggested by AMD.
+touch %{_sysconfdir}/ati/atiapfuser.blb
+
 # Clear driver version numbers from amdpcsdb as suggested by AMD.
 # (fixes version display in amdcccle after upgrade)
 amdconfig --del-pcs-key=LDC,ReleaseVersion &>/dev/null || :
@@ -771,6 +776,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/ati/logo_mask.xbm.example
 %config %{_sysconfdir}/ati/authatieventsd.sh
 %{_sysconfdir}/ati/amdpcsdb.default
+%ghost %{_sysconfdir}/ati/atiapfuser.blb
+%{_sysconfdir}/ati/atiapfxx.blb
 
 %{_initrddir}/atieventsd
 
