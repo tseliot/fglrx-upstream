@@ -1054,6 +1054,8 @@ rm -rf %{buildroot}
 %dir %{_datadir}/ati
 %{_datadir}/ati/amd-uninstall.sh
 
+%config(noreplace) %{_sysconfdir}/ati/atiapfuser.blb
+
 %{_mandir}/man8/atieventsd.8*
 
 %files -n %{drivername}-control-center -f amdcccle.langs
