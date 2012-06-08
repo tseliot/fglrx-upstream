@@ -777,6 +777,8 @@ cp -a %{buildroot}%{_libdir}/fglrx/switchlibGL %{buildroot}%{_libdir}/fglrx/swit
 find %{buildroot} -name '*.h' -exec %__chmod 0644 {} \;
 find %{buildroot} -name '*.c' -exec %__chmod 0644 {} \;
 
+touch %{buildroot}%{_sysconfdir}/ati/atiapfuser.blb
+
 %if %{mdkversion} >= 200800
 %pre -n %{driverpkgname}
 # Handle alternatives-era /etc/ati directory
