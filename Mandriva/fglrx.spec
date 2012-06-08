@@ -1057,6 +1057,7 @@ rm -rf %{buildroot}
 %{_datadir}/ati/amd-uninstall.sh
 
 %config(noreplace) %{_sysconfdir}/ati/atiapfuser.blb
+%config(noreplace) %{_sysconfdir}/ati/atiapfxx.blb
 
 %{_mandir}/man8/atieventsd.8*
 
