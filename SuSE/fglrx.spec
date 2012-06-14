@@ -229,6 +229,14 @@ echo "Apply some patches ..."
         echo "ati-2.6.36-compat_alloc_user_space.patch could not applied! Please report this bug to Sebastian Siebert <freespacer@gmx.de>. Thank you."
     fi
 %endif
+%if %suse_version > 1100
+    patch -p1 -s < /usr/share/doc/packages/fglrx/patches/amd-3.4.0-missing-functions.patch
+    if [ $? -eq 0 ]; then
+        echo "amd-3.4.0-missing-functions.patch applied successfully."
+    else
+        echo "amd-3.4.0-missing-functions.patch could not applied! Please report this bug to Sebastian Siebert <freespacer@gmx.de>. Thank you."
+    fi
+%endif
 # placeholder_for_additional_patches_for_fglrx_sources
 rm -f *.orig
 # For openSUSE 12.1 and higher: we should add a dynamic library search path

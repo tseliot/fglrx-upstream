@@ -1,3 +1,9 @@
+Thu Jun 14 21:17:00 CEST 2012 - Sebastian Siebert <freespacer@gmx.de>
+-------------------------------------------------------------------
+
+- add patch for Kernel 3.4.0 and higher to prevent compile error
+- activate packaging for openSUSE 12.2
+
 Thu May 03 20:15:03 CEST 2012 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
 - add new file for /etc/ati/atiapfxx.blb
