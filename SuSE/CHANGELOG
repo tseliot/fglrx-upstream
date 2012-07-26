@@ -1,68 +1,77 @@
-Thu Jun 14 21:17:00 CEST 2012 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Thu Jul 26 10:16:00 CEST 2012 - Sebastian Siebert <freespacer@gmx.de>
+
+- remove unneeded patch: amd-3.4.0-missing-functions.patch
+
+-------------------------------------------------------------------
+Thu Jun 14 21:17:00 CEST 2012 - Sebastian Siebert <freespacer@gmx.de>
 
 - add patch for Kernel 3.4.0 and higher to prevent compile error
 - activate packaging for openSUSE 12.2
 
-Thu May 03 20:15:03 CEST 2012 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Thu May 03 20:15:03 CEST 2012 - Sebastian Siebert <freespacer@gmx.de>
+
 - add new file for /etc/ati/atiapfxx.blb
 - create /etc/ati/atiapfuser.blb during installation and remove the
   file if the package was uninstalled.
 
-Wed Mar 07 19:37:22 CET 2012 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Wed Mar 07 19:37:22 CET 2012 - Sebastian Siebert <freespacer@gmx.de>
+
 - remove runlevel 3 from the init script atieventsd.sh
 
-Wed Feb 15 19:20:01 CET 2012 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Wed Feb 15 19:20:01 CET 2012 - Sebastian Siebert <freespacer@gmx.de>
+
 - update packaging script and fglrx.spec file
   - remove unneeded ati-powermode.sh
 
-Sat Jan 07 19:51:51 CET 2012 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Sat Jan 07 19:51:51 CET 2012 - Sebastian Siebert <freespacer@gmx.de>
+
 - add auto detection for Balsam Professional
   - Balsam Professional is based on openSUSE
 
-Sun Nov 20 17:02:29 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Sun Nov 20 17:02:29 CET 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - openSUSE 12.1:
   - add search path for dynamic libraries: /usr/X11R6/lib{,64}
 - change mode bits 644 => 755 for /usr/lib/*
 - add unsupported openSUSE 12.2
 
-Mon Oct 10 08:20:32 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Mon Oct 10 08:20:32 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - activate packaging for openSUSE 12.1
 - add kernel-debug package in the detecting routine of build script
 - rewrite the PowerXpress check routine in the post install script
 
-Fri Sep 30 00:04:15 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Fri Sep 30 00:04:15 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - add OpenCL runtime integration (changes in packaging script + spec file)
 
-Fri Aug 19 00:44:15 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Fri Aug 19 00:44:15 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - rewrite the KMS Configuration for Tumbleweed and openSUSE 12.1
 
-Thu Jul 28 14:13:23 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Thu Jul 28 14:13:23 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - KMS Configuration in Tumbleweed for openSUSE 11.4 is missing
 - add to the force mode removing the older fglrx kernel modules
   in fglrx-kernel-build.sh
 
-Thu Jul 14 21:03:41 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Thu Jul 14 21:03:41 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - rename variables from ATI to AMD
 
-Thu Jun 30 02:35:23 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 -------------------------------------------------------------------
+Thu Jun 30 02:35:23 CEST 2011 - Sebastian Siebert <freespacer@gmx.de>
 
 - add new KMS Configuration for further openSUSE versions (e.g., 12.1)
 - rename from ATI to AMD in some scripts
