@@ -224,7 +224,6 @@ Patch9:		fglrx-make_sh-custom-kernel-dir.patch
 # do not probe /proc for kernel info as we may be building for a
 # different kernel
 Patch10:	fglrx-make_sh-no-proc-probe.patch
-Patch11:	fglrx-8.951-kernel-3.3.x_fix.diff
 License:	Freeware
 URL:		http://ati.amd.com/support/driver.html
 Group:		System/Kernel and hardware
@@ -414,7 +413,6 @@ cd common # ensure patches do not touch outside
 %patch3 -p2
 %patch9 -p2
 %patch10 -p2
-%patch11 -p0
 cd ..
 
 cat > README.install.urpmi <<EOF
