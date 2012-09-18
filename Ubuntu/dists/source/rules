@@ -379,9 +379,9 @@ binary: binary-arch binary-indep ;
 
 override_dh_shlibdeps:
 ifeq ($(DEB_HOST_ARCH),amd64)
-	dh_shlibdeps -l$(CURDIR)/debian/fglrx/$(PKG_libdir):$(CURDIR)/debian/fglrx/$(PKG_libdir32) -Xlib32
+	dh_shlibdeps -l$(CURDIR)/debian/fglrx/$(PKG_libdir):$(CURDIR)/debian/fglrx/$(PKG_datadir):$(CURDIR)/debian/fglrx/$(PKG_libdir32) -Xlib32
 else
-	dh_shlibdeps -l$(CURDIR)/debian/fglrx/$(PKG_libdir)
+	dh_shlibdeps -l$(CURDIR)/debian/fglrx/$(PKG_libdir):$(CURDIR)/debian/fglrx/$(PKG_datadir)
 endif
 
 %:
