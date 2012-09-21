@@ -222,6 +222,9 @@ ifeq ($(DEB_HOST_ARCH),amd64)
 	dh_install -p$(PKG_driver) "arch/x86/usr/X11R6/lib/modules/dri"     "$(PKG_libdir32)"
 	dh_install -p$(PKG_driver) "arch/x86/usr/lib/*.so*"                 "$(PKG_libdir32)"
 
+	# Install the QT libraries
+	dh_install -p$(PKG_driver) "arch/x86_64/usr/share/ati/lib64" "$(datadir)/ati"
+
 	for i in \
 			debian/$(PKG_driver)/$(PKG_libdir32)/dri/fglrx_dri.so \
 			debian/$(PKG_driver)/$(PKG_libdir32)/*libGL.so.* \
@@ -231,6 +234,9 @@ ifeq ($(DEB_HOST_ARCH),amd64)
 	dh_link -p$(PKG_driver) $(PKG_libdir32)/libatiuki.so.1.0 $(PKG_libdir32)/libatiuki.so.1
 else
 	dh_installdirs -p$(PKG_driver)
+
+	# Install the QT libraries
+	dh_install -p$(PKG_driver) "arch/x86_64/usr/share/ati/lib" "$(datadir)/ati"
 endif
 	dh_installdirs -p$(PKG_driver_dev)
 	dh_installdocs -p$(PKG_driver) usr/share/doc/fglrx/* --exclude LICENSE.TXT
@@ -379,9 +385,9 @@ binary: binary-arch binary-indep ;
 
 override_dh_shlibdeps:
 ifeq ($(DEB_HOST_ARCH),amd64)
-	dh_shlibdeps -l$(CURDIR)/debian/fglrx/$(PKG_libdir):$(CURDIR)/debian/fglrx/$(PKG_datadir):$(CURDIR)/debian/fglrx/$(PKG_libdir32) -Xlib32
+	dh_shlibdeps -l$(CURDIR)/debian/fglrx/$(PKG_libdir):$(CURDIR)/debian/fglrx/$(PKG_libdir)/bin:$(CURDIR)/debian/fglrx/$(PKG_libdir)/sbin:$(CURDIR)/debian/fglrx/$(PKG_libdir32) -Xlib32
 else
-	dh_shlibdeps -l$(CURDIR)/debian/fglrx/$(PKG_libdir):$(CURDIR)/debian/fglrx/$(PKG_datadir)
+	dh_shlibdeps -l$(CURDIR)/debian/fglrx/$(PKG_libdir):$(CURDIR)/debian/fglrx/$(PKG_libdir)/bin:$(CURDIR)/debian/fglrx/$(PKG_libdir)/sbin
 endif
 
 %:
