@@ -1,5 +1,6 @@
 LIBGL_DRIVERS_PATH=/#PKGLIBDIR#/dri
 if [ `uname -m` = 'x86_64' ]; then
+  LIBGL_DRIVERS_PATH=${LIBGL_DRIVERS_PATH}:/usr/lib/x86_64-linux-gnu/dri:/usr/lib/dri
   if [ -d /#PKGLIBDIR32#/dri ]; then
     LIBGL_DRIVERS_PATH=${LIBGL_DRIVERS_PATH}:/#PKGLIBDIR32#/dri
     if [ ! -z $LD_LIBRARY_PATH ]; then
@@ -8,5 +9,8 @@ if [ `uname -m` = 'x86_64' ]; then
     LD_LIBRARY_PATH=${LD_LIBRARY_PATH}/usr/lib32
     export LD_LIBRARY_PATH
   fi
+fi
+elif [ `uname -m` = 'i686' ]; then
+  LIBGL_DRIVERS_PATH=${LIBGL_DRIVERS_PATH}:/usr/lib/i386-linux-gnu/dri:/usr/lib/dri
 fi
 export LIBGL_DRIVERS_PATH
