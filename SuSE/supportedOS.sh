@@ -29,19 +29,17 @@ SUSE_LIST="SLE10-IA32 \
 SLE10-AMD64 \
 SLE11-IA32 \
 SLE11-AMD64 \
-SUSE113-IA32 \
-SUSE113-AMD64 \
-SUSE114-IA32 \
-SUSE114-AMD64 \
 SUSE121-IA32 \
 SUSE121-AMD64 \
 SUSE122-IA32 \
 SUSE122-AMD64 \
+SUSE123-IA32 \
+SUSE123-AMD64 \
 SUSE-autodetection"
 
 # unsupported os (unofficial package list)
 # unlock this list with, for example:
 # UNSUPPORTED="yes" ./ati-driver-installer-<version>-<architecture>.run --buildpkg SuSE/SUSE114-AMD64
 if [ "${UNSUPPORTED}" = "yes" -o "${UNSUPPORTED}" = "true" -o "${UNSUPPORTED}" = "1"  ]; then
-    SUSE_LIST="${SUSE_LIST} SUSEFACTORY-IA32 SUSEFACTORY-AMD64"
+    SUSE_LIST="${SUSE_LIST} SUSE114-IA32 SUSE-114-AMD64 SUSEFACTORY-IA32 SUSEFACTORY-AMD64"
 fi
