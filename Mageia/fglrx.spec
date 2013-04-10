@@ -639,6 +639,11 @@ chmod 0755 %{buildroot}%{_libdir}/fglrx/switchlibGL
 # dereferencing the symlink.
 cp -a %{buildroot}%{_libdir}/fglrx/switchlibGL %{buildroot}%{_libdir}/fglrx/switchlibglx
 
+# unneeded to-be-removed files as per AMD
+find %{buildroot} \( -name libSlotMaximizerAg.so -o -name libSlotMaximizerBe.so \) -print -delete
+# not installed by AMD and not referenced elsewhere:
+find %{buildroot} \( -name libamdsc64.so -o -name libamdsc32.so \) -print -delete
+
 %pre -n %{driverpkgname}
 # Handle alternatives-era /etc/ati directory
 # It may confuse rpm due to it containing %config files
@@ -838,7 +843,6 @@ rm -rf %{buildroot}
 %{_libdir}/%{drivername}/libaticaldd.so
 %{_libdir}/%{drivername}/libaticalrt.so
 %{_libdir}/%{drivername}/libatiuki.so.1*
-%{_libdir}/%{drivername}/libSlotMaximizer*.so
 %ifarch x86_64
 %dir %{_prefix}/lib/%{drivername}
 %{_prefix}/lib/%{drivername}/libGL.so.1
@@ -847,7 +851,6 @@ rm -rf %{buildroot}
 %{_prefix}/lib/%{drivername}/libaticaldd.so
 %{_prefix}/lib/%{drivername}/libaticalrt.so
 %{_prefix}/lib/%{drivername}/libatiuki.so.1*
-%{_prefix}/lib/%{drivername}/libSlotMaximizer*.so
 %endif
 
 %{_libdir}/%{drivername}/libfglrx_dm.so.1*
