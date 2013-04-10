@@ -11,7 +11,7 @@
 #   see that file for detailed license information.
 
 # List of supported distributions.
-supported_distros="1 2 3"
+supported_distros="1 2 3 4"
 
 buildCheck()
 {
