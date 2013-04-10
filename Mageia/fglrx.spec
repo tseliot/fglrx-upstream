@@ -643,6 +643,8 @@ cp -a %{buildroot}%{_libdir}/fglrx/switchlibGL %{buildroot}%{_libdir}/fglrx/swit
 find %{buildroot} \( -name libSlotMaximizerAg.so -o -name libSlotMaximizerBe.so \) -print -delete
 # not installed by AMD and not referenced elsewhere:
 find %{buildroot} \( -name libamdsc64.so -o -name libamdsc32.so \) -print -delete
+# does not look like it should be there:
+find %{buildroot} -name atiapfxx.log -print -delete
 
 %pre -n %{driverpkgname}
 # Handle alternatives-era /etc/ati directory
@@ -801,6 +803,7 @@ rm -rf %{buildroot}
 %{_sysconfdir}/ati/control
 %{_sysconfdir}/ati/signature
 %config(noreplace) %{_sysconfdir}/ati/atiogl.xml
+%{_sysconfdir}/ati/atiapfxx
 %{_sysconfdir}/ati/atiapfxx.blb
 %{_sysconfdir}/ati/logo.xbm.example
 %{_sysconfdir}/ati/logo_mask.xbm.example
