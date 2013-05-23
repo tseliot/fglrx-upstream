@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 06 13:05:12 CEST 2013 - Sebastian Siebert <freespacer@gmx.de>
+
+- fix the symlink to the Mesa OpenGL Library in the switchlibGL script (openSUSE 12.3)
+
+-------------------------------------------------------------------
 Sat Jan 26 12:01:35 CET 2013 - Sebastian Siebert <freespacer@gmx.de>
 
 - update the packaging support
