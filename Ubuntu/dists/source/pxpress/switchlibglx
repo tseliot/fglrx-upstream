@@ -54,6 +54,32 @@ class Alternatives:
         if not os.environ.get('PATH'):
             os.environ['PATH'] = '/sbin:/usr/sbin:/bin:/usr/bin'
 
+    def _find_process(process_name):
+        ps = subprocess.Popen("ps -eaf | grep " + process_name + " | grep -v grep",
+                              shell=True, stdout=subprocess.PIPE)
+        output = ps.stdout.read()
+        ps.stdout.close()
+        ps.wait()
+        m = re.search('^(\w+)\s+(\d+)\s+.*', output, re.M)
+        if m:
+            try:
+                output = int(m.group(2))
+            except ValueError:
+                output = -1
+        else:
+            output = -1
+        return output
+
+    def _is_process_running(process_name):
+        process_id = self._find_process(process_name)
+        if process_id < 0:
+            return False
+        try:
+            os.kill(process_id, 0)
+            return True
+        except OSError:
+            return False
+
     def list_alternatives(self):
         '''Get the list of alternatives for the master link'''
         dev_null = open('/dev/null', 'w')
@@ -98,7 +124,9 @@ class Alternatives:
         '''Trigger gmenu so that the icons will show up in the menu'''
         try:
             subprocess.check_call(['dpkg-trigger', '--by-package=fakepackage', 'gmenucache'], stdout=open(os.devnull, 'w'))
-            subprocess.check_call(['dpkg', '--configure', '-a'], stdout=open(os.devnull, 'w'))
+            # Let's not call dpkg if dpkg is already running
+            if not self._is_process_running('dpkg'):
+                subprocess.check_call(['dpkg', '--configure', '-a'], stdout=open(os.devnull, 'w'))
         except (OSError, CalledProcessError):
             pass
 
