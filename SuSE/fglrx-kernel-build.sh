@@ -152,7 +152,7 @@ ${PRINTF_BIN} "\nUsed CPUs/Cores for compilation  =>  [\033[1;32m ${NUM_CORES} \
 
 # Get list of installed kernels
 KERNEL_LIST="`${RPM_BIN} -q kernel kernel-desktop kernel-default kernel-pae kernel-smp kernel-bigsmp kernel-vanilla kernel-debug | \
-                ${GREP_BIN} -v 'not installed' | ${SORT_BIN}`"
+                ${GREP_BIN} -v 'not installed' | ${SORT_BIN} -f -t . -k 1,1 -k 2,2n -k 3,3n -k 4,4n`"
 
 # Get list of installed vanilla kernels
 if [ "${USE_VANILLA_KERNELS}" = "yes" ]; then
@@ -184,7 +184,7 @@ do
     # Test if we build for rpm installed kernel or vanilla kernel
     if [ -z "`echo "${KERNEL}" | grep 'fglrxvanilla'`" ]; then
         # Get the library of the iterated kernel
-        KERNEL_LIBRARY="`${RPM_BIN} --list -q ${KERNEL} | ${SORT_BIN} | \
+        KERNEL_LIBRARY="`${RPM_BIN} --list -q ${KERNEL} | ${SORT_BIN} -f -t . -k 1,1 -k 2,2n -k 3,3n -k 4,4n | \
                             ${GREP_BIN} -m 1 '/lib/modules/'`"
         # Get the version of the iterated kernel
         KERNEL_VERSION="`${ECHO_BIN} "${KERNEL_LIBRARY}" | \
