@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2010-2012 Sebastian Siebert (freespacer@gmx.de)
+# Copyright (c) 2010-2013 Sebastian Siebert (freespacer@gmx.de)
 # All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person
@@ -35,6 +35,8 @@ SUSE122-IA32 \
 SUSE122-AMD64 \
 SUSE123-IA32 \
 SUSE123-AMD64 \
+SUSE131-IA32 \
+SUSE131-AMD64 \
 SUSE-autodetection"
 
 # unsupported os (unofficial package list)

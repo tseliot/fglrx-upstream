@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2010-2012, Sebastian Siebert (freespacer@gmx.de)
+# Copyright (c) 2010-2013, Sebastian Siebert (freespacer@gmx.de)
 # All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person
@@ -506,9 +506,9 @@ case "${ACTION}" in
     PACKAGE=$2
     if [ "${PACKAGE}" = "SUSE-autodetection" ]; then
         echo "Auto detection mode:"
-        if [ -f "/etc/SuSE-release" ]; then
-            SUSE_NAME=`head -n 1 /etc/SuSE-release | cut -f1 -d" "`
-            SUSE_VERSION=`grep VERSION /etc/SuSE-release | sed -e 's/VERSION\s=\s//g'`
+        if [ -n "`which lsb_release`" ]; then
+            SUSE_NAME=`lsb-release -d | cut -f2 | cut -f1 -d" "`
+            SUSE_VERSION=`lsb-release -r | cut -f2`
 
             if [ "${SUSE_NAME}" = "openSUSE" ]; then
                 AMD_SUSE_NAME="SUSE"
