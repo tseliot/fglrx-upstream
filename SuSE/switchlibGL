@@ -52,28 +52,30 @@ esac
 function switch_to_amd() {
 
     if [ -f /usr/${LIB}/libGL.so.1.2.0 ]; then
+        OPENGL_VERSION="1.2.0"
         ln -snf /usr/X11R6/${LIB}/fglrx/fglrx-libGL.so.1.2 \
                 /usr/X11R6/${LIB}/libGL.so.1.2.0
         ln -snf libGL.so.1.2.0 /usr/X11R6/${LIB}/libGL.so.1.2
     elif [ -f /usr/${LIB}/libGL.so.1.2 ]; then
+        OPENGL_VERSION="1.2"
         ln -snf /usr/X11R6/${LIB}/fglrx/fglrx-libGL.so.1.2 \
                 /usr/X11R6/${LIB}/libGL.so.1.2
     fi
     ln -snf libGL.so.1.2 /usr/X11R6/${LIB}/libGL.so.1
     ln -snf libGL.so.1 /usr/X11R6/${LIB}/libGL.so
-    ldconfig /usr/X11R6/${LIB}
+    /sbin/ldconfig /usr/X11R6/${LIB}
     if [ "${LIB}" = "lib64" ]; then
-        if [ -f /usr/lib/libGL.so.1.2.0 ]; then
+        if [ "${OPENGL_VERSION}" = "1.2.0" ]; then
             ln -snf /usr/X11R6/lib/fglrx/fglrx-libGL.so.1.2 \
                     /usr/X11R6/lib/libGL.so.1.2.0
             ln -snf libGL.so.1.2.0 /usr/X11R6/lib/libGL.so.1.2
-        elif [ -f /usr/lib/libGL.so.1.2 ]; then
+        elif [ "${OPENGL_VERSION}" = "1.2" ]; then
             ln -snf /usr/X11R6/lib/fglrx/fglrx-libGL.so.1.2 \
                     /usr/X11R6/lib/libGL.so.1.2
         fi
         ln -snf libGL.so.1.2 /usr/X11R6/lib/libGL.so.1
         ln -snf libGL.so.1 /usr/X11R6/lib/libGL.so
-        ldconfig /usr/X11R6/lib
+        /sbin/ldconfig /usr/X11R6/lib
     fi
 
 }
@@ -81,28 +83,30 @@ function switch_to_amd() {
 function switch_to_intel() {
 
     if [ -f /usr/${LIB}/libGL.so.1.2.0 ]; then
+        OPENGL_VERSION="1.2.0"
         ln -snf /usr/${LIB}/libGL.so.1.2.0 \
                 /usr/X11R6/${LIB}/libGL.so.1.2.0
         ln -snf libGL.so.1.2.0 /usr/X11R6/${LIB}/libGL.so.1.2
     elif [ -f /usr/${LIB}/libGL.so.1.2 ]; then
+        OPENGL_VERSION="1.2"
         ln -snf /usr/${LIB}/libGL.so.1.2 \
                 /usr/X11R6/${LIB}/libGL.so.1.2
     fi
     ln -snf libGL.so.1.2 /usr/X11R6/${LIB}/libGL.so.1
     ln -snf libGL.so.1 /usr/X11R6/${LIB}/libGL.so
-    ldconfig /usr/X11R6/${LIB}
+    /sbin/ldconfig /usr/X11R6/${LIB}
     if [ "${LIB}" = "lib64" ]; then
-        if [ -f /usr/lib/libGL.so.1.2.0 ]; then
+        if [ "${OPENGL_VERSION}" = "1.2.0" ]; then
             ln -snf /usr/lib/libGL.so.1.2.0 \
                     /usr/X11R6/lib/libGL.so.1.2.0
             ln -snf libGL.so.1.2.0 /usr/X11R6/lib/libGL.so.1.2
-        elif [ -f /usr/lib/libGL.so.1.2 ]; then
+        elif [ "${OPENGL_VERSION}" = "1.2" ]; then
             ln -snf /usr/lib/libGL.so.1.2 \
                     /usr/X11R6/lib/libGL.so.1.2
         fi
         ln -snf libGL.so.1.2 /usr/X11R6/lib/libGL.so.1
         ln -snf libGL.so.1 /usr/X11R6/lib/libGL.so
-        ldconfig /usr/X11R6/lib
+        /sbin/ldconfig /usr/X11R6/lib
     fi
 
 }

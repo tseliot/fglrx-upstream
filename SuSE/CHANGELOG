@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Nov 23 11:57:34 CET 2013 - Sebastian Siebert <freespacer@gmx.de>
+
+- update switchlibGL script to fixed 32-bit OpenGL library issue
+  on 64-bit openSUSE system.
+
+-------------------------------------------------------------------
 Sat Oct 12 23:54:12 CEST 2013 - Sebastian Siebert <freespacer@gmx.de>
 
 - update the packaging support
