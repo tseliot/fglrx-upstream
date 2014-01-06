@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jan 06 05:31:53 CET 2014 - Sebastian Siebert <freespacer@gmx.de>
+
+- private Qt-libaries should not be provided
+
+-------------------------------------------------------------------
 Sat Nov 23 11:57:34 CET 2013 - Sebastian Siebert <freespacer@gmx.de>
 
 - update switchlibGL script to fixed 32-bit OpenGL library issue

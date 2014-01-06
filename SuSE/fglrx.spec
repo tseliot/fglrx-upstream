@@ -18,6 +18,10 @@ Obsoletes:      fglrx_7_4_0_SUSE111 fglrx64_7_4_0_SUSE111 fglrx_7_4_0_SUSE112 fg
 ExclusiveArch:  %ix86 x86_64
 BuildRoot:      %AMD_DRIVER_BUILD_ROOT
 
+%global _privatelibs libQtCore|libQtGui
+%global __provides_exclude ^(%{_privatelibs})\\.so.*$
+%global __requires_exclude ^(%{_privatelibs})\\.so.*$
+
 %if %suse_version > 1010
 %define MODULES_DIR       /usr/%{_lib}/xorg/modules
 %define DRI_DRIVERS_DIR   /usr/%{_lib}/dri
