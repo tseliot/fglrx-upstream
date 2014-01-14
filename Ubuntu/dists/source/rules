@@ -120,9 +120,9 @@ clean: refresh_copyright
 		filename=`echo $$file | sed -e "s|.in|$1|"` \
 		rm -f $(filename); \
 	done
+	rm -f debian/$(PKG_driver).substvars
 
 	dh clean
-
 
 build: build-arch
 build-arch:
@@ -209,8 +209,12 @@ build-arch:
 
 	dh build
 
+.PHONY: gen-abi-substvars
+gen-abi-substvars:
+	# Generate the xserver ABI dependencies
+	cat debian/substvars >> debian/$(PKG_driver).substvars
 
-binary-arch: refresh_copyright
+binary-arch: refresh_copyright gen-abi-substvars
 	#Steps that we can't easily represent in debhelper files or .in files yet
 
 	# Remove any libraries that may be caught by shell expansion
@@ -386,7 +390,7 @@ endif
 	#Run the normal stuff
 	dh binary-arch
 
-binary: binary-arch binary-indep ;
+binary: binary-arch binary-indep gen-abi-substvars;
 	#Run the normal stuff
 	dh binary
 
