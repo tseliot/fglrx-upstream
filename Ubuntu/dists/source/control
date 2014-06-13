@@ -17,7 +17,7 @@ Build-Depends: debhelper (>= 7),
                libgl1-mesa-glx | libgl1-mesa-glx-lts-quantal,
                libxinerama1,
                libqtgui4,
-               xserver-xorg-dev (>= 2:1.10.0) | xserver-xorg-dev-lts-quantal | xserver-xorg-dev-lts-raring | xserver-xorg-dev-lts-saucy,
+               xserver-xorg-dev (>= 2:1.10.0) | xserver-xorg-dev-lts-quantal | xserver-xorg-dev-lts-raring | xserver-xorg-dev-lts-saucy | xserver-xorg-dev-lts-trusty,
                execstack
 Standards-Version: 3.8.3
 Homepage: http://support.amd.com
