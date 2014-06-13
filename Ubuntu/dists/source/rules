@@ -265,6 +265,13 @@ endif
 			debian/$(PKG_driver)/$(PKG_libdir)/*libOpenCL.so.* \
 			; do execstack -q $$i; execstack -c $$i; done
 
+	# Install amd-console-helper and set the sticky bit on it
+	if [ -f arch/$(SRC_arch)/usr/X11R6/bin/amd-console-helper ]; then \
+		dh_install -p$(PKG_driver) "arch/$(SRC_arch)/usr/X11R6/bin/amd-console-helper" \
+		"$(PKG_libdir)/bin/"; \
+		chmod ug+s debian/$(PKG_driver)/$(PKG_libdir)/bin/amd-console-helper; \
+	fi
+
 	# Make some additional scripts executable
 	find debian/$(PKG_control)/$(PKG_libdir)/bin/ \
 		-type f | xargs chmod a+x
@@ -400,6 +407,9 @@ ifeq ($(DEB_HOST_ARCH),amd64)
 else
 	dh_shlibdeps -l$(CURDIR)/debian/fglrx/$(PKG_libdir):$(CURDIR)/debian/fglrx/$(PKG_libdir)/bin:$(CURDIR)/debian/fglrx/$(PKG_libdir)/sbin
 endif
+
+override_dh_fixperms:
+	dh_fixperms -Xdebian/$(PKG_driver)/$(PKG_libdir)/bin/amd-console-helper
 
 %:
 	dh $@

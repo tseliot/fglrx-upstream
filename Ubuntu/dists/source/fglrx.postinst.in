@@ -112,6 +112,7 @@ if [ "$1" = "configure" ]; then
         --install /#SYSCONFDIR#/ld.so.conf.d/#DEB_HOST_MULTIARCH#_GL.conf #DEB_HOST_MULTIARCH#_gl_conf /#LDSOCONF# #ALTPRIORITY# \
         --slave /#BINDIR#/aticonfig #DEB_HOST_MULTIARCH#_aticonfig /#PKGBINDIR#/aticonfig \
         --slave /#BINDIR#/amdconfig #DEB_HOST_MULTIARCH#_amdconfig /#PKGBINDIR#/amdconfig \
+        --slave /#BINDIR#/amd-console-helper #DEB_HOST_MULTIARCH#_amd_console_helper /#PKGBINDIR#/amd-console-helper \
         --slave /#BINDIR#/atiode #DEB_HOST_MULTIARCH#_atiode /#PKGBINDIR#/atiode \
         --slave /#BINDIR#/amdnotifyui #DEB_HOST_MULTIARCH#_amdnotifyui /#PKGBINDIR#/amdnotifyui \
         --slave /#BINDIR#/amdcccle #DEB_HOST_MULTIARCH#_amdcccle /#PKGBINDIR#/amdcccle \
@@ -146,6 +147,7 @@ if [ "$1" = "configure" ]; then
         --install /#SYSCONFDIR#/ld.so.conf.d/#DEB_HOST_MULTIARCH#_GL.conf #DEB_HOST_MULTIARCH#_gl_conf /#PXLDSOCONF# #PXALTPRIORITY# \
         --slave /#BINDIR#/aticonfig #DEB_HOST_MULTIARCH#_aticonfig /#PKGBINDIR#/aticonfig \
         --slave /#BINDIR#/amdconfig #DEB_HOST_MULTIARCH#_amdconfig /#PKGBINDIR#/amdconfig \
+        --slave /#BINDIR#/amd-console-helper #DEB_HOST_MULTIARCH#_amd_console_helper /#PKGBINDIR#/amd-console-helper \
         --slave /#BINDIR#/atiode #DEB_HOST_MULTIARCH#_atiode /#PKGBINDIR#/atiode \
         --slave /#BINDIR#/amdnotifyui #DEB_HOST_MULTIARCH#_amdnotifyui /#PKGBINDIR#/amdnotifyui \
         --slave /#BINDIR#/amdcccle #DEB_HOST_MULTIARCH#_amdcccle /#PKGBINDIR#/amdcccle \
