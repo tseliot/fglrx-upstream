@@ -270,6 +270,7 @@ endif
 		dh_install -p$(PKG_driver) "arch/$(SRC_arch)/usr/X11R6/bin/amd-console-helper" \
 		"$(PKG_libdir)/bin/"; \
 		chmod ug+s debian/$(PKG_driver)/$(PKG_libdir)/bin/amd-console-helper; \
+		execstack -c debian/$(PKG_driver)/$(PKG_libdir)/bin/amd-console-helper; \
 	fi
 
 	# Make some additional scripts executable
