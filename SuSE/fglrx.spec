@@ -15,6 +15,30 @@ Provides:       fglrx km_fglrx
 Obsoletes:      fglrx km_fglrx ati-fglrxG02 x11-video-fglrxG02
 Obsoletes:      fglrx_6_9_0_SLE10 fglrx64_6_9_0_SLE10 fglrx_7_4_0_SLE11 fglrx64_7_4_0_SLE11
 Obsoletes:      fglrx_7_4_0_SUSE111 fglrx64_7_4_0_SUSE111 fglrx_7_4_0_SUSE112 fglrx64_7_4_0_SUSE112 fglrx_7_5_0_SUSE113 fglrx64_7_5_0_SUSE113 fglrx_7_6_0_SUSE114 fglrx64_7_6_0_SUSE114
+%if %suse_version > 1110
+Obsoletes:      fglrx_xpic_SUSE111 fglrx64_xpic_SUSE111
+%if %suse_version > 1120
+Obsoletes:      fglrx_xpic_SUSE112 fglrx64_xpic_SUSE112
+%if %suse_version > 1130
+Obsoletes:      fglrx_xpic_SUSE113 fglrx64_xpic_SUSE113
+%if %suse_version > 1140
+Obsoletes:      fglrx_xpic_SUSE114 fglrx64_xpic_SUSE114
+%if %suse_version > 1210
+Obsoletes:      fglrx_xpic_SUSE121 fglrx64_xpic_SUSE121
+%if %suse_version > 1220
+Obsoletes:      fglrx_xpic_SUSE122 fglrx64_xpic_SUSE122
+%if %suse_version > 1230
+Obsoletes:      fglrx_xpic_SUSE123 fglrx64_xpic_SUSE123
+%if %suse_version > 1310
+Obsoletes:      fglrx_xpic_SUSE131 fglrx64_xpic_SUSE131
+%endif
+%endif
+%endif
+%endif
+%endif
+%endif
+%endif
+%endif
 ExclusiveArch:  %ix86 x86_64
 BuildRoot:      %AMD_DRIVER_BUILD_ROOT
 
@@ -114,6 +138,7 @@ pushd $tmpdir/fglrx
 %endif
     install -m 755 usr/bin/* \
                    $RPM_BUILD_ROOT/usr/bin
+    chmod ug+s $RPM_BUILD_ROOT/usr/bin/amd-console-helper
     ln -s aticonfig $RPM_BUILD_ROOT/usr/bin/amdconfig
     install -m 644 usr/include/ATI/GL/* \
                    $RPM_BUILD_ROOT/usr/include/ATI/GL

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul  7 23:17:08 CEST 2014 - Sebastian Siebert <freespacer@gmx.de>
+
+- adjust the right permission for /usr/bin/amd-console-helper
+- add obsolete fglrx packages from older openSUSE systems
+
+-------------------------------------------------------------------
 Mon Jan 06 05:31:53 CET 2014 - Sebastian Siebert <freespacer@gmx.de>
 
 - private Qt-libaries should not be provided
