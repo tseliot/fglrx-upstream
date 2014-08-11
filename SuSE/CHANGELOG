@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Mon Aug 11 23:50:44 CEST 2014 - Sebastian Siebert <freesapcer@gmx.de>
+
+- rewrite fglrx spec file to split up into 5 fglrx packages:
+  - fglrx-core
+  - fglrx-graphics (depends on fglrx-core)
+  - fglrx-amdcccle (depends on fglrx-core and fglrx-graphics)
+  - fglrx-opencl   (depends on fglrx-core)
+  - fglrx-xpic = Meta package that depends on all above called
+                 packages (like old behaviour)
+- add more parameters in ati-packager.sh to build only needed
+  packages (is passed by the amd installer).
+  - Parameter:
+    --NoXServer = fglrx-core
+    --graphics  = fglrx-core, fglrx-graphics
+    --amdcccle  = fglrx-core, fglrx-graphics, fglrx-amdcccle
+    --OpenCL    = fglrx-core, fglrx-opencl
+- add obsolete fglrx packages from older SLE systems
+
+-------------------------------------------------------------------
 Mon Jul  7 23:17:08 CEST 2014 - Sebastian Siebert <freespacer@gmx.de>
 
 - adjust the right permission for /usr/bin/amd-console-helper

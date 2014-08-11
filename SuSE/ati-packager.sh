@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2010-2013, Sebastian Siebert (freespacer@gmx.de)
+# Copyright (c) 2010-2014, Sebastian Siebert (freespacer@gmx.de)
 # All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person
@@ -30,8 +30,8 @@ export LANG=C
 . `dirname $0`/ati-packager-functions.sh
 . `dirname $0`/supportedOS.sh
 
-#Function: getSupportedPackages()
-#Purpose: lists distribution supported packages
+# Function: getSupportedPackages()
+# Purpose: lists distribution supported packages
 getSupportedPackages()
 {
     for CURRENT_SUSE in ${SUSE_LIST}
@@ -45,8 +45,8 @@ getSupportedPackages()
     done
 }
 
-#Function: buildPackage()
-#Purpose: build the requested package if it is supported
+# Function: buildPackage()
+# Purpose: build the requested package if it is supported
 buildPackage()
 {
     PACKAGE_NAME=$1
@@ -112,7 +112,26 @@ Requires:       kernel-devel\n\
     elif [ "${ARCH}" = "AMD64" ]; then
         PACKAGE_NAME="fglrx64_xpic_${SUSE_VERSION}"
     fi
-    debugMsg "   Package name: ${PACKAGE_NAME}" && print_okay
+    PACKAGE_NAME_CORE=`echo ${PACKAGE_NAME} | sed "s/_xpic_/_core_/g"`
+    PACKAGE_NAME_GRAPHICS=`echo ${PACKAGE_NAME} | sed "s/_xpic_/_graphics_/g"`
+    PACKAGE_NAME_AMDCCCLE=`echo ${PACKAGE_NAME} | sed "s/_xpic_/_amdcccle_/g"`
+    PACKAGE_NAME_OPENCL=`echo ${PACKAGE_NAME} | sed "s/_xpic_/_opencl_/g"`
+
+    if [ "${BUILD_META}" = "true" ]; then
+        debugMsg "   Package name (Meta):     ${PACKAGE_NAME}\n"
+    fi
+    if [ "${BUILD_CORE}" = "true" ]; then
+        debugMsg "   Package name (Core):     ${PACKAGE_NAME_CORE}\n"
+    fi
+    if [ "${BUILD_GRAPHICS}" = "true" ]; then
+        debugMsg "   Package name (Graphics): ${PACKAGE_NAME_GRAPHICS}\n"
+    fi
+    if [ "${BUILD_AMDCCCLE}" = "true" ]; then
+        debugMsg "   Package name (AMDCCCLE): ${PACKAGE_NAME_AMDCCCLE}\n"
+    fi
+    if [ "${BUILD_OPENCL}" = "true" ]; then
+        debugMsg "   Package name (OpenCL):   ${PACKAGE_NAME_OPENCL}\n"
+    fi
 
     # set needed variables
     DISTRO_PATH=`cd $(dirname $0) 2>/dev/null && pwd` \
@@ -161,7 +180,15 @@ Requires:       kernel-devel\n\
         || checkReturnOutput $?
     mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/share/{applications,ati,man,pixmaps} \
         || checkReturnOutput $?
-    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx/patches \
+    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-amdcccle \
+        || checkReturnOutput $?
+    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-core/patches \
+        || checkReturnOutput $?
+    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-graphics/articles \
+        || checkReturnOutput $?
+    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-meta \
+        || checkReturnOutput $?
+    mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-opencl \
         || checkReturnOutput $?
     mkdir ${VERBOSE_OPTION} -p ${TMP_BUILD_PATH}/usr/X11R6/lib/fglrx \
         || checkReturnOutput $?
@@ -200,16 +227,24 @@ Requires:       kernel-devel\n\
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/ati/* ${TMP_BUILD_PATH}/usr/share/ati \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/doc/amdcccle/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/doc/amdcccle/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-amdcccle \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/doc/fglrx/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/doc/fglrx/LICENSE.TXT ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-amdcccle \
+        || checkReturnOutput $?
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/doc/fglrx/LICENSE.TXT ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-core \
+        || checkReturnOutput $?
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/doc/fglrx/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-graphics \
+        || checkReturnOutput $?
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/doc/fglrx/LICENSE.TXT ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-meta \
+        || checkReturnOutput $?
+    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/doc/fglrx/LICENSE.TXT ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-opencl \
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/icons/* ${TMP_BUILD_PATH}/usr/share/pixmaps \
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/share/man/* ${TMP_BUILD_PATH}/usr/share/man \
         || checkReturnOutput $?
-    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/src/ati/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
-        || checkReturnOutput $?
+#    cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/common/usr/src/ati/* ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-core \
+#        || checkReturnOutput $?
     cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/lib/modules/fglrx/build_mod/* ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx \
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} -R "${INSTALLER_PATH}"/arch/${AMD_ARCH}/usr/X11R6/bin/* ${TMP_BUILD_PATH}/usr/bin \
@@ -294,7 +329,7 @@ Requires:       kernel-devel\n\
         cp ${VERBOSE_OPTION} -f "${DISTRO_PATH}"/switchlibglx ${TMP_BUILD_PATH}/usr/lib64/fglrx \
             || checkReturnOutput $?
     fi
-    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/README.SuSE ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx \
+    cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/README.SuSE ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-graphics \
         || checkReturnOutput $?
     cp ${VERBOSE_OPTION} "${DISTRO_PATH}"/fglrx.png ${TMP_BUILD_PATH}/usr/share/pixmaps \
         || checkReturnOutput $?
@@ -302,11 +337,12 @@ Requires:       kernel-devel\n\
         || checkReturnOutput $?
     echo "blacklist radeon" >${TMP_BUILD_PATH}/etc/modprobe.d/50-fglrx.conf \
         || checkReturnOutput $?
+    echo "This file marks the fglrx packages fglrx-core, fglrx-graphics, fglrx-amdcccle, fglrx-opencl to be installed" > ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-meta/fglrx-meta.txt
     print_okay
 
     # copy patch files to the $TMP_BUILD_PATH
     debugMsg "Copy patch files to the temporary build path ...${VERBOSE_2_LINE_BREAK}"
-    cp ${VERBOSE_OPTION} -R "${DISTRO_PATH}"/*.patch ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx/patches
+    cp ${VERBOSE_OPTION} -R "${DISTRO_PATH}"/*.patch ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-core/patches
     checkReturnOutput $?
 
     # clean up temp dir
@@ -315,8 +351,8 @@ Requires:       kernel-devel\n\
         rm ${VERBOSE_OPTION} ${TMP_BUILD_PATH}/usr/src/kernel-modules/fglrx/make.sh \
             || checkReturnOutput $?
     fi
-    if [ -d "${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx/examples" ]; then
-        rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx/examples \
+    if [ -d "${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-graphics/examples" ]; then
+        rm ${VERBOSE_OPTION} -r ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-graphics/examples \
             || checkReturnOutput $?
     fi
     if [ -f "${TMP_BUILD_PATH}/usr/lib/xorg/modules/updates/extensions/fglrx-libglx.so" ]; then
@@ -360,6 +396,10 @@ Requires:       kernel-devel\n\
     # substitute variables in the specfile
     debugMsg "Substitute variables in the temporary spec file ...${VERBOSE_2_LINE_BREAK}"
     sed -f - "${DISTRO_PATH}/fglrx.spec" > ${TMP_SPEC_FILE} <<END_SED_SCRIPT
+s!%PACKAGE_NAME_CORE!${PACKAGE_NAME_CORE}!
+s!%PACKAGE_NAME_GRAPHICS!${PACKAGE_NAME_GRAPHICS}!
+s!%PACKAGE_NAME_AMDCCCLE!${PACKAGE_NAME_AMDCCCLE}!
+s!%PACKAGE_NAME_OPENCL!${PACKAGE_NAME_OPENCL}!
 s!%PACKAGE_NAME!${PACKAGE_NAME}!
 s!%AMD_DRIVER_VERSION!${AMD_DRIVER_VERSION}!
 s!%AMD_DRIVER_RELEASE!${RELEASE}!
@@ -451,23 +491,58 @@ END_SED_SCRIPT
     fi
     print_okay
 
-    # retrieve the absolute path to the built package
-    debugMsg "Retrieve the absolute path to the built package ..."
-    PACKAGE_STR=`grep "Wrote: .*\.rpm" ${TMP_BUILD_OUTPUT}`             # String containing info where the package was created
-    PACKAGE_FILE_WITH_PATH=`expr "${PACKAGE_STR}" : 'Wrote: \(.*\)'`    # Absolute path to the create package file
-    PACKAGE_FILE=`basename ${PACKAGE_FILE_WITH_PATH}`
-    print_okay
-
-    # after-build diagnostics and processing
+    # Move the created packages to the directory where the self-extracting driver archive is located
     debugMsg "After-build diagnostics and processing ...\n"
-    INSTALLER_PARENT_PATH=`cd "${INSTALLER_PATH}/.." 2>/dev/null && pwd`  # Absolute path to the installer parent directory
-    cp ${PACKAGE_FILE_WITH_PATH} "${INSTALLER_PARENT_PATH}"               # Copy the created package to the directory where the self-extracting driver archive is located
-    echo -n -e "\nPackage ${INSTALLER_PARENT_PATH}/${PACKAGE_FILE} has been successfully generated\n"
-    echo -n -e "\nInstall or update the RPM package as follows:\n\n   "
+    INSTALLER_PARENT_PATH=`cd "${INSTALLER_PATH}/.." 2>/dev/null && pwd`
+    PACKAGE_STR=`sed -n -e "s/Wrote:\s*\(.*\)/\1/p" ${TMP_BUILD_OUTPUT}`
+    PACKAGE_FILE_STR=""
+    for PACKAGE_FILE_WITH_PATH in ${PACKAGE_STR}
+    do
+        PACKAGE_FILE=$(basename ${PACKAGE_FILE_WITH_PATH})
+
+        if [ -n "`echo ${PACKAGE_FILE} | grep '_xpic_'`" ]; then
+            if [ "${BUILD_META}" = "false" ]; then
+                rm ${VERBOSE_OPTION} -f ${PACKAGE_FILE_WITH_PATH}
+                continue
+            fi
+        fi
+        if [ -n "`echo ${PACKAGE_FILE} | grep '_core_'`" ]; then
+            if [ "${BUILD_CORE}" = "false" ]; then
+                rm ${VERBOSE_OPTION} -f ${PACKAGE_FILE_WITH_PATH}
+                continue
+            fi
+        fi
+        if [ -n "`echo ${PACKAGE_FILE} | grep '_graphics_'`" ]; then
+            if [ "${BUILD_GRAPHICS}" = "false" ]; then
+                rm ${VERBOSE_OPTION} -f ${PACKAGE_FILE_WITH_PATH}
+                continue
+            fi
+        fi
+        if [ -n "`echo ${PACKAGE_FILE} | grep '_amdcccle_'`" ]; then
+            if [ "${BUILD_AMDCCCLE}" = "false" ]; then
+                rm ${VERBOSE_OPTION} -f ${PACKAGE_FILE_WITH_PATH}
+                continue
+            fi
+        fi
+        if [ -n "`echo ${PACKAGE_FILE} | grep '_opencl_'`" ]; then
+            if [ "${BUILD_OPENCL}" = "false" ]; then
+                rm ${VERBOSE_OPTION} -f ${PACKAGE_FILE_WITH_PATH}
+                continue
+            fi
+        fi
+        echo -n -e "Package ${INSTALLER_PARENT_PATH}/${PACKAGE_FILE} has been successfully generated\n"
+        if [ -z "${PACKAGE_FILE_STR}" ]; then
+            PACKAGE_FILE_STR="${PACKAGE_FILE}"
+        else
+            PACKAGE_FILE_STR="${PACKAGE_FILE_STR} ${PACKAGE_FILE}"
+        fi
+        mv ${PACKAGE_FILE_WITH_PATH} "${INSTALLER_PARENT_PATH}"
+    done
+    echo -n -e "\n\nInstall or update the RPM package as follows:\n\n   "
     if [ -n "`zypper --version 2>&1 | grep '0.6'`" ]; then
-        echo -n -e "rpm -i ${PACKAGE_FILE}\n\n"
+        echo -n -e "rpm -i ${PACKAGE_FILE_STR}\n\n"
     else
-        echo -n -e "zypper install ${PACKAGE_FILE}\n\n"
+        echo -n -e "zypper install ${PACKAGE_FILE_STR}\n\n"
     fi
     print_okay
 
@@ -479,8 +554,6 @@ END_SED_SCRIPT
         || checkReturnOutput $?
     rm ${VERBOSE_OPTION} -rf ${TMP_BUILD_PATH} \
         || checkReturnOutput $?
-    rm ${VERBOSE_OPTION} -f ${PACKAGE_FILE_WITH_PATH} \
-        || checkReturnOutput $?
     print_okay
 
     debugMsg "Finished!" && print_okay
@@ -488,78 +561,126 @@ END_SED_SCRIPT
     exit 0
 }
 
-#Starting point of this script, process the {action} argument
+# Standard
+BUILD_PACKAGE=""
+BUILD_META="true"
+BUILD_CORE="true"
+BUILD_GRAPHICS="true"
+BUILD_AMDCCCLE="true"
+BUILD_OPENCL="true"
 
-#Requested action
-ACTION=$1
+while [ "$#" -gt "0" ]; do
+    case "$1" in
+        --get-supported)
+            shift 1
+            getSupportedPackages
+            exit 0
+            ;;
+        --get-maintainer)
+            shift 1
+            echo "Sebastian Siebert <freespacer@gmx.de>"
+            exit 0
+            ;;
+        --buildpkg)
+            PACKAGE=$2
+            if [ "${PACKAGE}" = "SUSE-autodetection" ]; then
+                echo "Auto detection mode:"
+                if [ -n "`which lsb_release`" ]; then
+                    SUSE_NAME=`lsb-release -d | cut -f2 | cut -f1 -d" "`
+                    SUSE_VERSION=`lsb-release -r | cut -f2`
 
-case "${ACTION}" in
---get-supported)
-    getSupportedPackages
-    exit 0
-    ;;
---get-maintainer)
-    echo "Sebastian Siebert <freespacer@gmx.de>"
-    exit 0
-    ;;
---buildpkg)
-    PACKAGE=$2
-    if [ "${PACKAGE}" = "SUSE-autodetection" ]; then
-        echo "Auto detection mode:"
-        if [ -n "`which lsb_release`" ]; then
-            SUSE_NAME=`lsb-release -d | cut -f2 | cut -f1 -d" "`
-            SUSE_VERSION=`lsb-release -r | cut -f2`
+                    if [ "${SUSE_NAME}" = "openSUSE" ]; then
+                        AMD_SUSE_NAME="SUSE"
+                    elif [ "${SUSE_NAME}" = "Balsam" ]; then
+                        AMD_SUSE_NAME="SUSE"
+                    else
+                        AMD_SUSE_NAME="SLE"
+                    fi
 
-            if [ "${SUSE_NAME}" = "openSUSE" ]; then
-                AMD_SUSE_NAME="SUSE"
-            elif [ "${SUSE_NAME}" = "Balsam" ]; then
-                AMD_SUSE_NAME="SUSE"
+                    AMD_SUSE_VERSION=`echo "${SUSE_VERSION}" | sed -e 's/\.//g'`
+
+                    ARCH="$(uname -m)"
+                    case "${ARCH}" in
+                        i?86)
+                            AMD_ARCH="IA32"
+                            ;;
+                        x86_64)
+                            AMD_ARCH="AMD64"
+                            ;;
+                    esac
+
+                    PACKAGE="${AMD_SUSE_NAME}${AMD_SUSE_VERSION}-${AMD_ARCH}"
+
+                    echo "   Distribution: ${SUSE_NAME}"
+                    echo "   Version:      ${SUSE_VERSION}"
+                    echo "   Architecture: ${ARCH}"
+                    echo "   Package name: ${AMD_SUSE_NAME}${AMD_SUSE_VERSION}-${AMD_ARCH}"
+                fi
+            fi
+
+            if [ "${PACKAGE}" != "" ]; then
+                SUPPORT_FLAG="false"
+                for SUPPORTED_LIST in `getSupportedPackages`
+                do
+                    if [ "${SUPPORTED_LIST}" = "${PACKAGE}" ]; then
+                        SUPPORT_FLAG="true"
+                        break
+                    fi
+                done
+                if [ "${SUPPORT_FLAG}" = "true" ]; then
+                    BUILD_PACKAGE="${PACKAGE}"
+                    #buildPackage ${PACKAGE}
+                else
+                    echo "Requested package is not supported."
+                    exit 0
+                fi
             else
-                AMD_SUSE_NAME="SLE"
+                echo "Please provide package name"
+                exit 0
             fi
+            shift 2
+            ;;
+        --NoXServer|--noxserver)
+            BUILD_META="false"
+            BUILD_CORE="true"
+            BUILD_GRAPHICS="false"
+            BUILD_AMDCCCLE="false"
+            BUILD_OPENCL="false"
+            shift 1
+            ;;
+        --graphics)
+            BUILD_META="false"
+            BUILD_CORE="true"
+            BUILD_GRAPHICS="true"
+            BUILD_AMDCCCLE="false"
+            BUILD_OPENCL="false"
+            shift 1
+            ;;
+        --amdcccle)
+            BUILD_META="false"
+            BUILD_CORE="true"
+            BUILD_GRAPHICS="true"
+            BUILD_AMDCCCLE="true"
+            BUILD_OPENCL="false"
+            shift 1
+            ;;
+        --OpenCL|--opencl)
+            BUILD_META="false"
+            BUILD_CORE="true"
+            BUILD_GRAPHICS="false"
+            BUILD_AMDCCCLE="false"
+            BUILD_OPENCL="true"
+            shift 1
+            ;;
+        *|--*)
+            echo "${ACTION}: unsupported option passed by ati-installer.sh"
+            exit 0
+            ;;
+    esac
+done
 
-            AMD_SUSE_VERSION=`echo "${SUSE_VERSION}" | sed -e 's/\.//g'`
+if [ -n "${BUILD_PACKAGE}" ]; then
+    buildPackage ${BUILD_PACKAGE}
+fi
 
-            ARCH="$(uname -m)"
-            case "${ARCH}" in
-                i?86)
-                    AMD_ARCH="IA32"
-                    ;;
-                x86_64)
-                    AMD_ARCH="AMD64"
-                    ;;
-            esac
-
-            PACKAGE="${AMD_SUSE_NAME}${AMD_SUSE_VERSION}-${AMD_ARCH}"
-
-            echo "   Distribution: ${SUSE_NAME}"
-            echo "   Version:      ${SUSE_VERSION}"
-            echo "   Architecture: ${ARCH}"
-            echo "   Package name: ${AMD_SUSE_NAME}${AMD_SUSE_VERSION}-${AMD_ARCH}"
-        fi
-    fi
-
-    if [ "${PACKAGE}" != "" ]; then
-        SUPPORT_FLAG="false"
-        for SUPPORTED_LIST in `getSupportedPackages`
-        do
-            if [ "${SUPPORTED_LIST}" = "${PACKAGE}" ]; then
-                SUPPORT_FLAG="true"
-                break
-            fi
-        done
-        if [ "${SUPPORT_FLAG}" = "true" ]; then
-            buildPackage ${PACKAGE}
-        else
-            echo "Requested package is not supported."
-        fi
-    else
-        echo "Please provide package name"
-    fi
-    exit 0
-    ;;
-*|--*)
-    echo "${ACTION}: unsupported option passed by ati-installer.sh"
-    exit 0
-    ;;
-esac
+exit 0

@@ -10,13 +10,15 @@ License:        %AMD_DRIVER_VENDOR
 URL:            %AMD_DRIVER_URL
 Group:          Servers
 PreReq:         %insserv_prereq %fillup_prereq
-Requires:       gcc make patch %AMD_DRIVER_KERNEL_DEVEL
+Requires:       %PACKAGE_NAME_CORE %PACKAGE_NAME_GRAPHICS %PACKAGE_NAME_AMDCCCLE %PACKAGE_NAME_OPENCL
 Provides:       fglrx km_fglrx
 Obsoletes:      fglrx km_fglrx ati-fglrxG02 x11-video-fglrxG02
 Obsoletes:      fglrx_6_9_0_SLE10 fglrx64_6_9_0_SLE10 fglrx_7_4_0_SLE11 fglrx64_7_4_0_SLE11
 Obsoletes:      fglrx_7_4_0_SUSE111 fglrx64_7_4_0_SUSE111 fglrx_7_4_0_SUSE112 fglrx64_7_4_0_SUSE112 fglrx_7_5_0_SUSE113 fglrx64_7_5_0_SUSE113 fglrx_7_6_0_SUSE114 fglrx64_7_6_0_SUSE114
+%if %suse_version > 1010
+Obsoletes:      fglrx_xpic_SLE10 fglrx64_xpic_SLE10
 %if %suse_version > 1110
-Obsoletes:      fglrx_xpic_SUSE111 fglrx64_xpic_SUSE111
+Obsoletes:      fglrx_xpic_SUSE111 fglrx64_xpic_SUSE111 fglrx_xpic_SLE11 fglrx64_xpic_SLE11
 %if %suse_version > 1120
 Obsoletes:      fglrx_xpic_SUSE112 fglrx64_xpic_SUSE112
 %if %suse_version > 1130
@@ -31,6 +33,7 @@ Obsoletes:      fglrx_xpic_SUSE122 fglrx64_xpic_SUSE122
 Obsoletes:      fglrx_xpic_SUSE123 fglrx64_xpic_SUSE123
 %if %suse_version > 1310
 Obsoletes:      fglrx_xpic_SUSE131 fglrx64_xpic_SUSE131
+%endif
 %endif
 %endif
 %endif
@@ -63,7 +66,39 @@ BuildRoot:      %AMD_DRIVER_BUILD_ROOT
 # spec file description                                                     #
 #############################################################################
 %description
-%AMD_DRIVER_DESCRIPTION
+This package is a meta package to installed fglrx-core,
+fglrx-graphics, fglrx-amdcccle and fglrx-opencl.
+
+%package -n %PACKAGE_NAME_CORE
+Requires:       gcc make patch %AMD_DRIVER_KERNEL_DEVEL
+Summary:        fglrx core package
+
+%description -n %PACKAGE_NAME_CORE
+The fglrx core package contains the fglrx kernel module and the
+automatic kernel module rebuild script
+
+%package -n %PACKAGE_NAME_GRAPHICS
+Requires:       %PACKAGE_NAME_CORE = %{version}-%{release}
+Summary:        fglrx graphics package
+
+%description -n %PACKAGE_NAME_GRAPHICS
+The fglrx graphics package contains X.Org Server related display driver
+with the AMD OpenGL driver.
+
+%package -n %PACKAGE_NAME_AMDCCCLE
+Requires:       %PACKAGE_NAME_CORE  = %{version}-%{release}
+Requires:       %PACKAGE_NAME_GRAPHICS  = %{version}-%{release}
+Summary:        fglrx amdcccle package
+
+%description -n %PACKAGE_NAME_AMDCCCLE
+The fglrx amdcccle package contains the AMD Catalyst Control Center
+
+%package -n %PACKAGE_NAME_OPENCL
+Requires:       %PACKAGE_NAME_CORE = %{version}-%{release}
+Summary:        fglrx opencl package
+
+%description -n %PACKAGE_NAME_OPENCL
+The fglrx opencl package contains the OpenCL driver
 
 %install
 %if %suse_version > 1110
@@ -99,7 +134,11 @@ mkdir -p $RPM_BUILD_ROOT/etc/ati \
          $RPM_BUILD_ROOT/usr/sbin \
          $RPM_BUILD_ROOT/usr/share/applications \
          $RPM_BUILD_ROOT/usr/share/ati/{amdcccle,%{_lib}} \
-         $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx/{articles,patches,user-manual} \
+         $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-amdcccle \
+         $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-core/patches \
+         $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-graphics/{articles,user-manual} \
+         $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-meta \
+         $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-opencl \
          $RPM_BUILD_ROOT/usr/share/man/man8 \
          $RPM_BUILD_ROOT/usr/share/pixmaps \
          $RPM_BUILD_ROOT/usr/src/kernel-modules/fglrx/2.6.x \
@@ -197,15 +236,24 @@ pushd $tmpdir/fglrx
                    $RPM_BUILD_ROOT/usr/share/ati/amdcccle
     install -m 755 usr/share/ati/%{_lib}/* \
                    $RPM_BUILD_ROOT/usr/share/ati/%{_lib}
-    install -m 644 usr/share/doc/packages/fglrx/articles/* \
-                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx/articles
-    install -m 644 usr/share/doc/packages/fglrx/patches/* \
-                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx/patches
-    install -m 644 usr/share/doc/packages/fglrx/user-manual/* \
-                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx/user-manual
-    rm -rf usr/share/doc/packages/fglrx/{articles,patches,user-manual}
-    install -m 644 usr/share/doc/packages/fglrx/* \
-                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx
+    install -m 644 usr/share/doc/packages/fglrx-amdcccle/* \
+                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-amdcccle
+    install -m 644 usr/share/doc/packages/fglrx-core/patches/* \
+                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-core/patches
+    rm -rf usr/share/doc/packages/fglrx-core/patches
+    install -m 644 usr/share/doc/packages/fglrx-core/* \
+                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-core
+    install -m 644 usr/share/doc/packages/fglrx-graphics/articles/* \
+                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-graphics/articles
+    install -m 644 usr/share/doc/packages/fglrx-graphics/user-manual/* \
+                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-graphics/user-manual
+    rm -rf usr/share/doc/packages/fglrx-graphics/{articles,user-manual}
+    install -m 644 usr/share/doc/packages/fglrx-graphics/* \
+                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-graphics
+    install -m 644 usr/share/doc/packages/fglrx-meta/* \
+                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-meta
+    install -m 644 usr/share/doc/packages/fglrx-opencl/* \
+                   $RPM_BUILD_ROOT/usr/share/doc/packages/fglrx-opencl
     test -f usr/share/man/man8/atieventsd.8 && \
         gzip usr/share/man/man8/atieventsd.8 && \
         test -f usr/share/man/man8/atieventsd.8.gz && \
@@ -224,7 +272,7 @@ popd
 rm -rf $tmpdir
 export NO_BRP_CHECK_RPATH=true
 
-%post
+%post -n %PACKAGE_NAME_CORE
 %run_ldconfig
 if [ -f etc/sysconfig/fglrxconfig-oldconfig ]; then
     mv -f etc/sysconfig/fglrxconfig-oldconfig etc/sysconfig/fglrxconfig
@@ -235,7 +283,7 @@ pushd /usr/src/kernel-modules/fglrx
 # add kernel patches here
 echo "Apply some patches ..."
 %if %suse_version > 1030
-    patch -p0 -s < /usr/share/doc/packages/fglrx/patches/ati-CONFIG_SMP.patch
+    patch -p0 -s < /usr/share/doc/packages/fglrx-core/patches/ati-CONFIG_SMP.patch
     if [ $? -eq 0 ]; then
         echo "ati-CONFIG_SMP.patch applied successfully."
     else
@@ -243,7 +291,7 @@ echo "Apply some patches ..."
     fi
 %endif
 %if %suse_version > 1100
-    patch -p0 -s < /usr/share/doc/packages/fglrx/patches/ati-2.6.27-build-fix-1.patch
+    patch -p0 -s < /usr/share/doc/packages/fglrx-core/patches/ati-2.6.27-build-fix-1.patch
     if [ $? -eq 0 ]; then
         echo "ati-2.6.27-build-fix-1.patch applied successfully."
     else
@@ -251,7 +299,7 @@ echo "Apply some patches ..."
     fi
 %endif
 %if %suse_version > 1100
-    patch -p0 -s < /usr/share/doc/packages/fglrx/patches/ati-2.6.36-compat_alloc_user_space.patch
+    patch -p0 -s < /usr/share/doc/packages/fglrx-core/patches/ati-2.6.36-compat_alloc_user_space.patch
     if [ $? -eq 0 ]; then
         echo "ati-2.6.36-compat_alloc_user_space.patch applied successfully."
     else
@@ -260,46 +308,11 @@ echo "Apply some patches ..."
 %endif
 # placeholder_for_additional_patches_for_fglrx_sources
 rm -f *.orig
-# For openSUSE 12.1 and higher: we should add a dynamic library search path
-%if %suse_version > 1140
-%ifarch x86_64
-    echo "/usr/X11R6/lib64" >/etc/ld.so.conf.d/fglrx.conf
-    echo "/usr/X11R6/lib" >>/etc/ld.so.conf.d/fglrx.conf
-%else
-    echo "/usr/X11R6/lib" >/etc/ld.so.conf.d/fglrx.conf
-%endif
-%run_ldconfig
-%endif
 popd
-if [ -x etc/init.d/atieventsd ]; then
-    # Create symbolic run level links for atieventsd start script:
-    %{fillup_and_insserv -y atieventsd}
-fi
-%if %suse_version < 1110
-    if [ -r /etc/powersave/events ]; then
-        grep -q "EVENT_DAEMON_SCHEME_CHANGE=.*ati-powermode.sh" /etc/powersave/events || \
-            sed -e 's/\(EVENT_DAEMON_SCHEME_CHANGE="\)\(.*\)/\1ati-powermode.sh \2/g' -i /etc/powersave/events
-    fi
-%endif
 if [ -x etc/init.d/boot.fglrxrebuild ]; then
     # Create symbolic run level links for boot.fglrxrebuild start script:
     %{fillup_and_insserv -Y boot.fglrxrebuild}
 fi
-test -f %{MODULES_DIR}/drivers/fglrx_drv.so && \
-    touch %{MODULES_DIR}/drivers/fglrx_drv.so
-%if %suse_version > 1010
-# ATI libGL still uses the old X11R6 path :-(
-mkdir -p usr/X11R6/%{_lib}/modules
-test -d usr/X11R6/%{_lib}/modules/dri && \
-    mv usr/X11R6/%{_lib}/modules/dri usr/X11R6/%{_lib}/modules/dri.old
-ln -snf %{DRI_DRIVERS_DIR} usr/X11R6/%{_lib}/modules/dri
-%ifarch x86_64
-mkdir -p usr/X11R6/lib/modules
-test -d usr/X11R6/lib/modules/dri && \
-    mv usr/X11R6/lib/modules/dri usr/X11R6/lib/modules/dri.old
-ln -snf %{DRI_DRIVERS32_DIR} usr/X11R6/lib/modules/dri
-%endif
-%endif
 usr/bin/fglrx-kernel-build.sh -f -a
 if [ $? -ne 0 ]; then
     echo 
@@ -311,7 +324,7 @@ if [ $? -ne 0 ]; then
 fi
 echo
 echo "*************************************************************"
-echo "Please read \"/usr/share/doc/packages/fglrx/README.SuSE\" for"
+echo "Please read \"/usr/share/doc/packages/fglrx-core/README.SuSE\" for"
 echo "configuration details when using SaX2."
 echo "*************************************************************"
 echo
@@ -329,6 +342,54 @@ if grep -q '^KMS_IN_INITRD=\"yes\"' /etc/sysconfig/kernel; then
     sed -i 's/^KMS_IN_INITRD.*/KMS_IN_INITRD="no"/g' /etc/sysconfig/kernel
     mkinitrd
 fi
+if [ "$(%{_libdir}/fglrx/switchlibglx query)" = "unknown" ]; then
+    %{_libdir}/fglrx/switchlibglx amd
+fi
+if [ "$(%{_libdir}/fglrx/switchlibGL query)" = "unknown" ]; then
+    %{_libdir}/fglrx/switchlibGL amd
+fi
+if [ ! -f "etc/ati/atiapfuser.blb" ]; then
+    touch etc/ati/atiapfuser.blb
+fi
+exit 0
+
+%post -n %PACKAGE_NAME_GRAPHICS
+%run_ldconfig
+if [ -x etc/init.d/atieventsd ]; then
+    # Create symbolic run level links for atieventsd start script:
+    %{fillup_and_insserv -y atieventsd}
+fi
+%if %suse_version < 1110
+    if [ -r /etc/powersave/events ]; then
+        grep -q "EVENT_DAEMON_SCHEME_CHANGE=.*ati-powermode.sh" /etc/powersave/events || \
+            sed -e 's/\(EVENT_DAEMON_SCHEME_CHANGE="\)\(.*\)/\1ati-powermode.sh \2/g' -i /etc/powersave/events
+    fi
+%endif
+# For openSUSE 12.1 and higher: we should add a dynamic library search path
+%if %suse_version > 1140
+%ifarch x86_64
+    echo "/usr/X11R6/lib64" >/etc/ld.so.conf.d/fglrx.conf
+    echo "/usr/X11R6/lib" >>/etc/ld.so.conf.d/fglrx.conf
+%else
+    echo "/usr/X11R6/lib" >/etc/ld.so.conf.d/fglrx.conf
+%endif
+%run_ldconfig
+%endif
+test -f %{MODULES_DIR}/drivers/fglrx_drv.so && \
+    touch %{MODULES_DIR}/drivers/fglrx_drv.so
+%if %suse_version > 1010
+# ATI libGL still uses the old X11R6 path :-(
+mkdir -p usr/X11R6/%{_lib}/modules
+test -d usr/X11R6/%{_lib}/modules/dri && \
+    mv usr/X11R6/%{_lib}/modules/dri usr/X11R6/%{_lib}/modules/dri.old
+ln -snf %{DRI_DRIVERS_DIR} usr/X11R6/%{_lib}/modules/dri
+%ifarch x86_64
+mkdir -p usr/X11R6/lib/modules
+test -d usr/X11R6/lib/modules/dri && \
+    mv usr/X11R6/lib/modules/dri usr/X11R6/lib/modules/dri.old
+ln -snf %{DRI_DRIVERS32_DIR} usr/X11R6/lib/modules/dri
+%endif
+%endif
 AMDCONFIG_BIN="`which aticonfig 2>/dev/null`"
 if [ -n "${AMDCONFIG_BIN}" -a -x "${AMDCONFIG_BIN}" ]; then
     if [ -f etc/X11/xorg.conf.fglrx-oldconfig ]; then
@@ -345,21 +406,9 @@ if [ -n "${AMDCONFIG_BIN}" -a -x "${AMDCONFIG_BIN}" ]; then
     ${AMDCONFIG_BIN} --del-pcs-key=LDC,ReleaseVersion >/dev/null 2>&1
     ${AMDCONFIG_BIN} --del-pcs-key=LDC,Catalyst_Version >/dev/null 2>&1
 fi
-if [ "$(%{_libdir}/fglrx/switchlibglx query)" = "unknown" ]; then
-    %{_libdir}/fglrx/switchlibglx amd
-fi
-if [ "$(%{_libdir}/fglrx/switchlibGL query)" = "unknown" ]; then
-    %{_libdir}/fglrx/switchlibGL amd
-fi
-if [ ! -f "etc/ati/atiapfuser.blb" ]; then
-    touch etc/ati/atiapfuser.blb
-fi
 exit 0
 
-%preun
-if [ -x etc/init.d/atieventsd ]; then
-    %stop_on_removal atieventsd
-fi
+%preun -n %PACKAGE_NAME_CORE
 if [ -x etc/init.d/boot.fglrxrebuild ]; then
     %stop_on_removal boot.fglrxrebuild
 fi
@@ -368,6 +417,16 @@ if [ "$1" -eq 0 ]; then
     if [ -f "etc/ati/atiapfuser.blb" ]; then
         rm -f etc/ati/atiapfuser.blb
     fi
+    %run_ldconfig
+fi
+exit 0
+
+%preun -n %PACKAGE_NAME_GRAPHICS
+if [ -x etc/init.d/atieventsd ]; then
+    %stop_on_removal atieventsd
+fi
+# remove symlinks during uninstall (not during update)
+if [ "$1" -eq 0 ]; then
     rm -f /usr/X11R6/lib*/libGL.so*
     rm -f %{_libdir}/xorg/modules/updates/extensions/libglx.so
     if [ -f /etc/ld.so.conf.d/fglrx.conf ]; then
@@ -377,7 +436,23 @@ if [ "$1" -eq 0 ]; then
 fi
 exit 0
 
-%postun
+%postun -n %PACKAGE_NAME_CORE
+%{insserv_cleanup}
+if [ "$1" -eq 0 ]; then
+    if [ -f etc/sysconfig/fglrxconfig ]; then
+        mv -f etc/sysconfig/fglrxconfig etc/sysconfig/fglrxconfig-oldconfig
+    fi
+    # cleanup
+    rm -rf usr/src/kernel-modules/fglrx/
+    rm -rf etc/ati/
+    # try to unload the kernel module, which fails if it is still in use
+    rmmod fglrx &> /dev/null
+    # now remove all available fglrx kernel modules
+    find /lib/modules -iname "fglrx.ko" -print0 | xargs -r -0 rm
+fi
+exit 0
+
+%postun -n %PACKAGE_NAME_GRAPHICS
 #if [ -x etc/init.d/atieventsd ]; then
     # Rearrange run level symlinks after removing the atieventsd init script
     %{insserv_cleanup}
@@ -402,43 +477,63 @@ if [ "$1" -eq 0 ]; then
     else
         rm -f etc/X11/xorg.conf
     fi
-    if [ -f etc/sysconfig/fglrxconfig ]; then
-        mv -f etc/sysconfig/fglrxconfig etc/sysconfig/fglrxconfig-oldconfig
-    fi
-    # cleanup
-    rm -rf usr/src/kernel-modules/fglrx/
-    rm -rf etc/ati/
-    # try to unload the kernel module, which fails if it is still in use
-    rmmod fglrx &> /dev/null
-    # now remove all available fglrx kernel modules
-    find /lib/modules -iname "fglrx.ko" -print0 | xargs -r -0 rm
 fi
 exit 0
 
 %files
 %defattr(-, root, root)
-#%dir /usr/include/GL
-#%ifarch x86_64
-#%dir %{DRI_DRIVERS_DIR}
-#%endif
-#%dir /etc/security/console.apps/
-/etc/ati/*
-/etc/init.d/*
+/usr/share/doc/packages/fglrx-meta/*
+
+%files -n %PACKAGE_NAME_CORE
+%defattr(-, root, root)
+/etc/ati/amdpcsdb*
+/etc/ati/atiapfxx*
+/etc/ati/control
+/etc/ati/logo*
+/etc/ati/signature
+/etc/init.d/boot.fglrxrebuild
 /etc/modprobe.d/*
-/etc/OpenCL/vendors/*
-/etc/pam.d/*
-/etc/security/console.apps/*
+/usr/bin/fglrx-kernel-build.sh
+/usr/%{_lib}/fglrx/*
+/usr/%{_lib}/libatiadlxx*
+/usr/%{_lib}/libatiuki*
+%ifarch x86_64
+/usr/lib/libatiadlxx*
+/usr/lib/libatiuki*
+%endif
+/usr/sbin/atigetsysteminfo.sh
+/usr/share/ati/amd-uninstall.sh
+/usr/share/doc/packages/fglrx-core/*
+/usr/share/doc/packages/fglrx-core/patches/*
+%verify(not md5 size mtime) /usr/src/kernel-modules/fglrx/*
+/usr/src/kernel-modules/fglrx/2.6.x/*
+/var/adm/fillup-templates/*
+
+%files -n %PACKAGE_NAME_GRAPHICS
+%defattr(-, root, root)
+/etc/ati/authatieventsd.sh
+/etc/init.d/atieventsd
 /usr/X11R6/%{_lib}/*
 %ifarch x86_64
 /usr/X11R6/lib/*
 %endif
-/usr/bin/*
+/usr/bin/amdconfig
+/usr/bin/amdupdaterandrconfig
+/usr/bin/aticonfig
+/usr/bin/atiodcli
+/usr/bin/atiode
+/usr/bin/fgl_glxgears
+/usr/bin/fglrxinfo
 /usr/include/ATI/GL/*
 /usr/include/GL/*
-/usr/%{_lib}/*
+/usr/%{_lib}/libAMDXvBA*
+/usr/%{_lib}/libXvBAW*
+%ifarch x86_64
+/usr/lib/libAMDXvBA*
+/usr/lib/libXvBAW*
+%endif
 %{DRI_DRIVERS_DIR}/*
 %ifarch x86_64
-/usr/lib/*
 %{DRI_DRIVERS32_DIR}/*
 %endif
 %{MODULES_DIR}/*
@@ -446,17 +541,38 @@ exit 0
 %{MODULES_DIR}/linux/*
 %{MODULES_DIR}/updates/extensions/*
 %{MODULES_DIR}/updates/extensions/fglrx/*
-/usr/sbin/*
+/usr/sbin/amdnotifyui
+/usr/sbin/atieventsd
+/usr/sbin/rcatieventsd
+/usr/share/doc/packages/fglrx-graphics/*
+/usr/share/doc/packages/fglrx-graphics/articles/*
+/usr/share/doc/packages/fglrx-graphics/user-manual/*
+/usr/share/man/man8/*
+%verify(not mtime) %{MODULES_DIR}/drivers/fglrx_drv.*
+
+%files -n %PACKAGE_NAME_AMDCCCLE
+%defattr(-, root, root)
+/etc/pam.d/*
+/etc/security/console.apps/*
+/usr/bin/amdcccle
+/usr/bin/amdxdg-su
 /usr/share/applications/*
-/usr/share/ati/amd-uninstall.sh
 /usr/share/ati/amdcccle/*
 /usr/share/ati/%{_lib}/*
-/usr/share/doc/packages/fglrx/*
-/usr/share/doc/packages/fglrx/articles/*
-/usr/share/doc/packages/fglrx/user-manual/*
-/usr/share/man/man8/*
+/usr/share/doc/packages/fglrx-amdcccle/*
 /usr/share/pixmaps/*
-%verify(not md5 size mtime) /usr/src/kernel-modules/fglrx/*
-/usr/src/kernel-modules/fglrx/2.6.x/*
-%verify(not mtime) %{MODULES_DIR}/drivers/fglrx_drv.*
-/var/adm/fillup-templates/*
+
+%files -n %PACKAGE_NAME_OPENCL
+%defattr(-, root, root)
+/etc/OpenCL/vendors/*
+/usr/bin/amd-console-helper
+/usr/bin/clinfo
+/usr/%{_lib}/libOpenCL*
+/usr/%{_lib}/libamdocl*
+/usr/%{_lib}/libatical*
+%ifarch x86_64
+/usr/lib/libOpenCL*
+/usr/lib/libamdocl*
+/usr/lib/libatical*
+%endif
+/usr/share/doc/packages/fglrx-opencl/*
