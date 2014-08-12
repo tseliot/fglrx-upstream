@@ -10,7 +10,10 @@ License:        %AMD_DRIVER_VENDOR
 URL:            %AMD_DRIVER_URL
 Group:          Servers
 PreReq:         %insserv_prereq %fillup_prereq
-Requires:       %PACKAGE_NAME_CORE %PACKAGE_NAME_GRAPHICS %PACKAGE_NAME_AMDCCCLE %PACKAGE_NAME_OPENCL
+Requires:       %PACKAGE_NAME_CORE = %{version}-%{release}
+Requires:       %PACKAGE_NAME_GRAPHICS = %{version}-%{release}
+Requires:       %PACKAGE_NAME_AMDCCCLE = %{version}-%{release}
+Requires:       %PACKAGE_NAME_OPENCL = %{version}-%{release}
 Provides:       fglrx km_fglrx
 Obsoletes:      fglrx km_fglrx ati-fglrxG02 x11-video-fglrxG02
 Obsoletes:      fglrx_6_9_0_SLE10 fglrx64_6_9_0_SLE10 fglrx_7_4_0_SLE11 fglrx64_7_4_0_SLE11
@@ -86,8 +89,8 @@ The fglrx graphics package contains X.Org Server related display driver
 with the AMD OpenGL driver.
 
 %package -n %PACKAGE_NAME_AMDCCCLE
-Requires:       %PACKAGE_NAME_CORE  = %{version}-%{release}
-Requires:       %PACKAGE_NAME_GRAPHICS  = %{version}-%{release}
+Requires:       %PACKAGE_NAME_CORE = %{version}-%{release}
+Requires:       %PACKAGE_NAME_GRAPHICS = %{version}-%{release}
 Summary:        fglrx amdcccle package
 
 %description -n %PACKAGE_NAME_AMDCCCLE

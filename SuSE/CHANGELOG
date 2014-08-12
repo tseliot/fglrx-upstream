@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 12 21:07:48 CEST 2014 - Sebastian Siebert <freesapcer@gmx.de>
+
+- add same required version of the dependencies like the meta package
+
+-------------------------------------------------------------------
 Mon Aug 11 23:50:44 CEST 2014 - Sebastian Siebert <freesapcer@gmx.de>
 
 - rewrite fglrx spec file to split up into 5 fglrx packages:
