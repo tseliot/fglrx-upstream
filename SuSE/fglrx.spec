@@ -14,6 +14,10 @@ Requires:       %PACKAGE_NAME_CORE = %{version}-%{release}
 Requires:       %PACKAGE_NAME_GRAPHICS = %{version}-%{release}
 Requires:       %PACKAGE_NAME_AMDCCCLE = %{version}-%{release}
 Requires:       %PACKAGE_NAME_OPENCL = %{version}-%{release}
+%if 0%{?suse_version} >= 1315
+Requires(post):  update-alternatives
+Requires(preun): update-alternatives
+%endif
 Provides:       fglrx km_fglrx
 Obsoletes:      fglrx km_fglrx ati-fglrxG02 x11-video-fglrxG02
 Obsoletes:      fglrx_6_9_0_SLE10 fglrx64_6_9_0_SLE10 fglrx_7_4_0_SLE11 fglrx64_7_4_0_SLE11
@@ -60,6 +64,11 @@ BuildRoot:      %AMD_DRIVER_BUILD_ROOT
 %define MODULES_DIR       /usr/X11R6/%{_lib}/modules
 %define DRI_DRIVERS_DIR   /usr/X11R6/%{_lib}/modules/dri
 %define DRI_DRIVERS32_DIR /usr/X11R6/lib/modules/dri
+%endif
+%if 0%{?suse_version} >= 1315
+%define MOD_UPDATES_DIR   .
+%else
+%define MOD_UPDATES_DIR   updates
 %endif
 
 # local rpm options
@@ -133,7 +142,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/ati \
 %endif
          $RPM_BUILD_ROOT/usr/%{_lib}/fglrx \
          $RPM_BUILD_ROOT%{MODULES_DIR}/{linux,drivers} \
-         $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/fglrx \
+         $RPM_BUILD_ROOT%{MODULES_DIR}/%{MOD_UPDATES_DIR}/extensions/fglrx \
          $RPM_BUILD_ROOT/usr/sbin \
          $RPM_BUILD_ROOT/usr/share/applications \
          $RPM_BUILD_ROOT/usr/share/ati/{amdcccle,%{_lib}} \
@@ -197,7 +206,7 @@ pushd $tmpdir/fglrx
     install -m 755 usr/%{_lib}/xorg/modules/linux/* \
                    $RPM_BUILD_ROOT%{MODULES_DIR}/linux
     install -m 755 usr/%{_lib}/xorg/modules/updates/extensions/fglrx/* \
-                   $RPM_BUILD_ROOT%{MODULES_DIR}/updates/extensions/fglrx
+                   $RPM_BUILD_ROOT%{MODULES_DIR}/%{MOD_UPDATES_DIR}/extensions/fglrx
     rm -rf usr/%{_lib}/xorg/modules/{drivers,linux,updates}
     install -m 755 usr/%{_lib}/xorg/modules/* \
                    $RPM_BUILD_ROOT%{MODULES_DIR}
@@ -345,18 +354,13 @@ if grep -q '^KMS_IN_INITRD=\"yes\"' /etc/sysconfig/kernel; then
     sed -i 's/^KMS_IN_INITRD.*/KMS_IN_INITRD="no"/g' /etc/sysconfig/kernel
     mkinitrd
 fi
-if [ "$(%{_libdir}/fglrx/switchlibglx query)" = "unknown" ]; then
-    %{_libdir}/fglrx/switchlibglx amd
-fi
-if [ "$(%{_libdir}/fglrx/switchlibGL query)" = "unknown" ]; then
-    %{_libdir}/fglrx/switchlibGL amd
-fi
 if [ ! -f "etc/ati/atiapfuser.blb" ]; then
     touch etc/ati/atiapfuser.blb
 fi
 exit 0
 
 %post -n %PACKAGE_NAME_GRAPHICS
+INSTALL_PARAM=$1
 %run_ldconfig
 if [ -x etc/init.d/atieventsd ]; then
     # Create symbolic run level links for atieventsd start script:
@@ -409,6 +413,39 @@ if [ -n "${AMDCONFIG_BIN}" -a -x "${AMDCONFIG_BIN}" ]; then
     ${AMDCONFIG_BIN} --del-pcs-key=LDC,ReleaseVersion >/dev/null 2>&1
     ${AMDCONFIG_BIN} --del-pcs-key=LDC,Catalyst_Version >/dev/null 2>&1
 fi
+if [ "${INSTALL_PARAM}" -eq 1 ]; then
+%if 0%{?suse_version} >= 1315
+    /usr/sbin/update-alternatives \
+        --force --install \
+        %{_libdir}/xorg/modules/extensions/libglx.so libglx.so \
+        %{_libdir}/xorg/modules/extensions/fglrx/fglrx-libglx.so 100
+%endif
+    %{_libdir}/fglrx/switchlibglx amd
+    %{_libdir}/fglrx/switchlibGL amd
+else
+    if [ "$(%{_libdir}/fglrx/switchlibglx query)" = "intel" ]; then
+%if 0%{?suse_version} >= 1315
+        /usr/sbin/update-alternatives \
+            --force --install \
+            %{_libdir}/xorg/modules/extensions/libglx.so libglx.so \
+            %{_libdir}/xorg/modules/extensions/fglrx/fglrx-libglx.so 100
+%endif
+        %{_libdir}/fglrx/switchlibglx intel
+    else
+%if 0%{?suse_version} >= 1315
+        /usr/sbin/update-alternatives \
+            --force --install \
+            %{_libdir}/xorg/modules/extensions/libglx.so libglx.so \
+            %{_libdir}/xorg/modules/extensions/fglrx/fglrx-libglx.so 100
+%endif
+        %{_libdir}/fglrx/switchlibglx amd
+    fi
+    if [ "$(%{_libdir}/fglrx/switchlibGL query)" = "intel" ]; then
+        %{_libdir}/fglrx/switchlibGL intel
+    else
+        %{_libdir}/fglrx/switchlibGL amd
+    fi
+fi
 exit 0
 
 %preun -n %PACKAGE_NAME_CORE
@@ -431,7 +468,11 @@ fi
 # remove symlinks during uninstall (not during update)
 if [ "$1" -eq 0 ]; then
     rm -f /usr/X11R6/lib*/libGL.so*
-    rm -f %{_libdir}/xorg/modules/updates/extensions/libglx.so
+%if 0%{?suse_version} >= 1315
+    %_sbindir/update-alternatives --remove libglx.so %{_libdir}/xorg/modules/extensions/fglrx/fglrx-libglx.so
+%else
+    rm -f %{_libdir}/xorg/modules/%{MOD_UPDATES_DIR}/extensions/libglx.so
+%endif
     if [ -f /etc/ld.so.conf.d/fglrx.conf ]; then
         rm -f /etc/ld.so.conf.d/fglrx.conf
     fi
@@ -497,7 +538,6 @@ exit 0
 /etc/init.d/boot.fglrxrebuild
 /etc/modprobe.d/*
 /usr/bin/fglrx-kernel-build.sh
-/usr/%{_lib}/fglrx/*
 /usr/%{_lib}/libatiadlxx*
 /usr/%{_lib}/libatiuki*
 %ifarch x86_64
@@ -529,6 +569,7 @@ exit 0
 /usr/bin/fglrxinfo
 /usr/include/ATI/GL/*
 /usr/include/GL/*
+/usr/%{_lib}/fglrx/*
 /usr/%{_lib}/libAMDXvBA*
 /usr/%{_lib}/libXvBAW*
 %ifarch x86_64
@@ -542,8 +583,8 @@ exit 0
 %{MODULES_DIR}/*
 %{MODULES_DIR}/drivers/*
 %{MODULES_DIR}/linux/*
-%{MODULES_DIR}/updates/extensions/*
-%{MODULES_DIR}/updates/extensions/fglrx/*
+%{MODULES_DIR}/%{MOD_UPDATES_DIR}/extensions/*
+%{MODULES_DIR}/%{MOD_UPDATES_DIR}/extensions/fglrx/*
 /usr/sbin/amdnotifyui
 /usr/sbin/atieventsd
 /usr/sbin/rcatieventsd

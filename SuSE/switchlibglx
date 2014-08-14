@@ -49,8 +49,8 @@ case "${ARCH}" in
     ;;
 esac
 
-SUSE_NAME=`head -n 1 /etc/SuSE-release | cut -f1 -d" "`
-SUSE_VERSION=`grep VERSION /etc/SuSE-release | sed -e 's/VERSION\s=\s//g'`
+SUSE_NAME=`lsb-release -d | cut -f2 | cut -f1 -d" "`
+SUSE_VERSION=`lsb-release -r | cut -f2`
 
 if [ "${SUSE_NAME}" != "openSUSE" ]; then
     SUSE_NAME="SLE"
@@ -65,29 +65,54 @@ fi
 
 function switch_to_amd() {
 
-    ln -snf ${MODULES}/updates/extensions/fglrx/fglrx-libglx.so \
-            ${MODULES}/updates/extensions/libglx.so
+    if [ -L /etc/alternatives/libglx.so ]; then
+        /usr/sbin/update-alternatives \
+          --set libglx.so ${MODULES}/extensions/fglrx/fglrx-libglx.so
+    else
+	ln -snf ${MODULES}/updates/extensions/fglrx/fglrx-libglx.so \
+	        ${MODULES}/updates/extensions/libglx.so
+    fi
 
 }
 
 function switch_to_intel() {
 
-    ln -snf ${MODULES}/extensions/libglx.so \
-            ${MODULES}/updates/extensions/libglx.so
+    if [ -L /etc/alternatives/libglx.so ]; then
+        /usr/sbin/update-alternatives \
+          --set libglx.so ${MODULES}/extensions/xorg/xorg-libglx.so
+    else
+	ln -snf ${MODULES}/extensions/libglx.so \
+	        ${MODULES}/updates/extensions/libglx.so
+    fi
 
 }
 
 function get_current_driver() {
 
-    LIB_LINK="`readlink ${MODULES}/updates/extensions/libglx.so 2>/dev/null`"
-    if [ "${LIB_LINK}" = "${MODULES}/updates/extensions/fglrx/fglrx-libglx.so" ]; then
-        echo "amd"
-    elif [ "${LIB_LINK}" = "fglrx/fglrx-libglx.so" ]; then
-        echo "amd"
-    elif [ "${LIB_LINK}" = "${MODULES}/extensions/libglx.so" ]; then
-        echo "intel"
+    if [ -L /etc/alternatives/libglx.so ]; then
+        LIB_LINK="`readlink /etc/alternatives/libglx.so 2>/dev/null`"
+        if [ "${LIB_LINK}" = "${MODULES}/extensions/fglrx/fglrx-libglx.so" ]; then
+            echo "amd"
+        elif [ "${LIB_LINK}" = "fglrx/fglrx-libglx.so" ]; then
+            echo "amd"
+        elif [ "${LIB_LINK}" = "${MODULES}/extensions/xorg/xorg-libglx.so" ]; then
+            echo "intel"
+        elif [ "${LIB_LINK}" = "xorg/xorg-libglx.so" ]; then
+            echo "intel"
+        else
+            echo "unknown"
+        fi
     else
-        echo "unknown"
+        LIB_LINK="`readlink ${MODULES}/updates/extensions/libglx.so 2>/dev/null`"
+        if [ "${LIB_LINK}" = "${MODULES}/updates/extensions/fglrx/fglrx-libglx.so" ]; then
+            echo "amd"
+        elif [ "${LIB_LINK}" = "fglrx/fglrx-libglx.so" ]; then
+            echo "amd"
+        elif [ "${LIB_LINK}" = "${MODULES}/extensions/libglx.so" ]; then
+            echo "intel"
+        else
+            echo "unknown"
+        fi
     fi
 
 }

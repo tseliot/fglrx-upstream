@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Aug 14 20:21:26 CEST 2014 - Sebastian Siebert <freesapcer@gmx.de>
+
+- switched to use of update-alternatives for sle12 and openSUSE > 13.1
+- moved (use of) switchlibglx/switchlibGL from core to graphics subpackage
+- make use of update-alternatives in switchlibglx
+- added sle12 as supported OS
+(Thanks to Stefan Dirsch from SUSE for the patch)
+
+-------------------------------------------------------------------
 Tue Aug 12 21:07:48 CEST 2014 - Sebastian Siebert <freesapcer@gmx.de>
 
 - add same required version of the dependencies like the meta package
