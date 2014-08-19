@@ -207,9 +207,11 @@ installPackages()
 #Purpose: build the requested package if it is supported
 buildPackage()
 {
-    if [ "$2" = "--dryrun" ]; then
-        echo "We would have generated packages here."
-        exit 0
+    NO_X=""
+
+    if [ "$2" = "--NoXServer" ]; then
+        echo "Building X independent packages"
+        NO_X="TRUE"
     fi
 
     export X_NAME=$1                    # Well known X or distro name (exported for dpkg rules)
@@ -292,7 +294,13 @@ buildPackage()
     fi
 
     debclean >> ${TmpPkgBuildOut} 2>&1
-    ${PKG_BUILD_UTIL} ${PKG_BUILD_OPTIONS} >> ${TmpPkgBuildOut} 2>&1
+
+    if [ -n "$NO_X" ] && [ "$1" != "source" ]; then
+        #Call only the no-x target
+        fakeroot debian/rules binary-no-x >> ${TmpPkgBuildOut} 2>&1
+    else
+        ${PKG_BUILD_UTIL} ${PKG_BUILD_OPTIONS} >> ${TmpPkgBuildOut} 2>&1
+    fi
 
     if [ $? -eq 0 ]; then
         #String containing info where the package was created
@@ -364,7 +372,7 @@ case "${action}" in
     getSupportedPackages
     ;;
 --buildpkg)
-    buildPackage $2
+    buildPackage $2 $3
     ;;
 #API v2+ stuff:
 --getAPIVersion)
