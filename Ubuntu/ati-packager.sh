@@ -321,7 +321,7 @@ buildPackage()
             echo "Package "${AbsInstallerParentDir}"/`basename ${i}` has been successfully generated"
         done
 
-        mv ../fglrx-installer*.changes "${AbsInstallerParentDir}"
+        mv ../fglrx-installer*.changes "${AbsInstallerParentDir}" 2>/dev/null
 
     else
         echo "Package build failed!"
