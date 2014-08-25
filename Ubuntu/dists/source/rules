@@ -460,7 +460,6 @@ binary: binary-arch binary-indep gen-abi-substvars ;
 
 binary-no-x: build-arch pre-binary-arch ;
 	dh binary -p$(PKG_driver_core)
-	dh binary -p$(PKG_driver_dev)
 
 override_dh_shlibdeps:
 ifeq ($(DEB_HOST_ARCH),amd64)
