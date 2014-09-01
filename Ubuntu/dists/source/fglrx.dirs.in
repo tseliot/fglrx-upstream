@@ -7,6 +7,7 @@
 #SYSCONFDIR#/ati
 #DATADIR#/ati
 #LIBDIR#/dri
+#LIBDIR#/#DEB_HOST_MULTIARCH#/dri
 #LIBDIR#/xorg/modules/drivers/
 /usr/share/applications/
 #XORGEXTRA#
