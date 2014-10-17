@@ -11,3 +11,4 @@
 #LIBDIR#/xorg/modules/drivers/
 /usr/share/applications/
 #XORGEXTRA#
+/usr/share/lightdm/lightdm.conf.d
