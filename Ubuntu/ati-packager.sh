@@ -192,12 +192,11 @@ installPackages()
         echo "Error installing packages"
         exit 1
     fi
-    cleanup=$(cat $file | grep extra | awk '{print $5}' | tr "\n" " ")
-    echo "Cleaning up removed packages"
-    rm ${file} ${cleanup} -f
+    echo "Removing the generated changes file"
+    rm ${file} -f
     RET=$?
     if [ ! $RET -eq 0 ]; then
-        echo "Error cleaning up packages"
+        echo "Error removing the changes file"
         exit 1
     fi
 }
