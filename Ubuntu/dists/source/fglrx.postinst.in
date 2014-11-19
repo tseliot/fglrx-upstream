@@ -34,6 +34,7 @@ if [ "$1" = "configure" ]; then
         --slave /#LIBDIR#/xorg/modules/drivers/fglrx_drv.so #DEB_HOST_MULTIARCH#_fglrx_drv /#PKGLIBDIR#/xorg/modules/drivers/fglrx_drv.so \
         --slave /#SYSCONFDIR#/X11/Xsession.d/10fglrx #DEB_HOST_MULTIARCH#_10fglrx /#PKGLIBDIR#/10fglrx \
         --slave /#XORGEXTRA# #DEB_HOST_MULTIARCH#_xorg_extra_modules /#PKGLIBDIR#/xorg \
+        --slave /#LIBDIR#/libGL.so #DEB_HOST_MULTIARCH#_libgl_so /#PKGLIBDIR#/libGL.so.1
 
     # This is for switchable graphics
     # Note: the radeon kernel module is still blacklisted
