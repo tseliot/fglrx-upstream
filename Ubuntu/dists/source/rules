@@ -277,6 +277,9 @@ ifeq ($(DEB_HOST_ARCH),amd64)
 	dh_install -p$(PKG_driver_core) "arch/x86/usr/X11R6/lib/libatiadlxx.so"  "$(libdir32)"
 	dh_install -p$(PKG_driver_core) "arch/x86/usr/lib/*.so*"                 "$(libdir32)"
 
+	# Install the icd file for 32 bit OpenCL apps
+	dh_install -p$(PKG_driver_core) "arch/x86/etc/OpenCL/vendors/*.icd"      "$(sysconfdir)/OpenCL/vendors"
+
 	#they don't provide the symlink for us (starting at 8.699)
 	dh_link -p$(PKG_driver_core) $(libdir32)/libatiuki.so.1.0 $(libdir32)/libatiuki.so.1
 endif
