@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb  4 00:00:48 CET 2015 - Sebastian Siebert <freespacer@gmx.de
+
+- add openSUSE 13.2 support
+- add magic modprobe line for SLE
+- add special dracut support
+
+-------------------------------------------------------------------
 Thu Aug 14 20:21:26 CEST 2014 - Sebastian Siebert <freesapcer@gmx.de>
 
 - switched to use of update-alternatives for sle12 and openSUSE > 13.1

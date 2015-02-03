@@ -23,23 +23,26 @@ Obsoletes:      fglrx km_fglrx ati-fglrxG02 x11-video-fglrxG02
 Obsoletes:      fglrx_6_9_0_SLE10 fglrx64_6_9_0_SLE10 fglrx_7_4_0_SLE11 fglrx64_7_4_0_SLE11
 Obsoletes:      fglrx_7_4_0_SUSE111 fglrx64_7_4_0_SUSE111 fglrx_7_4_0_SUSE112 fglrx64_7_4_0_SUSE112 fglrx_7_5_0_SUSE113 fglrx64_7_5_0_SUSE113 fglrx_7_6_0_SUSE114 fglrx64_7_6_0_SUSE114
 %if %suse_version > 1010
-Obsoletes:      fglrx_xpic_SLE10 fglrx64_xpic_SLE10
+Obsoletes:      fglrx_core_SLE10 fglrx64_core_SLE10 fglrx_xpic_SLE10 fglrx64_xpic_SLE10
 %if %suse_version > 1110
-Obsoletes:      fglrx_xpic_SUSE111 fglrx64_xpic_SUSE111 fglrx_xpic_SLE11 fglrx64_xpic_SLE11
+Obsoletes:      fglrx_core_SUSE111 fglrx64_core_SUSE111 fglrx_core_SLE11 fglrx64_core_SLE11 fglrx_xpic_SUSE111 fglrx64_xpic_SUSE111 fglrx_xpic_SLE11 fglrx64_xpic_SLE11
 %if %suse_version > 1120
-Obsoletes:      fglrx_xpic_SUSE112 fglrx64_xpic_SUSE112
+Obsoletes:      fglrx_core_SUSE112 fglrx64_core_SUSE112 fglrx_xpic_SUSE112 fglrx64_xpic_SUSE112
 %if %suse_version > 1130
-Obsoletes:      fglrx_xpic_SUSE113 fglrx64_xpic_SUSE113
+Obsoletes:      fglrx_core_SUSE113 fglrx64_core_SUSE113 fglrx_xpic_SUSE113 fglrx64_xpic_SUSE113
 %if %suse_version > 1140
-Obsoletes:      fglrx_xpic_SUSE114 fglrx64_xpic_SUSE114
+Obsoletes:      fglrx_core_SUSE114 fglrx64_core_SUSE114 fglrx_xpic_SUSE114 fglrx64_xpic_SUSE114
 %if %suse_version > 1210
-Obsoletes:      fglrx_xpic_SUSE121 fglrx64_xpic_SUSE121
+Obsoletes:      fglrx_core_SUSE121 fglrx64_core_SUSE121 fglrx_xpic_SUSE121 fglrx64_xpic_SUSE121
 %if %suse_version > 1220
-Obsoletes:      fglrx_xpic_SUSE122 fglrx64_xpic_SUSE122
+Obsoletes:      fglrx_core_SUSE122 fglrx64_core_SUSE122 fglrx_xpic_SUSE122 fglrx64_xpic_SUSE122
 %if %suse_version > 1230
-Obsoletes:      fglrx_xpic_SUSE123 fglrx64_xpic_SUSE123
+Obsoletes:      fglrx_core_SUSE123 fglrx64_core_SUSE123 fglrx_xpic_SUSE123 fglrx64_xpic_SUSE123
 %if %suse_version > 1310
-Obsoletes:      fglrx_xpic_SUSE131 fglrx64_xpic_SUSE131
+Obsoletes:      fglrx_core_SUSE131 fglrx64_core_SUSE131 fglrx_xpic_SUSE131 fglrx64_xpic_SUSE131
+%if %suse_version > 1320
+Obsoletes:      fglrx_core_SUSE132 fglrx64_core_SUSE132 fglrx_xpic_SUSE132 fglrx64_xpic_SUSE132
+%endif
 %endif
 %endif
 %endif
@@ -354,6 +357,10 @@ if grep -q '^KMS_IN_INITRD=\"yes\"' /etc/sysconfig/kernel; then
     sed -i 's/^KMS_IN_INITRD.*/KMS_IN_INITRD="no"/g' /etc/sysconfig/kernel
     mkinitrd
 fi
+# no *KMS_IN_INITRD in /etc/sysconfig/kernel any longer on sle12 and openSUSE 13.2
+%if 0%{?suse_version} >= 1315
+    mkinitrd
+%endif
 if [ ! -f "etc/ati/atiapfuser.blb" ]; then
     touch etc/ati/atiapfuser.blb
 fi
@@ -406,12 +413,15 @@ if [ -n "${AMDCONFIG_BIN}" -a -x "${AMDCONFIG_BIN}" ]; then
         # The condition will be removed later.
         mv -f etc/X11/xorg.conf.fglrx-post etc/X11/xorg.conf
     fi
-    ${AMDCONFIG_BIN} --initial=check >/dev/null
-    if [ $? -eq 1 ]; then
-        ${AMDCONFIG_BIN} --initial >/dev/null
+    # Don't run aticonfig on build machines
+    if /sbin/lspci -n | grep 0300 | cut -d : -f3 | sed 's/ //g' | grep -q 1002; then
+        ${AMDCONFIG_BIN} --initial=check >/dev/null
+        if [ $? -eq 1 ]; then
+           ${AMDCONFIG_BIN} --initial >/dev/null
+        fi
+        ${AMDCONFIG_BIN} --del-pcs-key=LDC,ReleaseVersion >/dev/null 2>&1
+        ${AMDCONFIG_BIN} --del-pcs-key=LDC,Catalyst_Version >/dev/null 2>&1
     fi
-    ${AMDCONFIG_BIN} --del-pcs-key=LDC,ReleaseVersion >/dev/null 2>&1
-    ${AMDCONFIG_BIN} --del-pcs-key=LDC,Catalyst_Version >/dev/null 2>&1
 fi
 if [ "${INSTALL_PARAM}" -eq 1 ]; then
 %if 0%{?suse_version} >= 1315
@@ -493,6 +503,8 @@ if [ "$1" -eq 0 ]; then
     rmmod fglrx &> /dev/null
     # now remove all available fglrx kernel modules
     find /lib/modules -iname "fglrx.ko" -print0 | xargs -r -0 rm
+    # remove radeon blacklist from initrd
+    mkinitrd
 fi
 exit 0
 

@@ -337,6 +337,11 @@ Requires:       kernel-devel\n\
         || checkReturnOutput $?
     echo "blacklist radeon" >${TMP_BUILD_PATH}/etc/modprobe.d/50-fglrx.conf \
         || checkReturnOutput $?
+    if [ -n "$(echo ${PACKAGE_NAME} | grep '^SLE')" ]; then
+        echo "options fglrx /sbin/modprobe --ignore-install --allow-unsupported-modules fglrx" >>${TMP_BUILD_PATH}/etc/modprobe.d/50-fglrx.conf \
+            || checkReturnOutput $?
+    fi
+
     echo "This file marks the fglrx packages fglrx-core, fglrx-graphics, fglrx-amdcccle, fglrx-opencl to be installed" > ${TMP_BUILD_PATH}/usr/share/doc/packages/fglrx-meta/fglrx-meta.txt
     print_okay
 
@@ -598,6 +603,10 @@ while [ "$#" -gt "0" ]; do
                     fi
 
                     AMD_SUSE_VERSION=`echo "${SUSE_VERSION}" | sed -e 's/\.//g'`
+
+                    if [ "${#AMD_SUSE_VERSION}" -eq 8 ]; then
+                        AMD_SUSE_VERSION="TUMBLEWEED"
+                    fi
 
                     ARCH="$(uname -m)"
                     case "${ARCH}" in
