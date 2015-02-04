@@ -87,6 +87,7 @@ fglrx-graphics, fglrx-amdcccle and fglrx-opencl.
 %package -n %PACKAGE_NAME_CORE
 Requires:       gcc make patch %AMD_DRIVER_KERNEL_DEVEL
 Summary:        fglrx core package
+Group:          Servers
 
 %description -n %PACKAGE_NAME_CORE
 The fglrx core package contains the fglrx kernel module and the
@@ -95,6 +96,7 @@ automatic kernel module rebuild script
 %package -n %PACKAGE_NAME_GRAPHICS
 Requires:       %PACKAGE_NAME_CORE = %{version}-%{release}
 Summary:        fglrx graphics package
+Group:          Servers
 
 %description -n %PACKAGE_NAME_GRAPHICS
 The fglrx graphics package contains X.Org Server related display driver
@@ -104,6 +106,7 @@ with the AMD OpenGL driver.
 Requires:       %PACKAGE_NAME_CORE = %{version}-%{release}
 Requires:       %PACKAGE_NAME_GRAPHICS = %{version}-%{release}
 Summary:        fglrx amdcccle package
+Group:          Servers
 
 %description -n %PACKAGE_NAME_AMDCCCLE
 The fglrx amdcccle package contains the AMD Catalyst Control Center
@@ -111,6 +114,7 @@ The fglrx amdcccle package contains the AMD Catalyst Control Center
 %package -n %PACKAGE_NAME_OPENCL
 Requires:       %PACKAGE_NAME_CORE = %{version}-%{release}
 Summary:        fglrx opencl package
+Group:          Servers
 
 %description -n %PACKAGE_NAME_OPENCL
 The fglrx opencl package contains the OpenCL driver

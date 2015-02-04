@@ -1,5 +1,10 @@
 -------------------------------------------------------------------
-Wed Feb  4 00:00:48 CET 2015 - Sebastian Siebert <freespacer@gmx.de
+Wed Feb  4 20:49:34 CET 2015 - Sebastian Siebert <freespacer@gmx.de>
+
+- add group field in the sub packages (fglrx.spec)
+
+-------------------------------------------------------------------
+Wed Feb  4 00:00:48 CET 2015 - Sebastian Siebert <freespacer@gmx.de>
 
 - add openSUSE 13.2 support
 - add magic modprobe line for SLE
