@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar  2 22:04:30 CET 2015 - Sebastian Siebert <freespacer@gmx.de>
+
+- add a missing library in OpenCL package fglrx_opencl
+
+-------------------------------------------------------------------
 Wed Feb  4 20:49:34 CET 2015 - Sebastian Siebert <freespacer@gmx.de>
 
 - add group field in the sub packages (fglrx.spec)
