@@ -337,8 +337,8 @@ Requires:       kernel-devel\n\
         || checkReturnOutput $?
     echo "blacklist radeon" >${TMP_BUILD_PATH}/etc/modprobe.d/50-fglrx.conf \
         || checkReturnOutput $?
-    if [ -n "$(echo ${PACKAGE_NAME} | grep '^SLE')" ]; then
-        echo "options fglrx /sbin/modprobe --ignore-install --allow-unsupported-modules fglrx" >>${TMP_BUILD_PATH}/etc/modprobe.d/50-fglrx.conf \
+    if [ -n "$(echo ${PACKAGE_NAME} | grep 'SLE')" ]; then
+        echo "install fglrx /sbin/modprobe --ignore-install --allow-unsupported-modules fglrx" >>${TMP_BUILD_PATH}/etc/modprobe.d/50-fglrx.conf \
             || checkReturnOutput $?
     fi
 
