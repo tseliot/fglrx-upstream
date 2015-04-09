@@ -629,10 +629,12 @@ exit 0
 /usr/bin/clinfo
 /usr/%{_lib}/libOpenCL*
 /usr/%{_lib}/libamdocl*
+/usr/%{_lib}/libamdhsasc*
 /usr/%{_lib}/libatical*
 %ifarch x86_64
 /usr/lib/libOpenCL*
 /usr/lib/libamdocl*
+/usr/lib/libamdhsasc*
 /usr/lib/libatical*
 %endif
 /usr/share/doc/packages/fglrx-opencl/*
