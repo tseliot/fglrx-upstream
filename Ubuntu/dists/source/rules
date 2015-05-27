@@ -472,5 +472,8 @@ else
 	dh_shlibdeps -l$(CURDIR)/debian/$(PKG_driver)/$(PKG_libdir):$(CURDIR)/debian/$(PKG_driver)/$(PKG_libdir)/bin:$(CURDIR)/debian/$(PKG_driver)/$(PKG_libdir)/sbin:$(CURDIR)/debian/$(PKG_driver_core)/$(PKG_libdir):$(CURDIR)/debian/$(PKG_driver_core)/$(PKG_libdir)/bin:$(CURDIR)/debian/$(PKG_driver_core)/$(PKG_libdir)/sbin
 endif
 
+override_dh_fixperms:
+	dh_fixperms -Xamd-console-helper
+
 %:
 	dh $@
