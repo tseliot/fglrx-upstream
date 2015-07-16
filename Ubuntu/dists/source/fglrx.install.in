@@ -9,8 +9,7 @@ debian/overrides/#DRIVERNAME#                   #DATADIR#/lintian/overrides
 #debian/acpi/fglrx-*-aticonfig                   #SYSCONFDIR#/acpi/events
 #debian/acpi/fglrx-powermode.sh                  #SYSCONFDIR#/acpi
 debian/10fglrx                                  #PKGLIBDIR#
-etc/ati/*                                       #SYSCONFDIR#/ati
-debian/replacements/authatieventsd.sh           #SYSCONFDIR#/ati
+
 #lightdm configuration file
 debian/90-fglrx.conf                            usr/share/lightdm/lightdm.conf.d
 debian/pxpress-update                           sbin
