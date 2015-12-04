@@ -218,7 +218,8 @@ buildPackage()
     AbsDistroDir=`cd "${RelDistroDir}" 2>/dev/null && pwd` # Absolute path to the distro directory
     TmpPkgBuildOut="/tmp/pkg_build.out"         # Temporary file to output diagnostics of the package build utility
     TmpDrvFilesDir=`mktemp -d -t fglrx.XXXXXX`  # Temporary directory to merge files from the common and x* directories
-
+    DpkgVersion=`dpkg --version | head -n1 | cut -f7  -d" "`
+    LegacyDpkg=$(dpkg --compare-versions "$DpkgVersion" lt "1.18" && echo "yes" || echo "no")
 
     #Detect x* dir name corresponding to X_NAME
     X_DIR=xpic
@@ -306,8 +307,15 @@ buildPackage()
         if [ "$1" = "source" ]; then
             PACKAGE_FILES=`grep 'building fglrx\-installer in' ${TmpPkgBuildOut} | sed -e 's/.*\ in\ //'`
         else
-            PACKAGE_FILES=`grep 'building package .* in .*\.deb' ${TmpPkgBuildOut} | sed -e 's/.*in \`\(.*\.deb\).*/\1/'`
+            if [ "$LegacyDpkg" = "yes" ]; then
+                PACKAGE_FILES=`grep 'building package .* in .*\.deb' ${TmpPkgBuildOut} | sed -e 's/.*in \`\(.*\.deb\).*/\1/'`
+            else
+                PACKAGE_FILES=`grep 'building package .* in .*\.deb' ${TmpPkgBuildOut} | cut -d/ -f2 | sed s/\'.//g `
+            fi
         fi
+
+        # Remove duplicates
+        PACKAGE_FILES="$(echo "$PACKAGE_FILES" | xargs -n1 | sort -u)"
 
         for i in ${PACKAGE_FILES}; do
 
@@ -315,7 +323,11 @@ buildPackage()
             if [ "$1" = "source" ]; then
                 mv ../$i "${AbsInstallerParentDir}"
             else
-                mv $i "${AbsInstallerParentDir}"
+                if [ "$LegacyDpkg" = "yes" ]; then
+                    mv $i "${AbsInstallerParentDir}"
+                else
+                    mv ../$i "${AbsInstallerParentDir}"
+                fi
             fi
             echo "Package "${AbsInstallerParentDir}"/`basename ${i}` has been successfully generated"
         done
